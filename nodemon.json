@@ -1,0 +1,8 @@
+{
+    "env": {
+        "MONGO_USER": "admin",
+        "MONGO_PASSWORD": "doudou",
+        "MONGO_DATABASE": "storelocatordb"
+    }
+
+}
