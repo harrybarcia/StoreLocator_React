@@ -39,12 +39,6 @@ app.get('/api', async (req, res) => {
   return res.json(stores);  
 });
 
-app.use('/', (req, res, next) => {
-  
-  res.send('Hello from Express!');
-
-  });
-
 
 // const csrfProtection = csrf();
 
