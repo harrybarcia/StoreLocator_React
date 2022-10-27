@@ -2,7 +2,10 @@
     "env": {
         "MONGO_USER": "admin",
         "MONGO_PASSWORD": "doudou",
-        "MONGO_DATABASE": "storelocatordb"
+        "MONGO_DATABASE": "storelocatordb",
+        "GEOCODER_PROVIDER" : "mapquest",
+        "GEOCODER_API_KEY" : "fpccV7GZkymTtSUfMvkguGNwivae1pnO"
+
     }
 
 }

@@ -34,6 +34,7 @@ StoreSchema.pre('save', async function(next) {
     coordinates: [loc[0].longitude, loc[0].latitude],
     formattedAddress: loc[0].formattedAddress
   };
+  console.log("location", this.location);
   // Do not save address
   this.address=undefined;
   next(); 

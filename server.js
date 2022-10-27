@@ -7,7 +7,8 @@ const mongoose = require('mongoose');
 // const session=require('express-session');
 const csrf=require('csurf');
 const Store = require('./models/model_Store');
-
+const mongodb=require('mongodb');
+const adminController = require('./controllers/controller_stores');
 const flash = require('connect-flash');
 // const MongoDBStore = require('connect-mongodb-session')(session);
 // const upload=require("./utils/multer") 
@@ -26,6 +27,8 @@ const MONGODB_URI =
 
 
 const app=express();
+app.use(express.json());
+
 app.use(cors());
 
 // const store = new MongoDBStore({
@@ -38,7 +41,14 @@ app.get('/api', async (req, res) => {
   const stores = await Store.find();
   return res.json(stores);  
 });
+app.get('/stores/:storeId', async (req, res) => {
+  const store = await Store.findOne({storeId: req.params.storeId});
+  return res.json(store);  
+});
 
+app.post('/add-store',adminController.addStore)
+
+  
 
 // const csrfProtection = csrf();
 
