@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import mapboxgl from 'mapbox-gl';
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ';
 const DisplayMap = (props) => {
-    
+   
 const [backendData, setBackendData] = useState(null);
 useEffect(() => {
     // declare the async data fetching function
@@ -98,11 +98,59 @@ function loadMap(stores) {
   
   }
   getStores();
+  map.on('click', 'points', (e) => {
+    // Copy coordinates array.
+    const coordinates = e.features[0].geometry.coordinates.slice();
+    const address = e.features[0].properties.formattedAddress;
+    const image = e.features[0].properties.image;
+    const storeId = e.features[0].properties._id;
+    const userId = e.features[0].properties.userId;
+    const city = e.features[0].properties.city;
+      console.log(e.features);
+    // Ensure that if the map is zoomed out such that multiple
+    // copies of the feature are visible, the popup appears
+    // over the copy being pointed to.
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
+      
+    new mapboxgl.Popup()
+    .setLngLat(coordinates)
+    .setHTML(`
+      <img src='/images/${image}' style="width:100%;max-height:200px; border-radius:3%;max-height: 182px;object-fit: cover">
+      <div>
+      <span style="overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+                  line-clamp: 3; 
+          -webkit-box-orient: vertical;
+          max-height: 60px;">
+        </strong>
+        ${city}
+      </span>
+      <span style="overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+                  line-clamp: 3; 
+          -webkit-box-orient: vertical;
+          max-height: 60px;">
+        </strong>
+        ${city}
+      </span>
+      </div>
+      <a href='/stores/${storeId}' class="btn">Details</a>
+      `)
+    .addTo(map);
+  });
 
     
       
   }, 
   [backendData]);
+
+    
 
   return (	
     <div>
