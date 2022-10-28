@@ -69,7 +69,7 @@ exports.getStore = (req, res, next) => {
 // @desc Create a store
 // @route POST /api-stores
 // @access Public
-exports.addStore=async  (req, res, next)=>{
+exports.addStore = async (req, res, next)=>{
   console.log('session addstores', req.body);
   const address=req.body.address;
   const image = "";
@@ -147,11 +147,14 @@ exports.postEditStore = (req, res, next) => {
 };
 
 exports.deleteStore = (req, res, next) => {
-  const storeId = req.body.storeId;
+  
+  console.log('delete body store', req.params.id);
+  
+  const storeId = req.params.id;
   Store.deleteOne({ _id: storeId })
     .then(() => {
       console.log('DESTROYED PRODUCT');
-      res.redirect('/stores-list');
+      res.status(200).json({ message: 'Success!' });
     })
     .catch(err => console.log(err));
 };

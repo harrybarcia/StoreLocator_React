@@ -47,6 +47,7 @@ app.get('/stores/:storeId', async (req, res) => {
 });
 
 app.post('/add-store',adminController.addStore)
+app.delete('/api/:id',adminController.deleteStore)
 
   
 
