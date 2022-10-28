@@ -1,10 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import './MainHeader.css';
+
 
 const MainHeader = () => {
     return (
         <header>
-            <ul>
+            <ul className="banner">
                 <li>
                     <Link to="/welcome">Welcome</Link>
                 </li>
@@ -14,6 +16,10 @@ const MainHeader = () => {
                 <li>
                     <Link to="/new-store">Add a new store</Link>
                 </li>
+                <li>
+                    <Link to="/edit-store">Add a new store</Link>
+                </li>
+
 
             </ul>
         </header>

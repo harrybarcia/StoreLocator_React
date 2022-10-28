@@ -9,6 +9,8 @@ const Store = () => {
         <div>
             <h1>Store</h1>
             <h2>{params.id}</h2>
+            <button>Delete</button>
+
         </div>
     );
 };

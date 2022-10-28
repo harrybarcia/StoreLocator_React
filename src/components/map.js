@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import mapboxgl from 'mapbox-gl';
+import './map.css'
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ';
 const DisplayMap = (props) => {
    
@@ -149,29 +150,52 @@ function loadMap(stores) {
       
   }, 
   [backendData]);
+  
+
+  const deleteStore = async (id) => {
+    try {
+      const res = await fetch(`/api/${id}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      console.log(data);
+      setBackendData(backendData.filter(store => store._id !== id));
+      
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
     
 
   return (	
-    <div>
-        <div ref={mapContainer} className="map-container"></div>
-    <div>   
-        {( backendData && backendData.length > 0) ? backendData.map((store, index) => {
-        
-            return (
-                <div>
-                    <div key={index}>
-                        <h1>{store.location.formattedAddress}</h1>
-                        <p>{store.address}</p>
-                    </div>
-                    
-                </div>
-            );
-        })
-        : <p>loading...</p>
-        };
-    </div>
-
+    <div className='map-wrapper'>
+      <div className='map'>
+        <div ref={mapContainer} ></div>
+      </div>
+      <div>   
+          {( backendData && backendData.length > 0) ? backendData.map((store, index) => {
+          
+              return (
+                  <div>
+                      <div key={index}>
+                          <p>{store.location.formattedAddress}</p>
+                          <p>{store.address}</p>
+                          
+                          
+                      </div>
+                      <button 
+                      value={store._id}
+                      name={store._id}
+                      onClick={() => deleteStore(store._id)}
+                      >Delete</button>
+                      
+                  </div>
+              );
+          })
+          : <p>loading...</p>
+          };
+      </div>
     </div>
     
     );

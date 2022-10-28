@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+  margin: 10px;
+  
+}
+
+.mapboxgl-map {
+  width: 100%;
+  height: 100%;
+}

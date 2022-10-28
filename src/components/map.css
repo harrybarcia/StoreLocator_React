@@ -1,0 +1,15 @@
+.map {
+   
+   width: 100vh;
+    
+}
+
+
+.map-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 100%;
+    margin-left: 5em;
+    height: 80vh;
+}
