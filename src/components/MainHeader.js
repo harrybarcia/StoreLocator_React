@@ -8,17 +8,15 @@ const MainHeader = () => {
         <header>
             <ul className="banner">
                 <li>
-                    <Link to="/welcome">Welcome</Link>
+                    <Link to="/">Welcome</Link>
                 </li>
                 <li>
-                    <Link to="/products">Products</Link>
+                    <Link to="/stores">Stores</Link>
                 </li>
                 <li>
                     <Link to="/new-store">Add a new store</Link>
                 </li>
-                <li>
-                    <Link to="/edit-store">Add a new store</Link>
-                </li>
+                
 
 
             </ul>
