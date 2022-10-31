@@ -98,53 +98,31 @@ exports.addStore = async (req, res, next)=>{
 }
 
 
-exports.getEditStore = (req, res, next) => {
-  const editMode = req.query.edit;
-  if (!editMode) {
-    return res.redirect('/');
-  }
-  const storeId = req.params.storeId;
+exports.updateStore = (req, res, next) => {
+  
+  console.log('heree');
+  console.log(req.params);
+  const storeId =req.params.id;
+  console.log(storeId)
+  const updatedAddress = req.body.address;
+  const updatedImage = req.body.image;
+  const updatedCity = req.body.city;
   Store.findById(storeId)
     .then(store => {
-      if (!store) {
-        return res.redirect('/');
-      }
-      res.render('pages/add',{
-        path:'/add',
-        pageTitle:'Add Store',
-        editing: editMode,
-        store: store,
-        csrfToken:req.csrfToken()      
-
-      });
+      console.log('store', store);
+      store.address = updatedAddress;
+      store.image = updatedImage;
+      store.city = updatedCity;
+      return store.save();
+    })
+    .then(result => {
+      console.log('UPDATED STORE!');
+      res.redirect('/stores-list');
     })
     .catch(err => console.log(err));
 };
 
-exports.postEditStore = (req, res, next) => {
-  const storeId = req.body.storeId;
-  const updatedAddress = req.body.address;
-  const updatedImage = req.file.filename;
-  const updatedCity = req.body.city;
-
-
-  Store.findById(storeId)
-    .then(store => {
-      // if (store.userId.toString() !== req.user._id.toString()) {
-      //   return res.redirect('/');
-      // }
-      store.address = updatedAddress;
-      store.image = updatedImage;
-      store.city = updatedCity;
-      return store.save()
-    .then(result => {
-      console.log('UPDATED PRODUCT!');
-      // res.redirect('/stores/' + storeId);
-      res.redirect('/');
-    });
-  })
-    .catch(err => console.log(err));
-};
+  
 
 exports.deleteStore = (req, res, next) => {
   

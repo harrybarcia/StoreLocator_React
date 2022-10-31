@@ -48,6 +48,7 @@ app.get('/stores/:storeId', async (req, res) => {
 
 app.post('/add-store',adminController.addStore)
 app.delete('/api/:id',adminController.deleteStore)
+app.put('/edit-store/:id',adminController.updateStore)
 
   
 
