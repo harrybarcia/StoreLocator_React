@@ -3,6 +3,7 @@ const path=require('path');
 const express=require('express');
 const dotenv=require('dotenv');
 const cors=require('cors');
+const multer=require('multer');
 const mongoose = require('mongoose');
 // const session=require('express-session');
 const csrf=require('csurf');
@@ -11,13 +12,29 @@ const mongodb=require('mongodb');
 const adminController = require('./controllers/controller_stores');
 const flash = require('connect-flash');
 // const MongoDBStore = require('connect-mongodb-session')(session);
-// const upload=require("./utils/multer") 
+const User = require('./models/model_User');
+
+
 const compression = require('compression');
 const https = require('https');
 // load env vars
 const morgan = require('morgan');
 dotenv.config({path:'./config/config.env' });
 const bodyParser=require('body-parser');
+
+
+const fileStorage=multer.diskStorage({
+  destination:(req,file,cb)=>{
+      cb(null, 'public/images');
+  },
+  filename:(req,file,cb)=>{
+    console.log('file in server.js', file);
+      cb(null, file.originalname);
+  }
+});
+
+const upload=multer({storage:fileStorage}).single('image');
+
 
 // const User=require('./models/model_User');
 // adding a comment test for git
@@ -27,6 +44,15 @@ const MONGODB_URI =
 
 
 const app=express();
+
+// Set static folder
+
+app.use(express.static(path.join(__dirname, 'public')));
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, 'access.log'),
+  { flags: 'a' }
+);
+
 app.use(express.json());
 
 app.use(cors());
@@ -36,20 +62,25 @@ app.use(cors());
 //   collection: 'sessions'
 // });
 
+app.get('/api/users', async (req, res) => {
+
+  User.find()
+    
+  const users = await User.find({});
+  res.send(users);
+});
+
+
 
 app.get('/api', async (req, res) => {
   const stores = await Store.find();
   return res.json(stores);  
 });
-app.get('/stores/:storeId', async (req, res) => {
-  const store = await Store.findOne({storeId: req.params.storeId});
-  return res.json(store);  
-});
+app.get('/api/:storeId', adminController.getStore);
 
-app.post('/add-store',adminController.addStore)
+app.post('/add-store', upload, adminController.addStore)
 app.delete('/api/:id',adminController.deleteStore)
-app.put('/edit-store/:id',adminController.updateStore)
-
+app.put('/edit-store/:id',upload, adminController.updateStore)
   
 
 // const csrfProtection = csrf();

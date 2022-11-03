@@ -11,17 +11,22 @@ const usersSchema = new Schema({
         type: String,
         required: true
     },
-    favorites: [{ 
-        type: Schema.Types.ObjectId, 
-        ref: 'Store' }],
-    resetToken: String,
-    resetTokenExpiration: Date
+    users: [{
+        type: Schema.Types.ObjectId,
+        ref: 'model_User'
+    }]
+    // ,
+    // favorites: [{ 
+    //     type: Schema.Types.ObjectId, 
+    //     ref: 'Store' }],
+    // resetToken: String,
+    // resetTokenExpiration: Date
 });                                 
 
-usersSchema.methods.addFavorite = function(storeId) {
-    const updatedFavorites = [...this.favorites];
-    updatedFavorites.push(storeId);
-    this.favorites = updatedFavorites;
-    return this.save();
-  }
+// usersSchema.methods.addFavorite = function(storeId) {
+//     const updatedFavorites = [...this.favorites];
+//     updatedFavorites.push(storeId);
+//     this.favorites = updatedFavorites;
+//     return this.save();
+//   }
 module.exports = mongoose.model('User', usersSchema);

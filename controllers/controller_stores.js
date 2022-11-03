@@ -1,7 +1,7 @@
 const Store=require('../models/model_Store')
 const mongodb=require('mongodb');
 // const { json } = require('body-parser');
-
+const User = require('../models/model_User');
 
 
 
@@ -22,62 +22,35 @@ exports.getStoresList = (req, res, next) => {
       console.log(err);
     });
 };
-exports.getStoresTest = (req, res, next) => {
-  // Store.find({userId: req.user._id})
-  Store.find({})
-
-    .then(stores => {
-    
-      res.status(200).json({
-        message: 'Success',
-        stores: stores
-      });
-      
-    })
-    .catch(err => {
-      console.log(err);
-    });
-};
 
 
 
-
-exports.getStore = (req, res, next) => {
-  console.log('heree');
+exports.getStore = async (req, res, next) => {
+  console.log('in Get Store');
   console.log(req.params);
   const storeId = (req.params.storeId).trim();
   console.log(storeId)
-  Store.findById(storeId)
-    .then(store => {
-      console.log(store);
-      res.render('stores/store-details', {
-        prods: store,
-        path: '/stores/:storeId',
-      });
-    })
-    .catch(err => console.log(err));
+  const data = await Store.findById(storeId)
+  console.log(data);
+  return (
+    res.status(200).json({ message: 'Success!', data: data })
+  )
+
 };
 
-  exports.getAddStore= (req, res, next)=>{
-    console.log("add store", req.user);
-      res.render('pages/add',{
-          path:'/add-store',
-          pageTitle:'Add Store',
-          editing:false
-      })
-      }
+
 // @desc Create a store
 // @route POST /api-stores
 // @access Public
 exports.addStore = async (req, res, next)=>{
   console.log('session addstores', req.body);
+  console.log("req.file", req.file);
   const address=req.body.address;
-  const image = "";
+  const image = req.file.filename;
   const storeId = new mongodb.ObjectId();
   const userId = req.body.userId;
   const city = req.body.city;
   
-  console.log("req", req.body);
         const store=await new Store({
           storeId:storeId,
           address, image, userId, city});
@@ -86,7 +59,8 @@ exports.addStore = async (req, res, next)=>{
         .then(results => {
           console.log(results);
           console.log('Created Store');
-          res.redirect('/');
+          res.status(200).json({ message: 'Success!', data: results });
+
         })
           .catch (err=>{
             console.error(err);
@@ -100,13 +74,12 @@ exports.addStore = async (req, res, next)=>{
 
 exports.updateStore = (req, res, next) => {
   
-  console.log('heree');
-  console.log(req.params);
+  console.log('in update controller');
+  
   const storeId =req.params.id;
-  console.log(storeId)
-  const updatedAddress = req.body.address;
-  const updatedImage = req.body.image;
   const updatedCity = req.body.city;
+  const updatedAddress = req.body.address;
+  const updatedImage = req.file.filename;
   Store.findById(storeId)
     .then(store => {
       console.log('store', store);
@@ -116,13 +89,24 @@ exports.updateStore = (req, res, next) => {
       return store.save();
     })
     .then(result => {
-      console.log('UPDATED STORE!');
-      res.redirect('/stores-list');
+      res.status(200).json({ message: 'Store updated!', data: result });
     })
     .catch(err => console.log(err));
 };
 
   
+exports.getUsers = async (req, res, next) => {
+  console.log('in Get Users');
+  const users = await User.find();
+  users.forEach(user => {
+    console.log(user);
+  });
+  
+  console.log(users);
+  res.status(200).json({ message: 'Success!', data: users });
+};
+
+
 
 exports.deleteStore = (req, res, next) => {
   
