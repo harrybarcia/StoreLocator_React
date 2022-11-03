@@ -1,52 +1,106 @@
 import {useRef, useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from "react-router-dom";
-const EditStore = (props) => {
-    const params = useParams();
-    const initialValues = {address:"", city:"", image:""};
-    const [formValues, setFormValues] = useState(initialValues);
 
-    const handleChange = (e) => {
-        const {name, value} = e.target;
-        setFormValues({...formValues, [name]: value});
-        console.log("formValues", formValues);
-    }
+const EditStore = (props) => {
+
+  
+  const [dataExistingStore, setDataExistingStore] = useState([]);
+  
+  const { id } = useParams();
+  console.log("id", id);
+  const storeId = useParams().id;
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [image, setFile] = useState('');
+  const [imagePath, setImagePath] = useState('');
+  
+  useEffect(() => {
+    fetchStore();
+  }, []);
+
+  const fetchStore = async () => {
+    const response = await fetch(`/api/${id}`);
+    const result = await response.json();
+    console.warn("data", result);
     
-    const navigate = useNavigate();
-    const handleEdit = async (id) => {
-        
-        const data = await fetch(`/edit-store/${id}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(formValues),
-        });
-        
-    }
+    setAddress(result.data.location.formattedAddress);
+    setCity(result.data.city);
+    setFile(result.data.image);
+    setImagePath(result.data.image);
+    
+    
+    
+    
+  };
+  console.log("address", address);
+    
+  const updateStore = async (evt) => {
+    evt.preventDefault();
+    console.log("updateStore", updateStore);
+  };
+  
+  const handleEdit = async (evt) => {
+
+    
+    evt.preventDefault();
+    const formData = new FormData();
+    formData.append('address', address);
+    formData.append('city', city);
+    formData.append('image', image);
+    const response = await fetch(`/edit-store/${storeId}`, {
+      method: 'PUT',
+      body: formData,
+    });
+    const data = await response.json();
+    console.log(data);
+  
+  }
     
     return (
-        <form onSubmit={() => handleEdit(params.id)}>
+        <form 
+        onSubmit={handleEdit}>
           <div >
             <label >Your Address</label>
             <input 
             type="text" 
             name="address"
-            value={formValues.address} 
-            onChange={handleChange} />
+            value={address} 
+            
+            onChange={
+              (evt) => {
+                setAddress(evt.target.value);
+              }
+            } />
             
             <label >Image</label>
             <input 
             name="image"
-            type="text"
-            value={formValues.image} 
-            onChange={handleChange}
+            type="file"
+            defaultValue={image}
+
+            onChange={
+              (evt) => {
+                
+                setFile(evt.target.files[0]);
+                setImagePath(evt.target.files[0].name);
+              }
+            }
+            
             />
+            <img src={"/images/"+imagePath} alt="store" style={{width:"100px"}}/>             
             
             <label >City</label>
             <input 
             name="city"
             type="text"
-            value={formValues.city} 
-            onChange={handleChange}
+            value={city} 
+            onChange={
+              (evt) => {
+                setCity(evt.target.value);
+              }
+            }
+            
             />
           </div>
           <div className="form-actions">

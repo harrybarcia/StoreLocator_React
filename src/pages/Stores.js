@@ -30,9 +30,12 @@ const AllStores = () => {
                     <li >
                         {store.location.formattedAddress}
                     </li>
+                    <li >
+                        {store.image}
+                    </li>
                 </ul>
                 <button>
-                    <Link to="/new-store">Add a new store</Link>
+                    <Link to="/add-store">Add a new store</Link>
                 </button>
                 <button>
                     <Link to={`/edit-store/${store._id}`}>Edit my store</Link>

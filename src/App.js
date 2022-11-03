@@ -5,6 +5,10 @@ import Child from './components/parent';
 import Welcome from './pages/Welcome';
 import AllStores from './pages/Stores';
 import MainHeader from './components/MainHeader';
+import Login from './pages/Login';
+import Logout from './pages/Logout';
+import Signup from './pages/Signup';
+import Users from './pages/Users';
 import './App.css';
 
 import Store from './pages/Store';
@@ -25,9 +29,13 @@ const App = () => {
 						<Route path="/" element={<MapData />} />
 						<Route path="/welcome"  element={<Welcome />} />
 						<Route path="/stores" element={<AllStores />} />
-						<Route path="/stores/:id" element={<Store />} />
-						<Route path="/new-store" element={<NewStoreForm />} />
+						<Route path="/api/:id" element={<Store />} />
+						<Route path="/add-store" element={<NewStoreForm />} />
 						<Route path="/edit-store/:id" element={<EditStore />} />
+						<Route path="/login" element={<Login />} />
+						<Route path="/logout" element={<Logout />} />
+						<Route path="/signup" element={<Signup />} /> 
+						<Route path="/api/users" element={<Users />} />
 						
 					</Routes>
 				</div>

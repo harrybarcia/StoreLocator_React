@@ -181,8 +181,7 @@ const DisplayMap = (props) => {
                         <div key={index}>
                             <p>{store.location.formattedAddress}</p>
                             <p>{store.address}</p>
-                            
-                            
+                            <p>{store.image}</p>
                         </div>
                         <button 
                         value={store._id}

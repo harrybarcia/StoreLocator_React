@@ -14,8 +14,22 @@ const MainHeader = () => {
                     <Link to="/stores">Stores</Link>
                 </li>
                 <li>
-                    <Link to="/new-store">Add a new store</Link>
+                    <Link to="/add-store">Add a new store</Link>
                 </li>
+                <li>
+                    <Link to="/login">Login</Link>
+                </li>
+                <li>
+                    <Link to="/logout">Logout</Link>
+                </li>
+                <li>
+                    <Link to="/signup">Sign up</Link>
+                </li>
+                <li>
+                    <Link to="/api/users">Users</Link>
+                </li>
+
+                
                 
 
 

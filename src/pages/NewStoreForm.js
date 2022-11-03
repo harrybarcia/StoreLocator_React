@@ -1,53 +1,65 @@
 import {useRef, useState, useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const SimpleInput = () => {
-  const initialValues = {address:"", city:"", image:""};
-  const [formValues, setFormValues] = useState(initialValues);
-
-  const handleChange = (e) => {
-    const {name, value} = e.target;
-    setFormValues({...formValues, [name]: value});
-    console.log(formValues);      
-
-  }
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [image, setFile] = useState('');
   const navigate = useNavigate();
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = await fetch('/add-store', {
+
+  const handleAddressChange = (evt) => {
+    setAddress(evt.target.value);
+    
+  };
+  const handleCityChange = (evt) => {
+    setCity(evt.target.value);
+  };
+
+  const handlePhotoSelect = (evt) => {
+    setFile(evt.target.files[0]);
+  };
+
+  const handleSubmit = async (evt) => {
+    evt.preventDefault();
+    const formData = new FormData();
+    formData.append('address', address);
+    formData.append('city', city);
+    formData.append('image', image);
+    const response = await fetch('/add-store', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formValues)
-        });
-      navigate('/');
+      body: formData,
+    });
+    const data = await response.json();
+    console.log(data);
+    navigate('/');
   }
+
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}
+    >
       <div >
         <label >Your Address</label>
         <input 
         type="text" 
         name="address"
-        value={formValues.address} 
-        onChange={handleChange} />
+        value={address} 
+        onChange={handleAddressChange} />
         
         <label >Image</label>
         <input 
         name="image"
-        type="text"
-        value={formValues.image} 
-        onChange={handleChange}
+        type="file"
+        defaultValue={image}
+        onChange= {handlePhotoSelect}
         />
         
         <label >City</label>
         <input 
         name="city"
         type="text"
-        value={formValues.city} 
-        onChange={handleChange}
+        value={city} 
+        onChange={handleCityChange}
         />
         
         
