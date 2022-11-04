@@ -30,8 +30,9 @@ const MONGODB_URI =
   `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.iaepn.mongodb.net/${process.env.MONGO_DATABASE}`;
 
   
-  const app=express();
-  app.use(cors());
+const app=express();
+
+app.use(cors());
 
 // Set static folder
 
@@ -58,7 +59,7 @@ mongoose
   .connect(MONGODB_URI)
   .then(result => {
 
-  console.log('connected to db');
+  console.log('connected to db on port 3000');
   app.listen(3001);
   })
   .catch(err => {

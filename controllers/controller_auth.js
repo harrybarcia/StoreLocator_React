@@ -45,10 +45,24 @@ exports.signUp = async (req, res, next)=>{
 exports.login = async (req, res, next)=>{
   const { email, password } = req.body;
   console.log('login', req.body);
+  const user = await User.findOne({ email: email });
+  if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+  }
+  const isEqual = await bcrypt.compare(password, user.password);
+  if (!isEqual) {
+      return res.status(401).json({ message: 'Password is incorrect' });
+  }
 
-  const accessToken = jwt.sign({ email, password }, '5b61290199fd4349e9b299bcbf0c81628fa0b47c67fe697f5a0192a1126d07b406f20c298143a70e1e9aa4fcdcdba730369213d5c6a5a81a94c9cd0d7c299911');
-  res.json({ accessToken: accessToken });
-  
-  
+  const token = jwt.sign(
+      {
+          email: user.email,
+          userId: user._id.toString()
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: '30s' }
+  );
+  res.cookie('access-token', token, { httpOnly: true });
+  res.json({ token: token, userId: user._id.toString() });
+
 };
-  
