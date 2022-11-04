@@ -36,8 +36,9 @@ const SimpleInput = () => {
 
 
   return (
-    <form onSubmit={handleSubmit}
-    >
+    <div>
+
+    <form onSubmit={handleSubmit}>
       <div >
         <label >Your Address</label>
         <input 
@@ -68,6 +69,7 @@ const SimpleInput = () => {
         <button>Submit</button>
       </div>
     </form>
+    </div>
   );
 };
 

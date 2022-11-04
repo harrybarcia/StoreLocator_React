@@ -7,7 +7,7 @@ import AllStores from './pages/Stores';
 import MainHeader from './components/MainHeader';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
-import Signup from './pages/Signup';
+import Register from './pages/Register';
 import Users from './pages/Users';
 import './App.css';
 
@@ -34,7 +34,7 @@ const App = () => {
 						<Route path="/edit-store/:id" element={<EditStore />} />
 						<Route path="/login" element={<Login />} />
 						<Route path="/logout" element={<Logout />} />
-						<Route path="/signup" element={<Signup />} /> 
+						<Route path="/add-store2" element={<Register />} /> 
 						<Route path="/api/users" element={<Users />} />
 						
 					</Routes>

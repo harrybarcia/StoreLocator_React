@@ -23,7 +23,7 @@ const MainHeader = () => {
                     <Link to="/logout">Logout</Link>
                 </li>
                 <li>
-                    <Link to="/signup">Sign up</Link>
+                    <Link to="/register">Sign up</Link>
                 </li>
                 <li>
                     <Link to="/api/users">Users</Link>

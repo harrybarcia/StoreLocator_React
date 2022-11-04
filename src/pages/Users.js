@@ -14,11 +14,6 @@ const Users = () => {
         fetchUsers();
         console.log(users);
     }, []);
-    
-    
-    
-
-
     return (
         <div>
             <h1>
@@ -35,7 +30,7 @@ const Users = () => {
                                 <li>
                                     {user.password}
                                 </li>
-                                
+
                             </ul>
                         </div>
                     )

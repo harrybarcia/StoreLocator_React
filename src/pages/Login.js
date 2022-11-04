@@ -1,25 +1,54 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import React, { useState } from "react";
 
-const Login = () => {
-    return (
-        <div>
-            <h1>Login</h1>
-            <form>
-                <label>
-                    Email
-                    <input type="email" />
-                </label>
-                <label>
-                    Password
-                    <input type="password" />
-                </label>
-                <button type="submit">Login</button>
-            </form>
-            <Link to="/signup">Sign up</Link>
-        </div>
-    );
-};
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  function validateForm() {
+    return email.length > 0 && password.length > 0;
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
 
 
-export default Login;
+    axios({
+      method: "post",
+      url: "/login",
+      
+      data: {
+        email: email,
+        password: password
+      },
+    })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    }
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <input  autoFocus
+            type="email"
+            name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}/>
+        <input  autoFocus
+            name="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}/>
+        
+        
+        <button type="submit" disabled={!validateForm()}>
+          Login
+        </button>
+      </form>
+    </div>
+  );
+}
