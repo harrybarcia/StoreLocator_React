@@ -1,7 +1,7 @@
 const Store=require('../models/model_Store')
 const mongodb=require('mongodb');
 // const { json } = require('body-parser');
-const User = require('../models/model_User');
+
 
 
 
@@ -26,12 +26,11 @@ exports.getStoresList = (req, res, next) => {
 
 
 exports.getStore = async (req, res, next) => {
-  console.log('in Get Store');
-  console.log(req.params);
+  
   const storeId = (req.params.storeId).trim();
-  console.log(storeId)
+  
   const data = await Store.findById(storeId)
-  console.log(data);
+  
   return (
     res.status(200).json({ message: 'Success!', data: data })
   )
@@ -95,16 +94,6 @@ exports.updateStore = (req, res, next) => {
 };
 
   
-exports.getUsers = async (req, res, next) => {
-  console.log('in Get Users');
-  const users = await User.find();
-  users.forEach(user => {
-    console.log(user);
-  });
-  
-  console.log(users);
-  res.status(200).json({ message: 'Success!', data: users });
-};
 
 
 

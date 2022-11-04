@@ -1,49 +1,37 @@
 const fs=require('fs');
 const path=require('path');
 const express=require('express');
-const dotenv=require('dotenv');
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
+
 const cors=require('cors');
 const multer=require('multer');
 const mongoose = require('mongoose');
 // const session=require('express-session');
 const csrf=require('csurf');
-const Store = require('./models/model_Store');
+
+require ('dotenv').config();
 const mongodb=require('mongodb');
-const adminController = require('./controllers/controller_stores');
+
 const flash = require('connect-flash');
 // const MongoDBStore = require('connect-mongodb-session')(session);
 const User = require('./models/model_User');
-
 
 const compression = require('compression');
 const https = require('https');
 // load env vars
 const morgan = require('morgan');
-dotenv.config({path:'./config/config.env' });
+
 const bodyParser=require('body-parser');
+const cookieParser = require("cookie-parser");
 
-
-const fileStorage=multer.diskStorage({
-  destination:(req,file,cb)=>{
-      cb(null, 'public/images');
-  },
-  filename:(req,file,cb)=>{
-    console.log('file in server.js', file);
-      cb(null, file.originalname);
-  }
-});
-
-const upload=multer({storage:fileStorage}).single('image');
-
-
-// const User=require('./models/model_User');
-// adding a comment test for git
 const MONGODB_URI =
   
   `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.iaepn.mongodb.net/${process.env.MONGO_DATABASE}`;
 
-
-const app=express();
+  
+  const app=express();
+  app.use(cors());
 
 // Set static folder
 
@@ -52,109 +40,18 @@ const accessLogStream = fs.createWriteStream(
   path.join(__dirname, 'access.log'),
   { flags: 'a' }
 );
-
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use(cors());
-
-// const store = new MongoDBStore({
-//   uri: MONGODB_URI,
-//   collection: 'sessions'
-// });
-
-app.get('/api/users', async (req, res) => {
-
-  User.find()
-    
-  const users = await User.find({});
-  res.send(users);
-});
+const storesRoutes = require('./routes/stores'); 
+const authRoutes = require('./routes/auth');
 
 
 
-app.get('/api', async (req, res) => {
-  const stores = await Store.find();
-  return res.json(stores);  
-});
-app.get('/api/:storeId', adminController.getStore);
+app.use(authRoutes);
+app.use(storesRoutes);
 
-app.post('/add-store', upload, adminController.addStore)
-app.delete('/api/:id',adminController.deleteStore)
-app.put('/edit-store/:id',upload, adminController.updateStore)
-  
-
-// const csrfProtection = csrf();
-
-// const privateKey = fs.readFileSync('server.key');
-// const certificate = fs.readFileSync('server.cert');
-
-// app.set('view engine', 'ejs');
-// app.set("views", path.join(__dirname, "views"));
-  // Body parser
-
-  
-// const authRoutes = require('./routes/auth');
-// const storesRoutes = require('./routes/stores');
-
-
-// app.use(bodyParser.urlencoded({ extended: false }));
-
-// app.use(session({
-//   secret: 'keyboard cat',
-//   resave: false,
-//   saveUninitialized: false,
-//   store: store
-//   }));
-
-// // Enable Cors
-
-
-// // Set static folder
-
-// app.use(express.static(path.join(__dirname, 'public')));
-// const accessLogStream = fs.createWriteStream(
-//   path.join(__dirname, 'access.log'),
-//   { flags: 'a' }
-// );
-// app.use(bodyParser.urlencoded({
-//     extended: false
-//  }));
-// app.use(compression());
-// app.use(morgan('combined', { stream: accessLogStream }));
-//  app.use(csrfProtection);
-//  app.use(flash());
-//  app.use((req, res, next) => {
-//   if (!req.session.user) {
-//     return next();
-//   }
-//   User.findById(req.session.user._id)
-//   .then(user => {
-//       // it is fueled by the session
-//       req.user = user;
-//       next();
-//   }).catch(err => console.log(err));
-// }
-// );
-
-
-//  app.use((req, res, next) => {
-//   res.locals.isAuthenticated = req.session.isLoggedIn;
-//   res.locals.csrfToken = req.csrfToken();
-//   next();
-//   }
-// );
-// app.use(authRoutes);
-// app.use(storesRoutes);
-
-// app.get('/add', function (req, res) {
-//   res.render('pages/add', {
-//     pageTitle: 'Add Store',
-//     path: '/add'});
-// });
-
-
-
-
+app.use(cookieParser());
 
 
 mongoose
