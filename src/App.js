@@ -4,6 +4,7 @@ import MapData from './components/map';
 import Child from './components/parent';
 import Welcome from './pages/Welcome';
 import AllStores from './pages/Stores';
+import AllStores2 from './pages/Stores2';
 import MainHeader from './components/MainHeader';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
@@ -36,6 +37,8 @@ const App = () => {
 						<Route path="/logout" element={<Logout />} />
 						<Route path="/add-store2" element={<Register />} /> 
 						<Route path="/api/users" element={<Users />} />
+						<Route path="/stores2" element={<AllStores2 />} />
+
 						
 					</Routes>
 				</div>

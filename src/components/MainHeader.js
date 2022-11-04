@@ -28,6 +28,9 @@ const MainHeader = () => {
                 <li>
                     <Link to="/api/users">Users</Link>
                 </li>
+                <li>
+                    <Link to="/stores2">Stores with Auth</Link>
+                </li>
 
                 
                 
