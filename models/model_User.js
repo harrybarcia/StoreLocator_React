@@ -11,10 +11,7 @@ const usersSchema = new Schema({
         type: String,
         required: true
     },
-    users: [{
-        type: Schema.Types.ObjectId,
-        ref: 'model_User'
-    }]
+    storeId: {type: Schema.Types.ObjectId, ref: 'Store'},
     // ,
     // favorites: [{ 
     //     type: Schema.Types.ObjectId, 

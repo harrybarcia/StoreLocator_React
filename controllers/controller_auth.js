@@ -43,7 +43,9 @@ exports.signUp = async (req, res, next)=>{
 };
 
 exports.login = async (req, res, next)=>{
+  
   const { email, password } = req.body;
+
   console.log('login', req.body);
   const user = await User.findOne({ email: email });
   if (!user) {
@@ -60,9 +62,17 @@ exports.login = async (req, res, next)=>{
           userId: user._id.toString()
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '30s' }
+      { expiresIn: '45m' }
   );
   res.cookie('access-token', token, { httpOnly: true });
   res.json({ token: token, userId: user._id.toString() });
+  return user;
+
 
 };
+
+exports.logout = async (req, res, next)=>{
+  res.cookie('access-token', '', { maxAge: 1 });
+  res.redirect('/');
+};
+

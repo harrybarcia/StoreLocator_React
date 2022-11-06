@@ -1,30 +1,21 @@
-const { sign, verify } = require("jsonwebtoken");
 
+const jwt = require('jsonwebtoken')
+function authenticateToken(req, res, next) {
+  console.log('req.headers', req.headers);
+  console.log('req.headers', req.headers['cookie'].split('=')[1]);
 
-const createTokens = (user) => {
-  const accessToken = sign(
-    { username: user.username, id: user.id },
-    "jwtsecretplschange"
-  );
+  const authHeader = req.headers['cookie']
+  const token = authHeader && authHeader.split('=')[1]
+  if (token == null) return res.sendStatus(401)
 
-  return accessToken;
-};
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    console.log(token)
+    console.log(process.env.ACCESS_TOKEN_SECRET)
+    console.log(err)
+    if (err) return res.sendStatus(403)
+    req.user = user
+    next()
+  })
+}
 
-const validateToken = (req, res, next) => {
-  const accessToken = req.cookies["access-token"];
-
-  if (!accessToken)
-    return res.status(400).json({ error: "User not Authenticated!" });
-
-  try {
-    const validToken = verify(accessToken, "jwtsecretplschange");
-    if (validToken) {
-      req.authenticated = true;
-      return next();
-    }
-  } catch (err) {
-    return res.status(400).json({ error: err });
-  }
-};
-
-module.exports = { createTokens, validateToken };
+module.exports = authenticateToken

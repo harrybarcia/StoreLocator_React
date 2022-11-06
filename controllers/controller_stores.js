@@ -1,35 +1,18 @@
 const Store=require('../models/model_Store')
 const mongodb=require('mongodb');
 // const { json } = require('body-parser');
+const ObjectId = require('mongodb').ObjectId; 
 
 
-
-
-exports.getStoresList = (req, res, next) => {
-  // Store.find({userId: req.user._id})
-  Store.find({})
-
-    .then(stores => {
-    
-      res.render('stores/stores-list', {
-        prods: stores,
-        pageTitle: 'All stores',
-        path: '/stores-list',
-      });
-      
-    })
-    .catch(err => {
-      console.log(err);
-    });
-};
 
 
 
 exports.getStore = async (req, res, next) => {
   
   const storeId = (req.params.storeId).trim();
+  const userId = req.user.userId?req.user.userId:null;
   
-  const data = await Store.findById(storeId)
+  const data = await Store.findById(userId, storeId);
   
   return (
     res.status(200).json({ message: 'Success!', data: data })
@@ -42,12 +25,12 @@ exports.getStore = async (req, res, next) => {
 // @route POST /api-stores
 // @access Public
 exports.addStore = async (req, res, next)=>{
-  console.log('session addstores', req.body);
-  console.log("req.file", req.file);
+  
+  console.log("user in controller stores", req.user);
   const address=req.body.address;
   const image = req.file.filename;
   const storeId = new mongodb.ObjectId();
-  const userId = req.body.userId;
+  const userId = req.user.userId;
   const city = req.body.city;
   
         const store=await new Store({
@@ -56,6 +39,7 @@ exports.addStore = async (req, res, next)=>{
         store
         .save()
         .then(results => {
+          console.log("results in controlle stores")
           console.log(results);
           console.log('Created Store');
           res.status(200).json({ message: 'Success!', data: results });
@@ -79,7 +63,8 @@ exports.updateStore = (req, res, next) => {
   const updatedCity = req.body.city;
   const updatedAddress = req.body.address;
   const updatedImage = req.file.filename;
-  Store.findById(storeId)
+  const userId = req.user.userId?req.user.userId:null;
+  Store.findById(storeId, userId)
     .then(store => {
       console.log('store', store);
       store.address = updatedAddress;
@@ -111,34 +96,16 @@ exports.deleteStore = (req, res, next) => {
 };
 
 exports.getStores = async (req, res, next) => {
-  
-  try{
-  const re = new RegExp("[a-zA-Z0-9]");
-  const city = req.query.city?req.query.city:re;
-  const user = req.user?req.user:null;
-  if (!city){
-    const stores = await Store.find({userId: req.user._id});
-    res.render('pages/index', {
-      pageTitle: 'Store Locator | Home',
-      path: '/',
-      prods: stores,
-      csrfToken:req.csrfToken()
-    });
-  }
+  console.log('in controller stores', req.user);
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated.' });
+    }
+    const userId = req.user.userId;
+    const data = await Store.find({userId:req.user.userId});
 
-   else{
-  const stores = await Store.find({ city: city, userId: user});
-    res.render('pages/index', {
-    pageTitle: 'Store Locator | Home',
-    path: '/api-store',
-    prods: stores,
-    csrfToken:req.csrfToken()
+    
+    console.log('data in controller', data);
+    
+    return res.status(200).json(data)
 
-  });
-}
-
-  }catch(err){
-    console.log(err);
-  }
-};
-
+  };

@@ -32,6 +32,8 @@ const MONGODB_URI =
   
 const app=express();
 
+
+
 app.use(cors());
 
 // Set static folder

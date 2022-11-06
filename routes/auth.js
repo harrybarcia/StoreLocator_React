@@ -3,9 +3,10 @@ const express = require('express');
 const path = require('path');
 const authController = require('../controllers/controller_auth');
 const User = require('../models/model_User');
-const jwt = require('jsonwebtoken')
+const authenticateToken = require('../utils/JWT');
 const Store = require('../models/model_Store');
 const app = express.Router();
+
 app.post('/register', authController.signUp);
 app.use(express.json())
 
@@ -22,26 +23,11 @@ app.get('/api/users', async (req, res) => {
     });
 
 app.post('/login', authController.login);
+app.get('/logout', authController.logout);
 
 
 
-function authenticateToken(req, res, next) {
-  console.log('req.headers', req.headers);
-  console.log('req.headers', req.headers['cookie'].split('=')[1]);
 
-  const authHeader = req.headers['cookie']
-  const token = authHeader && authHeader.split('=')[1]
-  if (token == null) return res.sendStatus(401)
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    console.log(token)
-    console.log(process.env.ACCESS_TOKEN_SECRET)
-    console.log(err)
-    if (err) return res.sendStatus(403)
-    req.user = user
-    next()
-  })
-}
 
 
 
