@@ -1,29 +1,28 @@
 import React, {useState, useEffect, useRef} from 'react';
 import mapboxgl from 'mapbox-gl';
 import './map.css'
+import axios from 'axios';
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ';
 const DisplayMap = (props) => {
    
   const [backendData, setBackendData] = useState(null);
+
   useEffect(() => {
-      // declare the async data fetching function
-      const fetchData = async () => {
-        // get the data from the api
-        const data = await fetch('/api');
-        // convert the data to json
-        const json = await data.json();
-        console.log(json);
-        console.log('--');
+    const fetchData = async () => {
+      const response = axios(
+        'http://localhost:3000/api',)
+        .then(response => {
+          
+          setBackendData(response.data);
+        })      
+    };
+    fetchData();
+  }, []);
+
+
+  
     
-        // set state with the result
-        setBackendData(json);
-      }
-    
-      // call the function
-      fetchData()
-        // make sure to catch any error
-        .catch(console.error);;
-    }, [])
+      
 
     const mapContainer = useRef(null);
     const map = useRef(null);
@@ -43,6 +42,9 @@ const DisplayMap = (props) => {
         function getStores() {
           try{
             console.log("data", backendData);
+            console.log("data", typeof(backendData));
+
+            
             const stores = backendData.map(store => {
               return {
       
@@ -151,7 +153,7 @@ const DisplayMap = (props) => {
     }, 
     [backendData]);
     
-
+    console.log("backendData 160", backendData);
     const deleteStore = async (id) => {
       try {
         const res = await fetch(`/api/${id}`, {

@@ -1,10 +1,11 @@
 import axios from "axios";
 import React, { useState } from "react";
-
+import { Navigate, useNavigate } from "react-router-dom";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const navigate = useNavigate();
+    
   function validateForm() {
     return email.length > 0 && password.length > 0;
   }
@@ -23,12 +24,19 @@ export default function Login() {
       },
     })
       .then(function (response) {
+        
+        console.log("response");
         console.log(response);
+        
       })
+      .then(() => navigate("/"))
+      
+      
       .catch(function (error) {
         console.log(error);
       });
     }
+    
 
   return (
     <div>
