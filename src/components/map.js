@@ -4,6 +4,7 @@ import './map.css'
 import axios from 'axios';
 import turf from '@turf/turf';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import '../pages/NewStoreForm.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ';
 const DisplayMap = (props) => {
@@ -178,20 +179,32 @@ const DisplayMap = (props) => {
         <div className='map'>
           <div ref={mapContainer} ></div>
         </div>
-        <div>   
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          overflow:'scroll'
+          
+
+
+          
+
+        }}>   
             {( backendData && backendData.length > 0) ? backendData.map((store, index) => {
             
                 return (
-                    <div>
-                        <div key={index}>
+                    <div className='grid_stores' >
+                        <div key={index} >
                             <p>{store.location.formattedAddress}</p>
-                            <p>{store.address}</p>
+                            <p>{store.location.formattedAddress}</p>
+                            
                             <p>{store.image}</p>
                         </div>
-                        <button 
+                        <button                         
+                        className='stores_button'
                         value={store._id}
                         name={store._id}
                         onClick={() => deleteStore(store._id)}
+                        type='button'
                         >Delete</button>
                         
                     </div>

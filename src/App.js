@@ -19,8 +19,10 @@ const App = () => {
 
 		return (
 			<div className='main'>
+
 			
 				< MainHeader />
+				    
 				<Routes>
 					<Route path="/" element={<MapData />} />
 					<Route path="/welcome"  element={<Welcome />} />

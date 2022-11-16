@@ -1,5 +1,6 @@
 import {useRef, useState, useEffect} from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import './NewStoreForm.css';
 
 const SimpleInput = () => {
   const [address, setAddress] = useState('');
@@ -36,9 +37,10 @@ const SimpleInput = () => {
 
 
   return (
-    <div>
+    <div class="container">
 
-    <form onSubmit={handleSubmit}>
+    <form id="contact" onSubmit={handleSubmit}>
+      <h4>Add your new store</h4>
       <div >
         <label >Your Address</label>
         <input 
@@ -54,7 +56,7 @@ const SimpleInput = () => {
         defaultValue={image}
         onChange= {handlePhotoSelect}
         />
-        
+        <br />
         <label >City</label>
         <input 
         name="city"
@@ -63,10 +65,9 @@ const SimpleInput = () => {
         onChange={handleCityChange}
         />
         
+      <button name="submit" type="submit" id="contact-submit" data-submit="...Sending" >Submit</button>
+      
         
-      </div>
-      <div className="form-actions">
-        <button>Submit</button>
       </div>
     </form>
     </div>
