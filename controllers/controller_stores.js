@@ -10,13 +10,24 @@ const ObjectId = require('mongodb').ObjectId;
 exports.getStore = async (req, res, next) => {
   
   const storeId = (req.params.storeId).trim();
-  const userId = req.user.userId?req.user.userId:null;
-  
-  const data = await Store.findById(userId, storeId);
-  
-  return (
-    res.status(200).json({ message: 'Success!', data: data })
-  )
+  if (!req.user) {
+    return res.status(401).json({ message: 'Not authenticated.' });
+  } else {
+    try {
+      const userId = req.user.userId?req.user.userId:null;
+      
+      const data = await Store.findById(userId, storeId);
+      
+      return (
+        res.status(200).json({ message: 'Success!', data: data })
+      );
+    } catch (err) {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    }
+  }
 
 };
 
