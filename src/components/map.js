@@ -2,9 +2,12 @@ import React, {useState, useEffect, useRef} from 'react';
 import mapboxgl from 'mapbox-gl';
 import './map.css'
 import axios from 'axios';
+import turf from '@turf/turf';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ';
 const DisplayMap = (props) => {
-   
+
   const [backendData, setBackendData] = useState(null);
 
   useEffect(() => {
@@ -168,7 +171,7 @@ const DisplayMap = (props) => {
       }
     }
 
-      
+            
 
     return (	
       <div className='map-wrapper'>

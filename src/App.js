@@ -19,29 +19,21 @@ const App = () => {
 
 		return (
 			<div className='main'>
-				{/* me retourne la carte */}
-				{/* <Child></Child> */}
-				{/* me retourne les stores */}
-				
+			
 				< MainHeader />
-				<div >
-					<Routes>
-
-						<Route path="/" element={<MapData />} />
-						<Route path="/welcome"  element={<Welcome />} />
-						<Route path="/stores" element={<AllStores />} />
-						<Route path="/api/:id" element={<Store />} />
-						<Route path="/add-store" element={<NewStoreForm />} />
-						<Route path="/edit-store/:id" element={<EditStore />} />
-						<Route path="/login" element={<Login />} />
-						<Route path="/logout" element={<Logout />} />
-						<Route path="/register" element={<Register />} /> 
-						<Route path="/api/users" element={<Users />} />
-						<Route path="/stores2" element={<AllStores2 />} />
-
-						
-					</Routes>
-				</div>
+				<Routes>
+					<Route path="/" element={<MapData />} />
+					<Route path="/welcome"  element={<Welcome />} />
+					<Route path="/stores" element={<AllStores />} />
+					<Route path="/api/:id" element={<Store />} />
+					<Route path="/add-store" element={<NewStoreForm />} />
+					<Route path="/edit-store/:id" element={<EditStore />} />
+					<Route path="/login" element={<Login />} />
+					<Route path="/logout" element={<Logout />} />
+					<Route path="/register" element={<Register />} /> 
+					<Route path="/api/users" element={<Users />} />
+					<Route path="/stores2" element={<AllStores2 />} />
+				</Routes>
 			</div>
 		);
 		

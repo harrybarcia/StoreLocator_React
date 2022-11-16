@@ -4,9 +4,11 @@
   "private": true,
   "proxy": "http://localhost:3001",
   "dependencies": {
+    "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@turf/turf": "^6.5.0",
     "mapbox-gl": "^2.10.0",
     "mongodb": "^4.11.0",
     "mongoose": "^6.7.0",
