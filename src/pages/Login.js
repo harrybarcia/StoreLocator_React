@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import './NewStoreForm.css';
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,13 +40,15 @@ export default function Login() {
     
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="container">
+      <form id="contact" onSubmit={handleSubmit}>
+      <label >Email</label>
         <input  autoFocus
             type="email"
             name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}/>
+      <label >Password</label>
         <input  autoFocus
             name="password"
             type="password"
@@ -53,7 +56,7 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}/>
         
         
-        <button type="submit" disabled={!validateForm()}>
+        <button name="submit" type="submit" id="contact-submit" data-submit="...Sending"  disabled={!validateForm()}>
           Login
         </button>
       </form>

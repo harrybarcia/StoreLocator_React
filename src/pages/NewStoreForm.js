@@ -37,7 +37,7 @@ const SimpleInput = () => {
 
 
   return (
-    <div class="container">
+    <div className="container">
 
     <form id="contact" onSubmit={handleSubmit}>
       <h4>Add your new store</h4>

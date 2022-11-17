@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 
 const EditStore = (props) => {
 
-  
+  const navigate = useNavigate();
   const [dataExistingStore, setDataExistingStore] = useState([]);
   
   const { id } = useParams();
@@ -53,13 +53,14 @@ const EditStore = (props) => {
       body: formData,
     });
     const data = await response.json();
-    console.log(data);
+    console.log("data in editstore.js", data);
+    navigate('/');
   
   }
     
     return (
-        <form 
-        onSubmit={handleEdit}>
+      <div className="container">
+        <form id='contact' onSubmit={handleEdit}>
           <div >
             <label >Your Address</label>
             <input 
@@ -107,6 +108,7 @@ const EditStore = (props) => {
             <button>Submit</button>
           </div>
         </form>
+      </div>
       );
 };
 

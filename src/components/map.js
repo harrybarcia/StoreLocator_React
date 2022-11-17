@@ -2,9 +2,8 @@ import React, {useState, useEffect, useRef} from 'react';
 import mapboxgl from 'mapbox-gl';
 import './map.css'
 import axios from 'axios';
-import turf from '@turf/turf';
-import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
-import '../pages/NewStoreForm.css';
+import {Link} from "react-router-dom";
+
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ';
 const DisplayMap = (props) => {
@@ -179,38 +178,36 @@ const DisplayMap = (props) => {
         <div className='map'>
           <div ref={mapContainer} ></div>
         </div>
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          overflow:'scroll'
-          
-
-
-          
-
-        }}>   
+        <div className = "content" >   
             {( backendData && backendData.length > 0) ? backendData.map((store, index) => {
             
                 return (
                     <div className='grid_stores' >
-                        <div key={index} >
+                        <div className='content-box' key={index} >
                             <p>{store.location.formattedAddress}</p>
-                            <p>{store.location.formattedAddress}</p>
+                            <p>{store.address}</p>
                             
                             <p>{store.image}</p>
                         </div>
-                        <button                         
-                        className='stores_button'
-                        value={store._id}
-                        name={store._id}
-                        onClick={() => deleteStore(store._id)}
-                        type='button'
-                        >Delete</button>
+                        <div className = 'content-box-button'>
+                          <button                         
+                            className='stores_button'
+                            value={store._id}
+                            name={store._id}
+                            onClick={() => deleteStore(store._id)}
+                            type='button'
+                            >Delete
+                          </button>
+                          <button className='stores_button'>
+                            <Link to={`/edit-store/${store._id}`}>Edit</Link>
+                          </button>
+
+                        </div>
                         
                     </div>
                 );
             })
-            : <p>loading...</p>
+            : <p>No Store, please login and add a new one!</p>
             };
         </div>
       </div>
