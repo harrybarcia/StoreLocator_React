@@ -16,9 +16,9 @@ const upload=multer({storage:fileStorage}).single('image');
 const Store = require('../models/model_Store');
 const app = express.Router();
 app.get('/api', authenticateToken, adminController.getStores);
-app.get('/api/:storeId', adminController.getStore);
+app.get('/api/:storeId',authenticateToken, adminController.getStore);
 app.post('/add-store', authenticateToken, upload, adminController.addStore)
 app.delete('/api/:id',adminController.deleteStore)
-app.put('/edit-store/:id',upload, adminController.updateStore)
+app.put('/edit-store/:id',authenticateToken, upload, adminController.updateStore)
 
 module.exports = app;

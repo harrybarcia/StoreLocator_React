@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken')
 function authenticateToken(req, res, next) {
   console.log('req.headers', req.headers);
-  console.log('req.headers', req.headers['cookie'].split('=')[1]);
+  console.log('req.headers split', req.headers['cookie'].split('=')[1]);
 
   const authHeader = req.headers['cookie']
   const token = authHeader && authHeader.split('=')[1]
