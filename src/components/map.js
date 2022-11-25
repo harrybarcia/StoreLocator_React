@@ -3,7 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import './map.css'
 import axios from 'axios';
 import {Link} from "react-router-dom";
-
+import '../pages/NewStoreForm.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ';
 const DisplayMap = (props) => {
@@ -22,16 +22,25 @@ const DisplayMap = (props) => {
     fetchData();
   }, []);
 
+  const [backendData2, setBackendData2] = useState(null);
 
-  
-    
-      
+  useEffect(() => {
+    const fetchData2 = async () => {
+      const response = axios(
+        'http://localhost:3000/api',)
+        .then(response => {
+          
+          setBackendData2(response.data);
+        })      
+    };
+    fetchData2();
+  }, []);
 
     const mapContainer = useRef(null);
     const map = useRef(null);
-    const [lng, setLng] = useState(-123.1207);
-    const [lat, setLat] = useState(49.28);
-    const [zoom, setZoom] = useState(10);
+    const [lng, setLng] = useState(-123.07);
+    const [lat, setLat] = useState(49.31);
+    const [zoom, setZoom] = useState(13);
     
     useEffect(() => {
     
@@ -44,10 +53,7 @@ const DisplayMap = (props) => {
         });
         function getStores() {
           try{
-            console.log("data", backendData);
-            console.log("data", typeof(backendData));
-
-            
+    
             const stores = backendData.map(store => {
               return {
       
@@ -70,7 +76,8 @@ const DisplayMap = (props) => {
                 }
               };
             });
-            console.log("stores", stores);
+            
+            console.log("---end of line 1---");
             loadMap(stores);
           }
           catch(err){
@@ -112,7 +119,7 @@ const DisplayMap = (props) => {
       const storeId = e.features[0].properties._id;
       const userId = e.features[0].properties.userId;
       const city = e.features[0].properties.city;
-        console.log(e.features);
+        
       // Ensure that if the map is zoomed out such that multiple
       // copies of the feature are visible, the popup appears
       // over the copy being pointed to.
@@ -155,38 +162,153 @@ const DisplayMap = (props) => {
         
     }, 
     [backendData]);
-    
-    console.log("backendData 160", backendData);
+
     const deleteStore = async (id) => {
       try {
         const res = await fetch(`/api/${id}`, {
           method: 'DELETE'
         });
         const data = await res.json();
-        console.log(data);
         setBackendData(backendData.filter(store => store._id !== id));
         
       } catch (err) {
         console.error(err);
       }
-    }
+    };
 
-            
 
+    
+
+    // I retrieve all my stores
+    const [apiCities, setApiCities] = useState(null);     
+        
+    useEffect(() => {
+      
+      const getCities = async () => {
+        try {
+          const res = await axios(
+          'http://localhost:3000/api')
+          const response = await res.data;
+          const reducedCities = response.reduce((acc, store) => {
+            if (!acc.includes(store.city)) {
+              acc.push(store.city);
+            }
+            return acc;
+          }, []);
+          setApiCities(reducedCities);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      getCities();
+
+    }, []);
+
+// console.log(apiCities);
+const [checked, setChecked] = useState([apiCities]);
+console.log(checked);
+    
+
+    useEffect(() => {
+    function test() {
+      try {
+        console.log(apiCities);
+        console.log(checked);
+        const checkBox = document.querySelectorAll('input[type="checkbox"]');
+        const arrayChecked = [];
+        for (let i = 0; i < checkBox.length; i++) {
+          console.log(checkBox[i].checked);
+            if (checkBox[i].checked) {
+            arrayChecked.push(checkBox[i].value);
+          } 
+        }
+        // console.log("arraychecked", arrayChecked);
+        setChecked(arrayChecked);
+        console.log("checked", checked);
+
+
+
+      }
+      catch(err){
+        console.log(err);
+      }}
+      test();
+    }, [apiCities]);
+
+    
+      
+
+    
+    
+    const handleCheck = (e) => {
+      
+
+      // console.log(checked);
+      let updatedList = [...checked];
+      // console.log(updatedList);
+      if (e.target.checked) {
+        console.log("unselected to selected");
+        updatedList = [...checked, e.target.value];
+        console.log("updatedList", updatedList);
+
+
+        
+      } else {
+        updatedList.splice(checked.indexOf(e.target.value), 1);
+        
+      }
+      
+      setChecked(updatedList);
+      
+      
+      setBackendData(backendData2.filter((store) => updatedList.includes(store.city)));
+    };
+
+
+    console.log("checked", checked);
+    console.log("backenData", backendData);
     return (	
       <div className='map-wrapper'>
         <div className='map'>
+          <div className='map-filter'>
+          
+            {( backendData2 && backendData2.length > 0) ? 
+            backendData2.reduce((acc, store) => {
+              if (!acc.includes(store.city)) {
+                acc.push(store.city);
+              }
+              return acc;
+            }, []).map((item, index) => {
+              return (
+                <div key={index}>
+                  <input type="checkbox" 
+                  id={item} 
+                  name={item} 
+                  value={item}
+                  defaultChecked={true}
+                  onChange={handleCheck}
+                  
+                  />
+                  <label 
+                  // className={isChecked(item)} 
+                  htmlFor={item}
+                  
+                  >{item}</label>
+                </div>
+              )
+            }) : null}
+          </div>
+              
           <div ref={mapContainer} ></div>
         </div>
         <div className = "content" >   
             {( backendData && backendData.length > 0) ? backendData.map((store, index) => {
-            
                 return (
-                    <div className='grid_stores' >
-                        <div className='content-box' key={index} >
-                            <p>{store.location.formattedAddress}</p>
-                            <p>{store.address}</p>
-                            
+                    <div className='grid_stores' key={index}>
+                        <div className='content-box'  >
+                            {/* <p>{store.location.formattedAddress}</p>
+                            <p>{store.address}</p> */}
+                            <p>{store.city}</p>
                             <p>{store.image}</p>
                         </div>
                         <div className = 'content-box-button'>
@@ -198,10 +320,9 @@ const DisplayMap = (props) => {
                             type='button'
                             >Delete
                           </button>
-                          <button className='stores_button'>
-                            <Link to={`/edit-store/${store._id}`}>Edit</Link>
+                          <button>
+                            <Link to={`/edit-store/${store._id}`}>Edit my store</Link>
                           </button>
-
                         </div>
                         
                     </div>

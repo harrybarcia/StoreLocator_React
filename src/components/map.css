@@ -32,7 +32,7 @@ ul{
     flex-wrap: wrap;
     overflow:scroll;
     transition:1s;
-    max-height: 50%;
+    max-height: 30%;
     justify-content: space-between;
 
 }
@@ -62,3 +62,12 @@ ul{
     flex-direction: row;
     justify-content: space-around;
   }
+
+.map-filter {
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    margin: 1em;
+    padding: 0.5em;
+    margin-right: 10px;
+}
