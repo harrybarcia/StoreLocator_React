@@ -72,7 +72,8 @@ const DisplayMap = (props) => {
                   icon: 'rocket',
                   image:store.image,
                   userId:store.userId,
-                  city:store.city
+                  city:store.city,
+                  price:store.price
                 }
               };
             });
@@ -119,6 +120,7 @@ const DisplayMap = (props) => {
       const storeId = e.features[0].properties._id;
       const userId = e.features[0].properties.userId;
       const city = e.features[0].properties.city;
+      const price = e.features[0].properties.price;
         
       // Ensure that if the map is zoomed out such that multiple
       // copies of the feature are visible, the popup appears
@@ -150,10 +152,10 @@ const DisplayMap = (props) => {
             -webkit-box-orient: vertical;
             max-height: 60px;">
           </strong>
-          ${city}
+          ${price}
         </span>
         </div>
-        <a href='/stores/${storeId}' class="btn">Details</a>
+        <a href='/api/${storeId}' class="btn">Details</a>
         `)
       .addTo(map);
     });
@@ -179,7 +181,7 @@ const DisplayMap = (props) => {
 
     
 
-    // I retrieve all my stores
+    // I retrieve all my stores  from the backend and reduce them according to the cities
     const [apiCities, setApiCities] = useState(null);     
         
     useEffect(() => {
@@ -205,6 +207,7 @@ const DisplayMap = (props) => {
     }, []);
 
 // console.log(apiCities);
+
 const [checked, setChecked] = useState([apiCities]);
 console.log(checked);
     
@@ -235,14 +238,7 @@ console.log(checked);
       test();
     }, [apiCities]);
 
-    
-      
-
-    
-    
     const handleCheck = (e) => {
-      
-
       // console.log(checked);
       let updatedList = [...checked];
       // console.log(updatedList);
@@ -265,11 +261,34 @@ console.log(checked);
     };
 
 
+
+
+
+    const [rangeValue, setRangeValue]=useState(500000);
+
     console.log("checked", checked);
     console.log("backenData", backendData);
     return (	
       <div className='map-wrapper'>
         <div className='map'>
+          <ul>
+            <input
+                type="range"
+                min = {backendData2 && Math.min(...backendData2.map((store) => store.price))}
+                max = {backendData2 && Math.max(...backendData2.map((store) => store.price))}
+                
+                value={rangeValue}
+                step="1000"
+                onChange={(e) => {
+                  setRangeValue(e.target.value);
+                  setBackendData(backendData2.filter((store) => store.price <= e.target.value));
+                }}
+              />
+            <li>
+              <span>Price range: {rangeValue}</span>
+            </li>
+
+        </ul>
           <div className='map-filter'>
           
             {( backendData2 && backendData2.length > 0) ? 
@@ -302,7 +321,9 @@ console.log(checked);
           <div ref={mapContainer} ></div>
         </div>
         <div className = "content" >   
-            {( backendData && backendData.length > 0) ? backendData.map((store, index) => {
+            {( backendData && backendData.length > 0) ? backendData
+            .filter((store) => store.price <= rangeValue)
+            .map((store, index) => {
                 return (
                     <div className='grid_stores' key={index}>
                         <div className='content-box'  >
@@ -310,6 +331,7 @@ console.log(checked);
                             <p>{store.address}</p> */}
                             <p>{store.city}</p>
                             <p>{store.image}</p>
+                            <p>{store.price}</p>
                         </div>
                         <div className = 'content-box-button'>
                           <button                         

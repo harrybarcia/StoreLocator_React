@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import {Link} from "react-router-dom";
-import EditStore from "./EditStore";
+
 const AllStores = () => {
     
     const [stores, setStores] = useState([]);
@@ -33,6 +33,11 @@ const AllStores = () => {
                     <li >
                         {store.image}
                     </li>
+                    <li >
+                        {store.price}
+                    </li>
+
+
                 </ul>
                 <button>
                     <Link to="/add-store">Add a new store</Link>
