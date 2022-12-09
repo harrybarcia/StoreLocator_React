@@ -43,10 +43,11 @@ exports.addStore = async (req, res, next)=>{
   const storeId = new mongodb.ObjectId();
   const userId = req.user.userId;
   const city = req.body.city;
+  const price = req.body.price;
   
         const store=await new Store({
           storeId:storeId,
-          address, image, userId, city});
+          address, image, userId, city, price});
         store
         .save()
         .then(results => {
@@ -74,6 +75,7 @@ exports.updateStore = (req, res, next) => {
   const updatedCity = req.body.city;
   const updatedAddress = req.body.address;
   const updatedImage = req.file.filename;
+  const price = req.body.price;
   const userId = req.user.userId?req.user.userId:null;
   Store.findById(storeId, userId)
     .then(store => {
@@ -81,6 +83,7 @@ exports.updateStore = (req, res, next) => {
       store.address = updatedAddress;
       store.image = updatedImage;
       store.city = updatedCity;
+      store.price = price;
       return store.save();
     })
     .then(result => {
