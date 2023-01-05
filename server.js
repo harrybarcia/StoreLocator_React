@@ -48,11 +48,14 @@ app.use(express.json());
 
 const storesRoutes = require('./routes/stores'); 
 const authRoutes = require('./routes/auth');
+const pollenRoutes = require('./routes/pollen');
 
 
 
 app.use(authRoutes);
 app.use(storesRoutes);
+app.use(pollenRoutes);
+
 
 app.use(cookieParser());
 
