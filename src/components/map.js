@@ -6,6 +6,7 @@ import {Link} from "react-router-dom";
 import '../pages/NewStoreForm.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ';
+
 const DisplayMap = (props) => {
 
   const [backendData, setBackendData] = useState(null);

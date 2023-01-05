@@ -31,6 +31,9 @@ const MainHeader = () => {
                 <li>
                     <Link to="/stores2">Stores with Auth</Link>
                 </li>
+                <li>
+                    <Link to="/pollens">Pollen</Link>
+                </li>
 
                 
                 

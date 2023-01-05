@@ -15,6 +15,7 @@ import './App.css';
 import Store from './pages/Store';
 import NewStoreForm from './pages/NewStoreForm';
 import EditStore from './pages/EditStore';
+import Pollen from './components/pollen';
 const App = () => {
 
 		return (
@@ -35,6 +36,7 @@ const App = () => {
 					<Route path="/register" element={<Register />} /> 
 					<Route path="/api/users" element={<Users />} />
 					<Route path="/stores2" element={<AllStores2 />} />
+					<Route path="/pollens" element={<Pollen />} />
 				</Routes>
 			</div>
 		);
