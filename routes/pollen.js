@@ -1,13 +1,11 @@
-var express = require('express');
+const express = require('express');
+const { db } = require('../models/model_Store');
 
+const router = express.Router();
 
-var router = express.Router();
-
-router.get("/pollens", function(req, res, next) {
-res.status(200).json({
-    message: "Handling GET requests to /pollens"
-
+router.get("/pollens", async function(req, res, next) {
+    const data = await db.collection('pollens').find().toArray();
+    res.status(200).json({ data });
 });
 
-});
 module.exports = router;
