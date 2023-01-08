@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import axios from "axios";
+import { get } from "mongoose";
 mapboxgl.accessToken = "pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ";
 
 const Pollen = () => {
@@ -12,21 +13,108 @@ const Pollen = () => {
     const mapContainer = useRef(null);
     const geocoderContainer = useRef(null);
     const [backendData, setBackendData] = useState(null);
+    const [places, setPlaces] = useState(null);
 
 
 
-
-
-
+    useEffect(() => {
+      const fetchData = async () => {
+        const result = await axios("http://localhost:3000/places");
+        const response = result.data;
+        setPlaces(response.data);
+      };
+      fetchData();
+    }, []);
+    console.log("places", places);
 
     useEffect(() => {
         const map = new mapboxgl.Map({
             container: mapContainer.current, // container id
             style: 'mapbox://styles/mapbox/streets-v11',
-        center: [-103,54],
-        zoom :4.02,
+        center: [-73.8,40.7],
+        zoom :7.02,
         minZoom:3, maxZoom:19
         });
+
+      console.log("places", places);
+
+      function getPlaces() {
+        fetch('http://localhost:3000/places')
+        .then(response => response.json())
+        .then(data => {
+        loadMap(data.data);
+        });
+        }
+
+
+  
+      function loadMap(places) {
+        map.on('load', function() {
+                            // Add a symbol layer
+
+        //   map.addSource('points', {
+        //     'type': 'geojson',
+        //     'data': {
+        //     'type': 'FeatureCollection',
+        //     'features': places.map(place => {
+        //     return {
+        //       'type': 'Feature',
+        //       'geometry': {
+        //       'type': 'Point',
+        //       'coordinates': [place.loc.coordinates[0], place.loc.coordinates[1]]
+        //       },
+        //       'properties': {'title': place.name},
+        //       'color': place.color
+        //     }
+        //     })
+        //     }
+        //     });
+            
+
+        //   map.addLayer({
+        //     'id': 'points',
+        //     'type': 'circle',
+        //     'source': 'points',
+        //     'paint': {
+        //     'circle-radius': 6,
+        //     'circle-color': ['get', 'color']
+        //     }
+        //   });
+        // });
+        map.addLayer({
+
+            'id': 'points',
+            'type': 'circle',
+            "paint": {
+              "circle-radius": 6,
+              "circle-color": ["get", "color"]
+            },
+            'source': {
+            'type': 'geojson',
+            'data': {
+              'type': 'FeatureCollection',
+              'features': places.map(place => {
+                return {
+                  'type': 'Feature',
+                  'geometry': {
+                  'type': 'Point',
+                  'coordinates': [place.loc.coordinates[0], place.loc.coordinates[1]]
+                  },
+                  'properties': {'title': place.name, 'color': place.color}
+                }
+              })
+            }
+          }
+        })
+      })
+    }
+
+
+        getPlaces();
+        console.log("places", places);
+
+
+  
         map.addControl(
             new MapboxGeocoder({
             accessToken: mapboxgl.accessToken,
@@ -72,26 +160,31 @@ const Pollen = () => {
                         'fill-opacity': 0.5
                     },
                   });
-                  map.addSource('points_provinces', {
-                    'type': 'geojson',
-                    'data': './centroides.geojson',
-                    cluster: true,
-                      clusterMaxZoom: 14, // Max zoom to cluster points on
-                      clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
-                      }
-                  );
-                  map.addLayer({
-                    'id': 'points_provinces',
-                    'type': 'circle',
-                    'source': 'points_provinces',
-                    'layout': {'visibility': 'visible'},
-                    'paint': {'circle-radius': 10     , 'circle-color': '#7C0A02',}
-                    
-                  });
+                map.addSource('points_provinces', {
+                  'type': 'geojson',
+                  'data': './centroides.geojson',
+                  cluster: true,
+                    clusterMaxZoom: 14, // Max zoom to cluster points on
+                    clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
+                    }
+                );
+
+                
+                map.addLayer({
+                  'id': 'points_provinces',
+                  'type': 'circle',
+                  'source': 'points_provinces',
+                  'layout': {'visibility': 'visible'},
+                  'paint': {'circle-radius': 10     , 'circle-color': '#7C0A02',}
+                  
+                });
                 map.addSource('cities', {
                     type: 'vector',
                     url: 'mapbox://harrybarcia.3hys6vpn' //tilesetID
                 });
+
+
+                  
 
 
 
@@ -157,13 +250,12 @@ const Pollen = () => {
                     })      
                 };
                 fetchData();
+                
+              }, [
+                
+              ]);
+              
               console.log("backendData", backendData);
- 
-    }, [
-        
-    ]);
-
-    
 
     return (
 
@@ -174,11 +266,13 @@ const Pollen = () => {
           </div>
           <div className="menu" id="menu"></div>
           <div className="footer">
-            {(backendData && backendData.length>0) ? backendData.map((item) => {
+            {(backendData && backendData.length>0) ? backendData.map((item, index) => {
               return (
-                <div>
-                 
-                    {item.province}
+                
+                <div key = {index}>
+                    
+                    {item.province}, 
+                    {item.color}
 
                   </div>
 
@@ -188,5 +282,6 @@ const Pollen = () => {
         </div>
     );
 };
+
 
 export default Pollen;

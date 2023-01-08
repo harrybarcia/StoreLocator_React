@@ -87,30 +87,29 @@ const DisplayMap = (props) => {
           }
       }
       // Load map with stores
-  function loadMap(stores) {
-      map.on('load', function() {
-        map.addLayer({
-          id: 'points',
-          type: 'symbol',
-          source: {
-            type: 'geojson',
-            data: {
-              type: 'FeatureCollection',
-              features: stores
-            }
-          },
-          layout: {
-            'icon-image': '{icon}-15',
-            'icon-size': 1.5,
-            'text-field': '{city}',
-            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-            'text-offset': [0, 0.9],
-            'text-anchor': 'top'
-          }
-        });
-      });
-      
-    
+      function loadMap(stores) {
+          map.on('load', function() {
+            map.addLayer({
+              id: 'points',
+              type: 'symbol',
+              source: {
+                type: 'geojson',
+                data: {
+                  type: 'FeatureCollection',
+                  features: stores
+                }
+              },
+              layout: {
+                'icon-image': '{icon}-15',
+                'icon-size': 1.5,
+                'text-field': '{city}',
+                'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+                'text-offset': [0, 0.9],
+                'text-anchor': 'top'
+              }
+            });
+          });
+
     }
     getStores();
     map.on('click', 'points', (e) => {
