@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
+import {useState} from 'react';
 import MapData from './components/map';
 import Child from './components/parent';
 import Welcome from './pages/Welcome';
@@ -11,12 +12,46 @@ import Logout from './pages/Logout';
 import Register from './pages/Register';
 import Users from './pages/Users';
 import './App.css';
+import csvtojson from 'csvtojson';
 
 import Store from './pages/Store';
 import NewStoreForm from './pages/NewStoreForm';
+import NewPollenForm from './pages/NewPollenForm';
 import EditStore from './pages/EditStore';
 import Pollen from './components/pollen';
+import axios from 'axios';
+
 const App = () => {
+
+		const [file, setFile] = useState(null);
+		const fileReader = new FileReader();
+		
+		const handleOnChange = (e) => {
+			setFile(e.target.files[0]);
+		};
+
+		const handleOnSubmit = (e) => {
+			e.preventDefault();
+			if (file) {
+				fileReader.onload = function (e) {
+					const csvOutput = e.target.result;
+					console.log(csvOutput);
+					csvtojson()
+						.fromString(csvOutput)
+						.then((jsonOutput) => {
+							axios.post('http://localhost:3001/add-pollen', jsonOutput);
+							
+							;
+						});
+					
+
+						
+				};
+				fileReader.readAsText(file);
+
+				}
+			};
+		
 
 		return (
 			<div className='main'>
@@ -37,7 +72,30 @@ const App = () => {
 					<Route path="/api/users" element={<Users />} />
 					<Route path="/stores2" element={<AllStores2 />} />
 					<Route path="/pollens" element={<Pollen />} />
+					<Route path="/add-pollen" element={<NewPollenForm />} />
 				</Routes>
+
+				<div style={{ textAlign: "center" }}>
+					<h1>REACTJS CSV IMPORT EXAMPLE </h1>
+					<form>
+						<input
+							type={"file"}
+							id={"csvFileInput"}
+							accept={".csv"}
+							onChange={handleOnChange}
+						/>
+
+						<button
+							onClick={(e) => {
+								handleOnSubmit(e);
+							}}
+						>
+							IMPORT CSV
+						</button>
+
+
+					</form>
+				</div>
 			</div>
 		);
 		

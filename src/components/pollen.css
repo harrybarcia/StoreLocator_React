@@ -49,3 +49,15 @@
     overflow: scroll;
     overflow-x: hidden;
     }
+
+    .marker-text {
+    font-size: 12px;
+    font-weight: bold;
+    }
+
+    .marker {
+        display: block;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        }

@@ -53,40 +53,38 @@ const DisplayMap = (props) => {
             zoom: zoom
         });
         function getStores() {
-          try{
-    
-            const stores = backendData.map(store => {
+          try {
+            const stores = backendData.map((store) => {
               return {
-      
-                type: 'Feature',
+                type: "Feature",
                 geometry: {
-                  type: 'Point',
+                  type: "Point",
                   coordinates: [
                     store.location.coordinates[0],
-                    store.location.coordinates[1]
-                  ]
+                    store.location.coordinates[1],
+                  ],
                 },
                 properties: {
                   _id: store._id,
                   storeId: store.storeId,
-                  formattedAddress:store.location.formattedAddress,  
-                  icon: 'rocket',
-                  image:store.image,
-                  userId:store.userId,
-                  city:store.city,
-                  price:store.price
-                }
+                  formattedAddress: store.location.formattedAddress,
+                  icon: "rocket",
+                  image: store.image,
+                  userId: store.userId,
+                  city: store.city,
+                  price: store.price,
+                },
               };
             });
-            
+
             console.log("---end of line 1---");
             loadMap(stores);
-          }
-          catch(err){
+          } catch (err) {
             console.log(err);
           }
-      }
-      // Load map with stores
+        }
+        
+        // Load map with stores
       function loadMap(stores) {
           map.on('load', function() {
             map.addLayer({
