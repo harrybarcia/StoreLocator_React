@@ -19,7 +19,7 @@ const Pollen = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios("http://localhost:3000/places");
+      const result = await axios("http://localhost:3000/pollens");
       const response = result.data;
       setPlaces(response.data);
     };
@@ -31,8 +31,8 @@ const Pollen = () => {
     const map = new mapboxgl.Map({
       container: mapContainer.current, // container id
       style: "mapbox://styles/mapbox/streets-v11",
-      center: [-73.8, 40.7],
-      zoom: 9.02,
+      center: [-123.8, 43.7],
+      zoom: 4.02,
       minZoom: 3,
       maxZoom: 19,
     });
@@ -40,7 +40,7 @@ const Pollen = () => {
     console.log("places", places);
 
     function getPlaces() {
-      fetch("http://localhost:3000/places")
+      fetch("http://localhost:3000/pollens")
         .then((response) => response.json())
         .then((data) => {
           loadMap(data.data);
@@ -70,7 +70,7 @@ const Pollen = () => {
                       place.loc.coordinates[1],
                     ],
                   },
-                  properties: { title: place.name, color: place.color },
+                  properties: { color: place.color },
                 };
               }),
             },
@@ -82,18 +82,11 @@ const Pollen = () => {
           el.className = 'marker';
           const width = 10;
           const height = 50;
-          if (item.value === "1") {
-            el.style.backgroundImage = `url(https://upload.wikimedia.org/wikipedia/commons/a/a8/Vertical_red_bar.svg)`;
-          }
-          else {
-            el.style.backgroundImage = `url(https://placekitten.com/g/60/60/)`;
-
-          }
+          
           
 
           el.style.width = `${width}px`;
           el.style.height = `${height}px`;
-          el.innerHTML = item.name;
 
 
 
@@ -166,7 +159,7 @@ const Pollen = () => {
         type: "circle",
         source: "points_provinces",
         layout: { visibility: "visible" },
-        paint: { "circle-radius": 10, "circle-color": "#7C0A02" },
+        paint: { "circle-radius": 10, "circle-color": ['get', 'color'] },
       });
       map.addSource("cities", {
         type: "vector",
@@ -263,7 +256,7 @@ const Pollen = () => {
     if (file) {
       fileReader.onload = function (e) {
         const csvOutput = e.target.result;
-        console.log(csvOutput);
+        console.log("in app", csvOutput);
         csvtojson()
           .fromString(csvOutput)
           .then((jsonOutput) => {
