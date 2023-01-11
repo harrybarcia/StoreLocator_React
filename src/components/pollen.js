@@ -4,8 +4,10 @@ import "./pollen.css";
 import { Link } from "react-router-dom";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
-import axios from "axios";
-import { get } from "mongoose";
+
+
+import csvtojson from 'csvtojson';
+import axios from 'axios';
 mapboxgl.accessToken =
   "pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ";
 
@@ -249,7 +251,34 @@ const Pollen = () => {
 
 
 
+  const [file, setFile] = useState(null);
+  const fileReader = new FileReader();
+  
+  const handleOnChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    if (file) {
+      fileReader.onload = function (e) {
+        const csvOutput = e.target.result;
+        console.log(csvOutput);
+        csvtojson()
+          .fromString(csvOutput)
+          .then((jsonOutput) => {
+            axios.post('http://localhost:3001/add-pollen', jsonOutput);
+            
+            ;
+          });
+        
+
+          
+      };
+      fileReader.readAsText(file);
+
+      }
+    };
 
   return (
     <div className="map-wrapper">
@@ -268,6 +297,30 @@ const Pollen = () => {
             })
           : "Loading..."}
       </div>
+
+      <div style={{ textAlign: "center" }}>
+					<h1>REACTJS CSV IMPORT EXAMPLE </h1>
+					<form>
+						<input
+							type={"file"}
+							id={"csvFileInput"}
+							accept={".csv"}
+							onChange={handleOnChange}
+						/>
+
+						<button
+							onClick={(e) => {
+								handleOnSubmit(e);
+							}}
+						>
+							IMPORT CSV
+						</button>
+
+
+					</form>
+				</div>
+
+
     </div>
   );
 };
