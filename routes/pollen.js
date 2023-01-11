@@ -21,47 +21,47 @@ router.get("pollens_coordinates", async function(req, res, next) {
 
 router.post("/add-pollen", async function(req, res, next) {
     
-
-    console.log('req.body', req.body);
-    const province = req.body[0].province;
-    const value = req.body[0].value;
-    const color = req.body[0].color;
-    const forecast = req.body[0].forecast;
-    const pro_id = req.body[0].pro_id;
-    const longitude = req.body[0].longitude;
-    const latitude = req.body[0].latitude;
-
-    const pollen = await new Pollen({
-        province,
-        value,
-        color,
-        forecast,
-        pro_id, 
-        location: {
-            coordinates: [longitude, latitude],
-            type: "Point"
-        }
-    });
-
-    const file = req.file;
-    console.log('file', file);
-
-    console.log('pollen', pollen);
-    pollen
-        .save()
-        .then(results => {
-            console.log(results);
-            console.log('Created Pollen');
-            res.status(200).json({ message: 'Success!', data: results });
-        }
-        )
-        .catch(err => {
-            if (!err.statusCode) {
-                err.statusCode = 500;
+    
+    console.log('req.body in api', req.body.length);
+    for (let i = 0; i < req.body.length; i++) {
+        const province = req.body[i].province;
+        const value = req.body[i].value;
+        const color = req.body[i].color;
+        const forecast = req.body[i].forecast;
+        const pro_id = req.body[i].pro_id;
+        const longitude = req.body[i].longitude;
+        const latitude = req.body[i].latitude;
+    
+        const pollen = await new Pollen({
+            province,
+            value,
+            color,
+            forecast,
+            pro_id, 
+            loc: {
+                coordinates: [longitude, latitude],
+                type: "Point"
             }
-            next(err);
-        }
-        );
+        });
+    
+        console.log('pollen', pollen);
+        pollen
+            .save()
+            .then(results => {
+                console.log(results);
+                console.log('Created Pollen');
+                res.status(200).json({ message: 'Success!', data: results });
+            }
+            )
+            .catch(err => {
+                if (!err.statusCode) {
+                    err.statusCode = 500;
+                }
+                next(err);
+            }
+            );
+    }
+    
 });
 
 
