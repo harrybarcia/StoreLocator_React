@@ -22,19 +22,27 @@ router.get("pollens_coordinates", async function(req, res, next) {
 router.post("/add-pollen", async function(req, res, next) {
     
 
-
+    console.log('req.body', req.body);
     const province = req.body[0].province;
     const value = req.body[0].value;
     const color = req.body[0].color;
     const forecast = req.body[0].forecast;
     const pro_id = req.body[0].pro_id;
+    const longitude = req.body[0].longitude;
+    const latitude = req.body[0].latitude;
+
     const pollen = await new Pollen({
         province,
         value,
         color,
         forecast,
-        pro_id
+        pro_id, 
+        location: {
+            coordinates: [longitude, latitude],
+            type: "Point"
+        }
     });
+
     const file = req.file;
     console.log('file', file);
 

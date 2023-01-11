@@ -7,8 +7,13 @@ const PollenSchema=new Schema(
         color:{type:String, required:[true, 'Please add a color']},
         forecast:{type:String, required:[true, 'Please add a forecast']},
         province:{type:String, required:[true, 'Please add a province']},
-        pro_id:{type:Number, required:[true, 'Please add a pro_id']}
-        
+        pro_id:{type:Number, required:[true, 'Please add a pro_id']},
+        location: {
+            coordinates: [Number],
+            type: { type: String, default: "Point"},
+        }
     }
-);
+    );
+    PollenSchema.index({ location: "2dsphere" })
+        
 module.exports=mongoose.model('Pollen', PollenSchema)
