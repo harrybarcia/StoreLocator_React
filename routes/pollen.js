@@ -64,6 +64,48 @@ router.post("/add-pollen", async function(req, res, next) {
     
 });
 
+router.get("/pollen/:id", async function(req, res, next) {
+    const pollenId = req.params.id;
+    const data = await Pollen.findById
+    (pollenId);
+    res.status(200).json({ data });
+});
+
+router.put("/update-pollen/:id", async function(req, res, next) {
+    console.log('req.body', req.body);
+    const pollenId = req.params.id;
+    const value = req.body.value;
+    const color = req.body.color;
+    const forecast = req.body.forecast;
+    const province = req.body.province;
+    const pro_id = req.body.pro_id;
+    const loc = req.body.loc;
+
+    
+        Pollen
+        .findById(pollenId)
+        .then(pollen => {
+            console.log('pollen', pollen);
+            pollen.value = value;
+            pollen.color = color;
+            pollen.forecast = forecast;
+            pollen.province = province;
+            pollen.pro_id = pro_id;
+            pollen.loc = loc;
+            return pollen.save();
+        })
+        
+        .then(result => {
+            console.log('Updated Pollen');
+            res.status(200).json({ message: 'Success!', data: result });
+        })
+        .catch(err => {
+            if (!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err);
+        });
+});
 
 
 module.exports = router;
