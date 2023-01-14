@@ -92,6 +92,18 @@ const Pollen = () => {
 
           new mapboxgl.Marker(el)
             .setLngLat([item.loc.coordinates[0], item.loc.coordinates[1]])
+            .setPopup(
+              new mapboxgl.Popup({ offset: 25 }) // add popups
+                .setHTML(
+                  `<h3>${item.province}</h3><p>Value: ${item.value}</p><p>Forecast: ${item.forecast}</p>
+                  <p>Coordinates: ${item.loc.coordinates[0]}, ${item.loc.coordinates[1]}</p>
+                  <p>Pro_id: ${item._id}</p>
+
+                  
+                  `
+
+                )
+            )
 
             .addTo(map);
         });
@@ -272,6 +284,8 @@ const Pollen = () => {
 
       }
     };
+
+    
 
   return (
     <div className="map-wrapper">

@@ -6,6 +6,7 @@ import Child from './components/parent';
 import Welcome from './pages/Welcome';
 import AllStores from './pages/Stores';
 import AllStores2 from './pages/Stores2';
+import AllPollens from './pages/Pollens';
 import MainHeader from './components/MainHeader';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
@@ -19,6 +20,7 @@ import NewStoreForm from './pages/NewStoreForm';
 import NewPollenForm from './pages/NewPollenForm';
 import EditStore from './pages/EditStore';
 import Pollen from './components/pollen';
+import EditPollen from './pages/EditPollen';
 
 const App = () => {
 
@@ -36,6 +38,7 @@ const App = () => {
 					<Route path="/welcome"  element={<Welcome />} />
 					<Route path="/stores" element={<AllStores />} />
 					<Route path="/api/:id" element={<Store />} />
+					<Route path="/pollen/:id" element={<Pollen />} />
 					<Route path="/add-store" element={<NewStoreForm />} />
 					<Route path="/edit-store/:id" element={<EditStore />} />
 					<Route path="/login" element={<Login />} />
@@ -44,7 +47,10 @@ const App = () => {
 					<Route path="/api/users" element={<Users />} />
 					<Route path="/stores2" element={<AllStores2 />} />
 					<Route path="/pollens" element={<Pollen />} />
+					<Route path="/all-pollens" element={<AllPollens />} />
 					<Route path="/add-pollen" element={<NewPollenForm />} />
+					<Route path="/update-pollen/:id" element={<EditPollen />} />
+
 				</Routes>
 
 			</div>

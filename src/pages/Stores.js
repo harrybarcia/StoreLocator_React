@@ -20,7 +20,7 @@ const AllStores = () => {
     return (
         <div>
             <h1>Stores</h1>
-            {stores.map((store) => (
+            {stores && stores.length > 0 && stores.map((store) => (
             <div>
                 <ul>
                 
@@ -47,7 +47,8 @@ const AllStores = () => {
                 </button>
 
             </div>
-                ))}
+                ))
+                }
             <Link to="/welcome">To welcome page</Link>
         </div>
     )

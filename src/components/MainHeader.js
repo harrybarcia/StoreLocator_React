@@ -35,14 +35,15 @@ const MainHeader = () => {
                     <Link to="/pollens">Pollen</Link>
                 </li>
                 <li>
+                    <Link to="/pollens">Pollen</Link>
+                </li>
+                <li>
+                    <Link to="/all-pollens">All Pollens</Link>
+                </li>
+
+                <li>
                     <Link to="/add-pollen">Add a new pollen</Link>
                 </li>
-                
-
-                
-                
-
-
             </ul>
         </header>
     );
