@@ -11,8 +11,10 @@ const EditPollen = () => {
     const [color, setColor] = useState('');
     const [forecast, setForecast] = useState('');
     const [pro_id, setPro_id] = useState('');
-    const [loc, setLoc] = useState('');
+    const [long, setLong] = useState('');
+    const [lat, setLat] = useState('');
     const [existingPollen, setExistingPollen] = useState({});
+
 
     useEffect(() => {
         fetchPollen();
@@ -20,50 +22,55 @@ const EditPollen = () => {
     , []);
 
     const fetchPollen = async () => {
-        const res = await fetch(`http://localhost:3000/pollen/${id}`);
-        const data = await res.json();
+        const response = await fetch(`/pollen/${id}`);
+        const result = await response.json();
+        const data = result.data;
 
-        console.log("data", data.province);
+        console.warn("data", data.data);
         setProvince(data.province);
         setValue(data.value);
         setColor(data.color);
         setForecast(data.forecast);
         setPro_id(data.pro_id);
-        setLoc(data.loc);
+        setLong(data.loc.coordinates[0]);
+        setLat(data.loc.coordinates[1]);
         setExistingPollen(data);
     }
     console.log("existingPollen", existingPollen);
 
     const handleEdit = async (e) => {
+        console.log("handleEdit");
         e.preventDefault();
-        const longitude = 41.8781;
-        const latitude = -87.6298;
-        const coordinates = [longitude, latitude];
-        const loc = {
-            type: "Point",  
-            coordinates: coordinates
-        }
-
-        const formData = new FormData();
-        formData.append('province', province);
-        formData.append('value', value);
-        formData.append('color', color);    
-        formData.append('forecast', forecast);
-        formData.append('pro_id', pro_id);
-        console.log(formData);
-        // formData.append('loc', loc);
         
+        const province = e.target.province.value;
+        const value = e.target.value.value;
+        const color = e.target.color.value;
+        const forecast = e.target.forecast.value;
+        const pro_id = e.target.pro_id.value;
+        const long = e.target.long.value;
+        const lat = e.target.lat.value;
 
-
-        const response = await fetch(`/update-pollen/${id}`, {
-        method: 'PUT',
-        body: formData,
-        });
-        const data = await response.json();
-        console.log("data in editstore.js", data);
-        navigate('/');
+        const loc = {
+            "coordinates": [long, lat],
+            "type": "Point"
+        }
+        const data = {
+            province,
+            value,
+            color,
+            forecast,
+            pro_id,
+            loc
+        }
+        console.log("data", data);
+        const res = await fetch(`${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+            });
+        navigate('/all-pollens');
     }
-
+    console.log("province", province);
 
     return (
         <div className="container">
@@ -103,9 +110,14 @@ const EditPollen = () => {
                     <input type="text" name="pro_id" value={pro_id} onChange={(e) => setPro_id(e.target.value)} />
                 </div>
                 <div >
-                    <label >Loc</label>
-                    <input type="text" name="loc" value={loc} onChange
-                    ={(e) => setLoc(e.target.value)} />
+                    <label >Long</label>
+                    <input type="number" name="long" value={long} onChange
+                    ={(e) => setLong(e.target.value)} />
+                </div>
+                <div >
+                    <label >Lat</label>
+                    <input type="number" name="lat" value={lat} onChange
+                    ={(e) => setLat(e.target.value)} />
                 </div>
                 <div >
                     <button type="submit">Update</button>

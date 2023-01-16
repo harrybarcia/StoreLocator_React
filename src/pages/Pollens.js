@@ -8,14 +8,14 @@ const AllPollens = () => {
     useEffect(() => {
         const fetchPollens = async () => {
             // console.log("fetching");
-            const response = await fetch("http://localhost:3000/pollens");
+            const response = await fetch("/pollens");
             const data = await response.json();
             setPollens(data.data);
         }
         fetchPollens();
         
     }, []);
-    console.log(pollens);
+    
 
     return (
         <div>
@@ -26,6 +26,12 @@ const AllPollens = () => {
                 <ul>
                     <li>
                         {pollen._id}
+                    </li>
+                    <li>
+                        {pollen.province}
+                    </li>
+                    <li>
+                        {pollen.loc.coordinates[0]} : {pollen.loc.coordinates[1]}
                     </li>
                 </ul>
                 <button>
