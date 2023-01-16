@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/pollens", async function(req, res, next) {
     const data = await db.collection('pollens').find().toArray();
-    console.log('data', data);
+    
     res.status(200).json({ data });
 });
 
@@ -71,7 +71,7 @@ router.get("/pollen/:id", async function(req, res, next) {
     res.status(200).json({ data });
 });
 
-router.put("/update-pollen/:id", async function(req, res, next) {
+router.put("/update-pollen/:id", function(req, res, next) {
     console.log('req.body', req.body);
     const pollenId = req.params.id;
     const value = req.body.value;
