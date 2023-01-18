@@ -30,3 +30,93 @@ header {
 a, a:hover, a:active { color: black;text-decoration: none; }
 .banner a:visited { color: rgb(255, 255, 255);text-decoration: none; }
 
+.map-container {
+  height: 400px;
+}
+ 
+.sidebar {
+  background-color: rgba(35, 55, 75, 0.9);
+  color: #fff;
+  padding: 6px 12px;
+  font-family: monospace;
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 12px;
+  border-radius: 4px;
+  }
+
+  :root{
+    --main-height:40px;
+    --ul-height: auto;
+}
+
+
+ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 10px;
+    overflow: hidden;
+    height:var(--ul-height);
+    
+}
+
+.map{
+    min-height: 50%;
+}
+.map-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 100%;
+    
+    height: calc(100% - (var(--ul-height)));
+    min-height: calc(100% - 40px);
+    
+}
+
+.content {
+    display: flex;
+    flex-wrap: wrap;
+    overflow:scroll;
+    transition:1s;
+    max-height: 30%;
+    justify-content: space-between;
+
+}
+
+.content:hover {
+    height: 100%;
+    max-height: 75% ;
+    transition: 1s;
+} 
+
+.content-box {
+    max-width: 70%;
+}
+
+.grid_stores {
+    display: flex;
+    margin: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: column;
+    
+    
+  }
+
+  .content-box-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+.map-filter {
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    margin: 1em;
+    padding: 0.5em;
+    margin-right: 10px;
+}

@@ -21,6 +21,7 @@ import NewPollenForm from './pages/NewPollenForm';
 import EditStore from './pages/EditStore';
 import Pollen from './components/pollen';
 import EditPollen from './pages/EditPollen';
+import Cluster from './components/cluster';
 
 const App = () => {
 
@@ -32,6 +33,7 @@ const App = () => {
 
 			
 				< MainHeader />
+
 				    
 				<Routes>
 					<Route path="/" element={<MapData />} />
@@ -50,6 +52,7 @@ const App = () => {
 					<Route path="/all-pollens" element={<AllPollens />} />
 					<Route path="/add-pollen" element={<NewPollenForm />} />
 					<Route path="/update-pollen/:id" element={<EditPollen />} />
+					<Route path="/cluster" element={<Cluster />} />
 
 				</Routes>
 

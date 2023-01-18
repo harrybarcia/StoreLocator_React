@@ -5,6 +5,9 @@ import { Link } from "react-router-dom";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
+import Supercluster from "supercluster";
+
+
 
 import csvtojson from 'csvtojson';
 import axios from 'axios';
@@ -53,7 +56,16 @@ const Pollen = () => {
           id: "points",
           type: "circle",
           paint: {
-            "circle-radius": 6,
+            "circle-radius": {
+              property: "value",
+              type: "exponential",
+              stops: [
+                [{ zoom: 0, value: 0 }, 0],
+                [{ zoom: 0, value: 1 }, 5],
+                [{ zoom: 0, value: 2 }, 10],
+                [{ zoom: 0, value: 3 }, 15]
+              ],
+            },
             "circle-color": ["get", "color"],
           },
           source: {
@@ -70,14 +82,31 @@ const Pollen = () => {
                       place.loc.coordinates[1],
                     ],
                   },
-                  properties: { color: place.color },
+                  properties: {
+                    value: place.value,
+                    color: 
+                      place.value = 0 ? "green" :
+                      place.value > 0 && place.value <= 1 ? "yellow" :
+                      place.value > 1 && place.value <= 2 ? "orange" :
+                      place.value > 2 && place.value <= 3 ? "red" : "purple", 
+                  cluster: true
+                  },
+                  
                 };
               }),
             },
           },
         });
 
+        
+        
+
+
+
+
         places.map((item, index) => {
+
+
           const el = document.createElement("div");
           el.className = 'marker';
           const width = 10;
@@ -87,9 +116,7 @@ const Pollen = () => {
 
           el.style.width = `${width}px`;
           el.style.height = `${height}px`;
-
-
-
+          el.textContent = item.value;
           new mapboxgl.Marker(el)
             .setLngLat([item.loc.coordinates[0], item.loc.coordinates[1]])
             .setPopup(
@@ -98,13 +125,9 @@ const Pollen = () => {
                   `<h3>${item.province}</h3><p>Value: ${item.value}</p><p>Forecast: ${item.forecast}</p>
                   <p>Coordinates: ${item.loc.coordinates[0]}, ${item.loc.coordinates[1]}</p>
                   <p>Pro_id: ${item._id}</p>
-
-                  
                   `
-
                 )
             )
-
             .addTo(map);
         });
       });
@@ -171,7 +194,9 @@ const Pollen = () => {
         type: "circle",
         source: "points_provinces",
         layout: { visibility: "visible" },
-        paint: { "circle-radius": 10, "circle-color": ['get', 'color'] },
+        // paint: { "circle-radius": 10, "circle-color": ['get', 'color'] },
+        
+
       });
       map.addSource("cities", {
         type: "vector",
@@ -190,7 +215,7 @@ const Pollen = () => {
           "fill-color": "#7C0A02",
           "fill-opacity": 0.5,
           "fill-outline-color": "#7C0A02",
-        },
+        }
       });
     });
     // After the last frame rendered before the map enters an "idle" state.
@@ -272,7 +297,7 @@ const Pollen = () => {
         csvtojson()
           .fromString(csvOutput)
           .then((jsonOutput) => {
-            axios.post('http://localhost:3001/add-pollen', jsonOutput);
+            axios.post('/add-pollen', jsonOutput);
             
             ;
           });

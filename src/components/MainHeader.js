@@ -44,6 +44,10 @@ const MainHeader = () => {
                 <li>
                     <Link to="/add-pollen">Add a new pollen</Link>
                 </li>
+                <li>
+                    <Link to="/cluster">Cluster</Link>
+                </li>
+                
             </ul>
         </header>
     );
