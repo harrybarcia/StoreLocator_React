@@ -1,10 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import useSwr from "swr";
 import Map from 'react-map-gl';
 import useSupercluster from "use-supercluster";
 import "./pollen.css"
 import "./cluster.css"
 import { Marker } from "react-map-gl";
+
+
 
 // import dotenv from "dotenv";
 // dotenv.config({path:'../config/config.env' });
@@ -14,9 +16,27 @@ export default function Cluster() {
   const [viewState, setViewState] = React.useState({
     longitude: -100,
     latitude: 40,
-    zoom: 3.5
+    zoom: 3.5,
+    
+    
   });
+
+  
   const mapRef = useRef();
+
+  const onFlyToPress = useCallback((long, lat, zoom) => {
+    mapRef.current.getMap().flyTo({
+      
+
+      center: [long, lat],
+      zoom,
+      essential: true // this animation is considered essential with respect to prefers-reduced-motion
+    });
+  }, []);
+
+  
+  
+  
   const token = "pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ";
   const url =
     "https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson";
@@ -43,7 +63,9 @@ export default function Cluster() {
         .getBounds()
         .toArray()
         .flat()
-    : null;
+    : [-127.25474891448067, 27.492912743548914, -72.74525108551866, 50.57634666208065]
+    
+    ;
 
     console.log("bounds", bounds);
     
@@ -52,14 +74,16 @@ export default function Cluster() {
     points,
     bounds,
     zoom: viewState.zoom,
-    options: { radius: 75, maxZoom: 20 }
+    
   });
 
   console.log("clusters", clusters);
+  console.log("supercluster", supercluster);
 
   return (
-    
+    <>
       <Map   {...viewState}
+      
       onMove={evt => setViewState(evt.viewState)}
       mapStyle="mapbox://styles/mapbox/streets-v9"
         
@@ -81,6 +105,7 @@ export default function Cluster() {
                 key={`cluster-${cluster.id}`}
                 latitude={latitude}
                 longitude={longitude}
+                ref = {mapRef}
               >
                 <div
                   className="cluster-marker"
@@ -93,8 +118,21 @@ export default function Cluster() {
                       supercluster.getClusterExpansionZoom(cluster.id),
                       20
                     );
+                    
+                    // setViewState({
+                    //   ...viewState,
+                    //   latitude,
+                    //   longitude,
+                    //   zoom: expansionZoom,
 
-                 
+
+                      
+                    //   });
+                      onFlyToPress(
+                        longitude,
+                        latitude,
+                        expansionZoom
+                      );
                   }}
                 >
                   {pointCount}
@@ -109,13 +147,15 @@ export default function Cluster() {
               latitude={latitude}
               longitude={longitude}
             >
-              <button className="crime-marker">
-                <img src="/custody.svg" alt="crime doesn't pay" />
+              <button className="point-marker">
+                
               </button>
             </Marker>
           );
         })}
       </Map>
+
+      </>
     
   );
 }
