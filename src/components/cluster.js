@@ -6,8 +6,6 @@ import "./pollen.css"
 import "./cluster.css"
 import { Marker } from "react-map-gl";
 
-
-
 // import dotenv from "dotenv";
 // dotenv.config({path:'../config/config.env' });
 const fetcher = (...args) => fetch(...args).then(response => response.json());
@@ -17,26 +15,23 @@ export default function Cluster() {
     longitude: -100,
     latitude: 40,
     zoom: 3.5,
-    
-    
+    bearing: 0,
+    pitch: 0
   });
 
-  
   const mapRef = useRef();
+
+
 
   const onFlyToPress = useCallback((long, lat, zoom) => {
     mapRef.current.getMap().flyTo({
-      
-
       center: [long, lat],
       zoom,
       essential: true // this animation is considered essential with respect to prefers-reduced-motion
     });
   }, []);
 
-  
-  
-  
+
   const token = "pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ";
   const url =
     "https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson";
@@ -86,6 +81,7 @@ export default function Cluster() {
       
       onMove={evt => setViewState(evt.viewState)}
       mapStyle="mapbox://styles/mapbox/streets-v9"
+      
         
         ref={mapRef}
           
@@ -116,18 +112,9 @@ export default function Cluster() {
                   onClick={() => {
                     const expansionZoom = Math.min(
                       supercluster.getClusterExpansionZoom(cluster.id),
-                      20
+                      18
                     );
-                    
-                    // setViewState({
-                    //   ...viewState,
-                    //   latitude,
-                    //   longitude,
-                    //   zoom: expansionZoom,
 
-
-                      
-                    //   });
                       onFlyToPress(
                         longitude,
                         latitude,
