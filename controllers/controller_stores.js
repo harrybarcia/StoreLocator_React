@@ -14,7 +14,6 @@ exports.getStore = async (req, res, next) => {
     return res.status(401).json({ message: 'Not authenticated.' });
   } else {
     try {
-      
       const data = await Store.findById(storeId);
       console.log('data in controller try', data);
       
