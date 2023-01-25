@@ -276,7 +276,7 @@ console.log(checked);
                 max = {backendData2 && Math.max(...backendData2.map((store) => store.price))}
                 
                 value={rangeValue}
-                step="1000"
+                step="10000"
                 onChange={(e) => {
                   setRangeValue(e.target.value);
                   setBackendData(backendData2.filter((store) => store.price <= e.target.value));

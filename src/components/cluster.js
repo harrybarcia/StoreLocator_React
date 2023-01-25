@@ -1,14 +1,16 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import useSwr from "swr";
 import Map from 'react-map-gl';
 import useSupercluster from "use-supercluster";
 import "./pollen.css"
 import "./cluster.css"
 import { Marker } from "react-map-gl";
+import mapboxgl from "mapbox-gl";
 
 // import dotenv from "dotenv";
 // dotenv.config({path:'../config/config.env' });
 const fetcher = (...args) => fetch(...args).then(response => response.json());
+
 // const token = process.env.token
 export default function Cluster() {
   const [viewState, setViewState] = React.useState({
@@ -20,6 +22,8 @@ export default function Cluster() {
   });
 
   const mapRef = useRef();
+
+
 
 
 
@@ -40,7 +44,7 @@ export default function Cluster() {
   const earthquakes = data && !error ? data.features : [];
   const points = earthquakes.map(earthquake => ({
     type: "Feature",
-    properties: { cluster: false, id: earthquake.id, category: earthquake.tsunami },
+    properties: { cluster: false, id: earthquake.properties.id, tsunami: earthquake.properties.tsunami },
     geometry: {
       type: "Point",
       coordinates: [
@@ -49,6 +53,10 @@ export default function Cluster() {
       ]
     }
   }));
+
+
+
+
   console.log("points", points);
   console.log("earthquakes", earthquakes);
 
@@ -62,7 +70,10 @@ export default function Cluster() {
     
     ;
 
-    console.log("bounds", bounds);
+    console.log("mapRef.current", mapRef.current);
+    console.log("mapRef.typeof", typeof(mapRef.current));
+
+
     
 
   const { clusters, supercluster } = useSupercluster({
@@ -75,25 +86,44 @@ export default function Cluster() {
   console.log("clusters", clusters);
   console.log("supercluster", supercluster);
 
+  
+
   return (
     <>
-      <Map   {...viewState}
-      
+      <Map {...viewState}
       onMove={evt => setViewState(evt.viewState)}
       mapStyle="mapbox://styles/mapbox/streets-v9"
-      
-        
-        ref={mapRef}
-          
-        
-
+      ref={mapRef}
+      onClick={evt => {
+        const features = mapRef.current
+          .getMap()
+          .queryRenderedFeatures(evt.point, {
+            layers: ["clusters"]
+          });
+        const clusterId = features;
+        console.log("clusterId", clusterId);
+        console.log("features", features);
+        const clusterExpansionZoom = supercluster.getClusterExpansionZoom(
+          clusterId
+        );
+        onFlyToPress(
+          features[0].geometry.coordinates[0],
+          features[0].geometry.coordinates[1],
+          clusterExpansionZoom
+        );
+      }}
       >
         {clusters.map(cluster => {
           const [longitude, latitude] = cluster.geometry.coordinates;
+          const id = cluster.properties.id;
+
+          const tsunami = cluster.properties.tsunami === 0 ? "No" : "Yes";
+          console.log("tsunami", tsunami);
           const {
             cluster: isCluster,
             point_count: pointCount
           } = cluster.properties;
+          
 
           if (isCluster) {
             return (
@@ -127,8 +157,36 @@ export default function Cluster() {
               </Marker>
             );
           }
-
-          return (
+          else if (!isCluster) {
+            return (
+              <Marker
+                key={`cluster-${cluster.id}`}
+                latitude={latitude}
+                longitude={longitude}
+                ref = {mapRef}
+              >
+                <div
+                  className="marker"
+                  style={{
+                    width: 3,
+                    height: 3
+                    
+                  }}
+                  onClick={() => {
+                    // alert(cluster.properties.id);
+                    
+                    const popup = new mapboxgl.Popup({ closeOnClick: false })
+                    .setLngLat([longitude, latitude])
+                    .setHTML(`<h3>${cluster.properties.id}</h3><p>Was there a tsunami in that spot? : ${tsunami}</p>`)
+                    .addTo(mapRef.current.getMap());
+                  }}
+                >
+                  1
+                </div>
+              </Marker>
+            );
+          }
+           return (
             <Marker 
               key={`earthquake-${cluster.properties.earthquakeId}`}
               latitude={latitude}
@@ -140,6 +198,7 @@ export default function Cluster() {
             </Marker>
           );
         })}
+        
       </Map>
 
       </>

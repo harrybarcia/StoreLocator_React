@@ -97,23 +97,11 @@ const Pollen = () => {
             },
           },
         });
-
-        
-        
-
-
-
-
         places.map((item, index) => {
-
-
           const el = document.createElement("div");
           el.className = 'marker';
           const width = 10;
           const height = 50;
-          
-          
-
           el.style.width = `${width}px`;
           el.style.height = `${height}px`;
           el.textContent = item.value;
@@ -135,6 +123,12 @@ const Pollen = () => {
 
     getPlaces();
     console.log("places", places);
+
+    console.log("map", map);
+
+    console.log("mapContainer", mapContainer);
+
+    console.log("mapobjetct", typeof(map));
 
     map.addControl(
       new MapboxGeocoder({
