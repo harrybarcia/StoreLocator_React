@@ -4,11 +4,13 @@ import "./map.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "../pages/NewStoreForm.css";
+import SearchBar from "./SearchBar";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ";
 
 const DisplayMap = (props) => {
+  const [searchTerm, setSearchTerm] = useState('');
   const [backendData, setBackendData] = useState(null);
 
   useEffect(() => {
@@ -31,6 +33,8 @@ const DisplayMap = (props) => {
     fetchData2();
   }, []);
 
+
+  console.log("backendData", backendData);
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [lng, setLng] = useState(-123.07);
@@ -237,6 +241,14 @@ const DisplayMap = (props) => {
 
   console.log("checked", checked);
   console.log("backenData", backendData);
+
+
+
+  const pull_data = (data) => {
+    setBackendData(data);
+  };
+  
+
   return (
     <div className="map-wrapper">
       <div className="map">
@@ -295,6 +307,12 @@ const DisplayMap = (props) => {
                 })
             : null}
         </div>
+      <SearchBar
+        func = {pull_data}
+        // data = {backendData}
+      
+      />
+      
 
         <div ref={mapContainer}></div>
       </div>

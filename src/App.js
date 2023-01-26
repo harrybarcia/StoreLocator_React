@@ -53,6 +53,7 @@ const App = () => {
 					<Route path="/add-pollen" element={<NewPollenForm />} />
 					<Route path="/update-pollen/:id" element={<EditPollen />} />
 					<Route path="/cluster" element={<Cluster />} />
+					<Route path="/api/search" element={<AllStores />} />
 
 				</Routes>
 
