@@ -166,7 +166,7 @@ export default function Cluster() {
                 ref = {mapRef}
               >
                 <div
-                  className="marker"
+                  className="marker-unique"
                   style={{
                     width: 3,
                     height: 3
