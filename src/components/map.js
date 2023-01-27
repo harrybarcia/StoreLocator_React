@@ -237,7 +237,7 @@ const DisplayMap = (props) => {
     );
   };
 
-  const [rangeValue, setRangeValue] = useState(500000);
+  const [rangeValue, setRangeValue] = useState(1000000);
 
   console.log("checked", checked);
   console.log("backenData", backendData);
@@ -248,7 +248,7 @@ const DisplayMap = (props) => {
     setBackendData(data);
   };
   
-
+console.log("backendData after pull data", backendData);
   return (
     <div className="map-wrapper">
       <div className="map">
@@ -309,7 +309,7 @@ const DisplayMap = (props) => {
         </div>
       <SearchBar
         func = {pull_data}
-        // data = {backendData}
+        data = {backendData}
       
       />
       

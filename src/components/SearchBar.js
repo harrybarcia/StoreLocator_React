@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { get } from 'mongoose';
 import React, { useEffect, useState } from 'react';
 
@@ -5,45 +6,40 @@ import React, { useEffect, useState } from 'react';
 const SearchBar = (props) => {
     console.log("props", props);
   const [searchTerm, setSearchTerm] = useState('');
-  const [results, setResults] = useState(props.data? props.data : []);
+  const [results, setResults] = useState([]);
 
-const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log("searchTerm", searchTerm);
-    getResults();
-    };
-    results && results.length > 0 && props.func(results);
-
-        
-    
-  
-    const getResults = async () => {
+  useEffect(() => {
+  const getResults = async () => {
         try {
-
-            const response = await fetch(`http://localhost:3000/api/search/${searchTerm}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json' }
-            });
-            const data = await response.json();
-            setResults(data);
-            console.log("response", data);
-        } catch (error) {
-            console.error(error);
+          axios.get(`api/search/${searchTerm}`)
+          .then(res => {
+            console.log("res", res);
+            setResults(res.data.data);
+            
+            console.log("results2", results);
+          })
+        } catch (err) {
+          console.log(err);
         }
-    };
-    
-
-
-    
+      };
+      if (searchTerm !== '') {
+        getResults();
+      } else {
+        setResults([]);
+      }
+  }, [searchTerm]);
   
+  console.log("results3", results);
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    props.func(results)
+  }
   
-  console.log("results", results);
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}  >
         <input
           type="text"
           placeholder="Search..."
