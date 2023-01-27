@@ -1,5 +1,5 @@
 const express = require('express');
-const path = require('path');
+
 const adminController = require('../controllers/controller_stores');
 const multer = require('multer');
 const authenticateToken = require('../utils/JWT');
@@ -12,6 +12,7 @@ const fileStorage=multer.diskStorage({
         cb(null, file.originalname);
     }
   });
+  
 const upload=multer({storage:fileStorage}).single('image');
 const Store = require('../models/model_Store');
 const app = express.Router();
