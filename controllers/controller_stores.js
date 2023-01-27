@@ -35,7 +35,7 @@ exports.getStoresByCity = async (req, res, next) => {
   const city = (req.params.city).trim();
   const userId = req.user.userId;
   if (!req.user) {
-    return res.status(401).json({ message: 'Not authenticated.' });
+    return res.status(401).json({ message: 'Not authenticated. ' });
   }
   if (!city) {
      const result = await Store.find({userId});
