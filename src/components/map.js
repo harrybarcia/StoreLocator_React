@@ -190,7 +190,7 @@ const DisplayMap = (props) => {
     getCities();
   }, []);
 
-  console.log(apiCities);
+  // I create a state to store the checked cities
 
   const [checked, setChecked] = useState([apiCities]);
   console.log(checked);
