@@ -20,6 +20,7 @@ const Pollen = () => {
   const [backendData, setBackendData] = useState(null);
   const [places, setPlaces] = useState(null);
 
+  
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios("http://localhost:3000/pollens");
@@ -27,7 +28,7 @@ const Pollen = () => {
       setPlaces(response.data);
     };
     fetchData();
-  }, []);
+  }, [places]);
   console.log("places", places);
 
   useEffect(() => {
@@ -304,6 +305,7 @@ const Pollen = () => {
       }
     };
 
+
     
 
   return (
@@ -311,7 +313,7 @@ const Pollen = () => {
       <div className="map">
         <div ref={mapContainer}></div>
       </div>
-      <div className="menu" id="menu"></div>
+      <div  id="menu"></div>
       <div className="footer">
         {backendData && backendData.length > 0
           ? backendData.map((item, index) => {
