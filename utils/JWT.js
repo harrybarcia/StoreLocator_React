@@ -4,8 +4,8 @@ function authenticateToken(req, res, next) {
   console.log('req.headers', req.headers);
   console.log('---');
   console.log('req.headers split', req.headers['cookie'].split('=')[2]);
-  console.log('req.headers split postman', req.headers['cookie'].split('=')[1]);
-  
+  // console.log('cookie :access token pour postman', req.headers['cookie'].split('=')[1]);
+  // console.log('bearer token pour postman', req.headers['authorization'].split(' ')[1]);
   console.log('---');
   console.log('---');
   const authHeader = req.headers['cookie']
