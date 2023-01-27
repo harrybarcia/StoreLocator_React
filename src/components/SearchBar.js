@@ -9,26 +9,27 @@ const SearchBar = (props) => {
   const [results, setResults] = useState([]);
 
   useEffect(() => {
-  const getResults = async () => {
-        try {
-          axios.get(`api/search/${searchTerm}`)
-          .then(res => {
-            console.log("res", res);
-            setResults(res.data.data);
-            
-            console.log("results2", results);
-          })
-        } catch (err) {
-          console.log(err);
-        }
-      };
-      if (searchTerm !== '') {
-        getResults();
-      } else {
-        setResults([]);
-      }
-  }, [searchTerm]);
-  
+    
+    axios.get(`/api/search/${searchTerm}`)
+      .then((res) => {
+        console.log("res", res);
+        setResults(res.data.data);
+      });
+      
+      if (searchTerm === '') {
+        axios.get(`/api`)
+        .then((res) => {
+          console.log("res", res);
+          setResults(res.data);
+        });
+      } 
+    }, [searchTerm]);
+
+
+
+
+    
+    
   console.log("results3", results);
 
   const handleSubmit = (event) => {

@@ -309,7 +309,7 @@ console.log("backendData after pull data", backendData);
         </div>
       <SearchBar
         func = {pull_data}
-        data = {backendData}
+        
       
       />
       
