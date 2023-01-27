@@ -31,22 +31,28 @@ exports.getStore = async (req, res, next) => {
 };
 
 exports.getStoresByCity = async (req, res, next) => {
-  console.log('dans get store de controller_stores, req.user:', req.user);
+  
   const city = (req.params.city).trim();
+  const userId = req.user.userId;
   if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated.' });
   }
-  try {
-    const result = await Store.find({ city: city });
-    console.log('result in controller try', result.length);
-    return (
-      res.status(200).json({ message: 'Success!', data: result })
-    );
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
+  if (!city) {
+     const result = await Store.find({userId});
+    return res.status(401).json({ message: 'All cities', data: result });
+  } else {
+    try {
+      const result = await Store.find({ city, userId});
+      console.log('result in controller try', result);
+      return (
+        res.status(200).json({ message: 'Success!', data: result })
+      );
+    } catch (err) {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     }
-    next(err);
   }
 };
   
