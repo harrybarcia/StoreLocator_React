@@ -173,7 +173,7 @@ export default function Cluster() {
                     
                   }}
                   onClick={() => {
-                    // alert(cluster.properties.id);
+                    
                     
                     const popup = new mapboxgl.Popup({ closeOnClick: false })
                     .setLngLat([longitude, latitude])
