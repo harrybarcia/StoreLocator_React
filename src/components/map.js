@@ -15,6 +15,7 @@ mapboxgl.accessToken =
 const DisplayMap = (props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [backendData, setBackendData] = useState(null);
+  const [radius, setRadius] = useState(2);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +36,13 @@ const DisplayMap = (props) => {
     };
     fetchData2();
   }, []);
+
+
+  const handleRadiusChange = (e) => {
+    setRadius(e.target.value);
+    console.log("radius", radius);
+    console.log(typeof(radius))
+}
 
 
   console.log("backendData", backendData);
@@ -86,6 +94,19 @@ const DisplayMap = (props) => {
     // Load map with stores
     function loadMap(stores) {
       map.on("load", function () {
+
+        
+
+        map.on('move', function () {
+          const center = map.getCenter();
+          const features = map.queryRenderedFeatures({
+            layers: ['circle']
+            });
+          console.log("features", features);
+        });
+            
+
+
         map.addLayer({
           id: "points",
           type: "symbol",
@@ -109,6 +130,8 @@ const DisplayMap = (props) => {
     }
     getStores();
     map.on("click", "points", (e) => {
+
+
       // Copy coordinates array.
       const coordinates = e.features[0].geometry.coordinates.slice();
       const address = e.features[0].properties.formattedAddress;
@@ -157,86 +180,92 @@ const DisplayMap = (props) => {
         )
         .addTo(map);
       });
-      // Selection of stores within a radius of 2 km
-      map.on("click", function (e) {
-        // I add a marker to the point I just clicked
-        const markers = document.getElementsByClassName("mapboxgl-marker");
-        console.log(markers);
-        console.log('markers[0]', markers[0])
 
-        if (markers[0]) markers[0].remove();
-        console.log(markers);
-        const coordinates = e.lngLat;
-        console.log(markers)
       
-        const marker = new mapboxgl.Marker({
-          color: "red",
-          draggable: true,
-        });
-        console.log("marker", typeof(marker));
-        // I retrieve all the distances from the point I just clicked and I sort them
-        if (markers[0]) markers[0].remove();
-        marker.setLngLat(coordinates).addTo(map);
-        const arrayCoordinates = [coordinates.lng, coordinates.lat];
-        const stores = backendData.map((store) => {
-          const mystore = store.location.coordinates;
-          const distance = Math.round(
-            turf.distance(turf.point(arrayCoordinates), turf.point(mystore), {
-              units: "meters",
-            })
-          );
-          store.distance = distance;
-          return store;
-        });
-        console.log("stores", stores);
-        stores.sort((a, b) => {
-          if (a.distance > b.distance) {
-            return 1;
-          }
-          if (a.distance < b.distance) {
-            return -1;
-          }
-          return 0; // a must be equal to b
-        });
-        // I display the stores by distance
-        const storesByDistance = stores.filter((store) => store.distance < 2000);
-        console.log("storesByDistance", storesByDistance);
-        setBackendData(storesByDistance);
+    // Selection of stores within a radius of 2 km
+    map.on("click", function (e) {
+      // I add a marker to the point I just clicked
+      const markers = document.getElementsByClassName("mapboxgl-marker");
+      console.log(markers);
+      console.log('markers[0]', markers[0])
 
-        
-          map.addLayer({
-            id: 'circle',
-            type: 'circle',
-            source: {
-              type: 'geojson',
-              data: {
-                type: 'Feature',
-                properties: {
-                  title: 'Mapbox',  
-                  description: 'Washington, D.C.'
-                },
-                geometry: {
-                  type: 'Point',
-                  coordinates: [coordinates.lng, coordinates.lat]
-                }
-
-                
-
-                
-
-              }},
-            
-            paint: {
-              'circle-radius': 100,
-              'circle-color': '#007cbf',
-            },
-          });
-
-
-          
+      if (markers[0]) markers[0].remove();
+      console.log(markers);
+      const coordinates = e.lngLat;
+      console.log(markers)
+    
+      const marker = new mapboxgl.Marker({
+        color: "red",
+        draggable: true,
       });
+      console.log("marker", typeof(marker));
+
+      map.addSource('circle', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [coordinates.lng, coordinates.lat]
+              },
+              properties: {}
+            }
+          ]
+        }
+      });
+
+      map.addLayer({
+        id: 'circle',
+        source: 'circle',
+        type: 'circle',
+        paint: {
+          'circle-radius': {
+            'base': 1.75,
+            'stops': [[12, 2], [22, 180]]
+            
+          }
+          ,
+          'circle-color': '#007cbf',
+          'circle-opacity': 0.1,
+          'circle-stroke-width': 3,
+          'circle-stroke-color': '#007cbf'
+          
+        }
+      });
+      // I retrieve all the distances from the point I just clicked and I sort them
+      if (markers[0]) markers[0].remove();
+      marker.setLngLat(coordinates).addTo(map);
+      const arrayCoordinates = [coordinates.lng, coordinates.lat];
+      const stores = backendData.map((store) => {
+        const mystore = store.location.coordinates;
+        const distance = Math.round(
+          turf.distance(turf.point(arrayCoordinates), turf.point(mystore), {
+            units: "meters",
+          })
+        );
+        store.distance = distance;
+        return store;
+      });
+      console.log("stores", stores);
+      stores.sort((a, b) => {
+        if (a.distance > b.distance) {
+          return 1;
+        }
+        if (a.distance < b.distance) {
+          return -1;
+        }
+        return 0; // a must be equal to b
+      });
+      // I display the stores by distance
+      const storesByDistance = stores.filter((store) => store.distance < radius*100);
+      console.log("storesByDistance", storesByDistance);
+      // setBackendData(storesByDistance);
+    });
       
-  }, [backendData]);
+  }, [backendData, radius, turf.circle]);
 
 
 
@@ -331,13 +360,6 @@ const DisplayMap = (props) => {
   const pull_data = (data) => {
     setBackendData(data);
   };
-
-  // I use the SearchRadius component to retrieve the data inside the radius
-  const pull_data_radius = (data) => {
-    setBackendData(data);
-  };
-
-
   
 console.log("backendData after pull data", backendData);
   return (
@@ -398,14 +420,27 @@ console.log("backendData after pull data", backendData);
                 })
             : null}
         </div>
-      <SearchBar
-        func = {pull_data}
-      />
-      <SearchRadius
-        func = {pull_data_radius}
-      />
+        <SearchBar func={pull_data} />
+        
+        <div style={
+          {
+            display: "flex",
+            flexDirection: "row",
+            
+          }
+        }>
+          <input
+            type="range"
+            min="0"
+            max="10"
+            value={radius}
+            onChange={handleRadiusChange}
+            className="slider"
+            id="myRange"
+          />
+          <p>Value: {radius} km</p>
 
-      
+        </div>
 
         <div ref={mapContainer}></div>
       </div>
