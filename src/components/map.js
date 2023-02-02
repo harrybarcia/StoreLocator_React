@@ -1,21 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
-import mapboxgl from "mapbox-gl";
+import mapboxgl from 'mapbox-gl';
+
 import "./map.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "../pages/NewStoreForm.css";
 import SearchBar from "./SearchBar";
-import SearchRadius from "./SearchRadius";
-import * as turf from "@turf/turf";
+import * as turf from '@turf/turf';
+
+
+
+
 
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ";
 
 const DisplayMap = (props) => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [backendData, setBackendData] = useState(null);
-  const [radius, setRadius] = useState(2);
+  const [radius, setRadius] = useState(0.5);
+  const coordinates = [-123.07, 49.31];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,228 +49,226 @@ const DisplayMap = (props) => {
 }
 
 
-  console.log("backendData", backendData);
+  // console.log("backendData", backendData);
   const mapContainer = useRef(null);
-  const map = useRef(null);
   const [lng, setLng] = useState(-123.07);
   const [lat, setLat] = useState(49.31);
   const [zoom, setZoom] = useState(13);
 
+  // useEffect(() => {
+  //   const map = new mapboxgl.Map({
+  //     container: mapContainer.current,
+  //     style: "mapbox://styles/mapbox/streets-v11",
+  //     center: [lng, lat],
+  //     zoom: zoom,
+  //   });
+  //   function getStores() {
+  //     try {
+  //       const stores = backendData.map((store) => {
+  //         return {
+  //           type: "Feature",
+  //           geometry: {
+  //             type: "Point",
+  //             coordinates: [
+  //               store.location.coordinates[0],
+  //               store.location.coordinates[1],
+  //             ],
+  //           },
+  //           properties: {
+  //             _id: store._id,
+  //             storeId: store.storeId,
+  //             formattedAddress: store.location.formattedAddress,
+  //             icon: "rocket",
+  //             image: store.image,
+  //             userId: store.userId,
+  //             city: store.city,
+  //             price: store.price,
+  //           },
+  //         };
+  //       });
+
+  //       console.log("---end of line 1---");
+  //       loadMap(stores);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   }
+
+  //   // Load map with stores
+  //   function loadMap(stores) {
+  //     map.on("load", function () {
+
+  //       map.addLayer({
+  //         id: "points",
+  //         type: "symbol",
+  //         source: {
+  //           type: "geojson",
+  //           data: {
+  //             type: "FeatureCollection",
+  //             features: stores,
+  //           },
+  //         },
+  //         layout: {
+  //           "icon-image": "{icon}-15",
+  //           "icon-size": 1.5,
+  //           "text-field": "{city}",
+  //           "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+  //           "text-offset": [0, 0.9],
+  //           "text-anchor": "top",
+  //         },
+  //       });
+  //     });
+  //   }
+  //   getStores();
+  //   map.on("click", "points", (e) => {
+
+
+  //     // Copy coordinates array.
+  //     const coordinates = e.features[0].geometry.coordinates.slice();
+  //     const address = e.features[0].properties.formattedAddress;
+  //     const image = e.features[0].properties.image;
+  //     const storeId = e.features[0].properties._id;
+  //     const userId = e.features[0].properties.userId;
+  //     const city = e.features[0].properties.city;
+  //     const price = e.features[0].properties.price;
+
+  //     // Ensure that if the map is zoomed out such that multiple
+  //     // copies of the feature are visible, the popup appears
+  //     // over the copy being pointed to.
+  //     while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+  //       coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+  //     }
+
+  //     new mapboxgl.Popup()
+  //       .setLngLat(coordinates)
+  //       .setHTML(
+  //         `
+  //       <img src='/images/${image}' style="width:100%;max-height:200px; border-radius:3%;max-height: 182px;object-fit: cover">
+  //       <div>
+  //       <span style="overflow: hidden;
+  //           text-overflow: ellipsis;
+  //           display: -webkit-box;
+  //           -webkit-line-clamp: 3;
+  //                   line-clamp: 3; 
+  //           -webkit-box-orient: vertical;
+  //           max-height: 60px;">
+  //         </strong>
+  //         ${city}
+  //       </span>
+  //       <span style="overflow: hidden;
+  //           text-overflow: ellipsis;
+  //           display: -webkit-box;
+  //           -webkit-line-clamp: 3;
+  //                   line-clamp: 3; 
+  //           -webkit-box-orient: vertical;
+  //           max-height: 60px;">
+  //         </strong>
+  //         ${price}
+  //       </span>
+  //       </div>
+  //       <a href='/api/${storeId}' class="btn">Details</a>
+  //       `
+  //       )
+  //       .addTo(map);
+  //     });
+
+      
+    
+      
+  // }, [backendData, radius]);
+
+
   useEffect(() => {
     const map = new mapboxgl.Map({
-      container: mapContainer.current,
+      container: mapContainer.current,  
       style: "mapbox://styles/mapbox/streets-v11",
-      center: [lng, lat],
+      center: coordinates, 
       zoom: zoom,
     });
-    function getStores() {
-      try {
-        const stores = backendData.map((store) => {
-          return {
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [
-                store.location.coordinates[0],
-                store.location.coordinates[1],
-              ],
-            },
-            properties: {
-              _id: store._id,
-              storeId: store.storeId,
-              formattedAddress: store.location.formattedAddress,
-              icon: "rocket",
-              image: store.image,
-              userId: store.userId,
-              city: store.city,
-              price: store.price,
-            },
-          };
-        });
 
-        console.log("---end of line 1---");
-        loadMap(stores);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-    // Load map with stores
-    function loadMap(stores) {
-      map.on("load", function () {
-
-        
-
-        map.on('move', function () {
-          const center = map.getCenter();
-          const features = map.queryRenderedFeatures({
-            layers: ['circle']
-            });
-          console.log("features", features);
-        });
-            
-
-
-        map.addLayer({
-          id: "points",
-          type: "symbol",
-          source: {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: stores,
-            },
-          },
-          layout: {
-            "icon-image": "{icon}-15",
-            "icon-size": 1.5,
-            "text-field": "{city}",
-            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-            "text-offset": [0, 0.9],
-            "text-anchor": "top",
-          },
-        });
-      });
-    }
-    getStores();
-    map.on("click", "points", (e) => {
-
-
-      // Copy coordinates array.
-      const coordinates = e.features[0].geometry.coordinates.slice();
-      const address = e.features[0].properties.formattedAddress;
-      const image = e.features[0].properties.image;
-      const storeId = e.features[0].properties._id;
-      const userId = e.features[0].properties.userId;
-      const city = e.features[0].properties.city;
-      const price = e.features[0].properties.price;
-
-      // Ensure that if the map is zoomed out such that multiple
-      // copies of the feature are visible, the popup appears
-      // over the copy being pointed to.
-      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-      }
-
-      new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(
-          `
-        <img src='/images/${image}' style="width:100%;max-height:200px; border-radius:3%;max-height: 182px;object-fit: cover">
-        <div>
-        <span style="overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-                    line-clamp: 3; 
-            -webkit-box-orient: vertical;
-            max-height: 60px;">
-          </strong>
-          ${city}
-        </span>
-        <span style="overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-                    line-clamp: 3; 
-            -webkit-box-orient: vertical;
-            max-height: 60px;">
-          </strong>
-          ${price}
-        </span>
-        </div>
-        <a href='/api/${storeId}' class="btn">Details</a>
-        `
-        )
-        .addTo(map);
-      });
-
+    map.on('load', function () {
+      var center = coordinates;
       
-    // Selection of stores within a radius of 2 km
-    map.on("click", function (e) {
-      // I add a marker to the point I just clicked
-      const markers = document.getElementsByClassName("mapboxgl-marker");
-      console.log(markers);
-      console.log('markers[0]', markers[0])
-
-      if (markers[0]) markers[0].remove();
-      console.log(markers);
-      const coordinates = e.lngLat;
-      console.log(markers)
-    
-      const marker = new mapboxgl.Marker({
-        color: "red",
-        draggable: true,
-      });
-      console.log("marker", typeof(marker));
-
-      map.addSource('circle', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: [coordinates.lng, coordinates.lat]
-              },
-              properties: {}
-            }
-          ]
-        }
-      });
-
+      var options = {steps: 20, units: 'kilometers', properties: {foo: 'bar'}};
+      const circle2 = turf.circle(center, radius, options);
+      // I add the circle to the map
       map.addLayer({
-        id: 'circle',
-        source: 'circle',
-        type: 'circle',
-        paint: {
-          'circle-radius': {
-            'base': 1.75,
-            'stops': [[12, 2], [22, 180]]
-            
-          }
-          ,
-          'circle-color': '#007cbf',
-          'circle-opacity': 0.1,
-          'circle-stroke-width': 3,
-          'circle-stroke-color': '#007cbf'
-          
-        }
-      });
-      // I retrieve all the distances from the point I just clicked and I sort them
-      if (markers[0]) markers[0].remove();
-      marker.setLngLat(coordinates).addTo(map);
-      const arrayCoordinates = [coordinates.lng, coordinates.lat];
-      const stores = backendData.map((store) => {
-        const mystore = store.location.coordinates;
-        const distance = Math.round(
-          turf.distance(turf.point(arrayCoordinates), turf.point(mystore), {
-            units: "meters",
-          })
-        );
-        store.distance = distance;
-        return store;
-      });
-      console.log("stores", stores);
-      stores.sort((a, b) => {
-        if (a.distance > b.distance) {
-          return 1;
-        }
-        if (a.distance < b.distance) {
-          return -1;
-        }
-        return 0; // a must be equal to b
-      });
-      // I display the stores by distance
-      const storesByDistance = stores.filter((store) => store.distance < radius*100);
-      console.log("storesByDistance", storesByDistance);
-      // setBackendData(storesByDistance);
-    });
-      
-  }, [backendData, radius, turf.circle]);
+        'id': 'circle2',
+        'type': 'fill',
+        'source': {
+          'type': 'geojson',
+          'data': circle2,
+        },
+        'layout': {
+          'visibility': 'visible',
 
+        },
+        'paint': {
+          'fill-color': '#007cbf',
+          'fill-opacity': 0.5,
+        },
+      });
+
+
+
+      
+    });
+    // Selection of stores within a radius of 2 km
+    // map.on("click", function (e) {
+    //   // I add a marker to the point I just clicked
+    //   alert("You clicked on the map at: " + e.lngLat);
+    //   console.log("radius", radius);
+    //   const coordinates = e.lngLat;
+    //   map.addSource('circle', {
+    //     type: 'geojson',
+    //     data: {
+    //       type: 'FeatureCollection',
+    //       features: [
+    //         {
+    //           type: 'Feature',
+    //           geometry: {
+    //             type: 'Point',
+    //             coordinates: [coordinates.lng, coordinates.lat]
+    //           },
+    //           properties: {
+    //             radius: radius,
+    //             color: '#007cbf',
+    //             opacity: 0.1,
+    //             stroke: '#007cbf',
+    //             circleLayout: {
+    //               visibility: 'visible',
+    //             },
+
+
+
+
+    //           }
+    //         }
+    //       ]
+    //     }
+        
+    //   });
+    //   console.log("features", map.getSource('circle'));
+    //   map.addLayer({
+    //     id: 'circle',
+    //     source: 'circle',
+    //     type: 'circle',
+    //     paint: {
+    //       'circle-radius': radius*100,
+
+    //       'circle-color': '#007cbf',
+    //       'circle-opacity': 0.1,
+    //       'circle-stroke-width': 3,
+    //       'circle-stroke-color': '#007cbf'
+          
+    //     },
+        
+    //   });
+      
+    // });
+
+    
+  }, [radius]);
 
 
   const deleteStore = async (id) => {
@@ -306,7 +308,7 @@ const DisplayMap = (props) => {
   // I create a state to store the checked cities
 
   const [checked, setChecked] = useState([apiCities]);
-  console.log(checked);
+  // console.log(checked);
 
   useEffect(() => {
     function test() {
@@ -352,8 +354,8 @@ const DisplayMap = (props) => {
 
   const [rangeValue, setRangeValue] = useState(1000000);
 
-  console.log("checked", checked);
-  console.log("backenData", backendData);
+  // console.log("checked", checked);
+  // console.log("backenData", backendData);
 
 
   // I use this function to retrieve the data fetched on the SearchBar component
@@ -419,28 +421,30 @@ console.log("backendData after pull data", backendData);
                   );
                 })
             : null}
-        </div>
         <SearchBar func={pull_data} />
         
-        <div style={
-          {
-            display: "flex",
-            flexDirection: "row",
-            
-          }
-        }>
+        
           <input
-            type="range"
+            type="number"
             min="0"
             max="10"
             value={radius}
             onChange={handleRadiusChange}
             className="slider"
+            style = {
+              {
+                width: "100px",
+                height: "20px",
+                margin: "0 10px"
+              }
+            }
             id="myRange"
+            step={0.1}
           />
           <p>Value: {radius} km</p>
 
-        </div>
+            </div>
+        
 
         <div ref={mapContainer}></div>
       </div>

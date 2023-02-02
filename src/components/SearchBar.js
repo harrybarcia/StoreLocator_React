@@ -12,7 +12,7 @@ const SearchBar = (props) => {
     
     axios.get(`/api/search/${searchTerm}`)
       .then((res) => {
-        console.log("res", res);
+        // console.log("res", res);
         setResults(res.data.data);
       });
       
@@ -30,7 +30,7 @@ const SearchBar = (props) => {
 
     
     
-  console.log("results3", results);
+  // console.log("results3", results);
 
   const handleSubmit = (event) => {
     event.preventDefault();
