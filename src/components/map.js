@@ -20,6 +20,9 @@ const DisplayMap = (props) => {
   const [backendData, setBackendData] = useState(null);
   const [radius, setRadius] = useState(0.5);
   const coordinates = [-123.07, 49.31];
+  const [checkRadius, setCheckRadius] = useState(false);
+  const [center, setCenter] = useState([0, 0]);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,221 +58,249 @@ const DisplayMap = (props) => {
   const [lat, setLat] = useState(49.31);
   const [zoom, setZoom] = useState(13);
 
-  // useEffect(() => {
-  //   const map = new mapboxgl.Map({
-  //     container: mapContainer.current,
-  //     style: "mapbox://styles/mapbox/streets-v11",
-  //     center: [lng, lat],
-  //     zoom: zoom,
-  //   });
-  //   function getStores() {
-  //     try {
-  //       const stores = backendData.map((store) => {
-  //         return {
-  //           type: "Feature",
-  //           geometry: {
-  //             type: "Point",
-  //             coordinates: [
-  //               store.location.coordinates[0],
-  //               store.location.coordinates[1],
-  //             ],
-  //           },
-  //           properties: {
-  //             _id: store._id,
-  //             storeId: store.storeId,
-  //             formattedAddress: store.location.formattedAddress,
-  //             icon: "rocket",
-  //             image: store.image,
-  //             userId: store.userId,
-  //             city: store.city,
-  //             price: store.price,
-  //           },
-  //         };
-  //       });
-
-  //       console.log("---end of line 1---");
-  //       loadMap(stores);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   }
-
-  //   // Load map with stores
-  //   function loadMap(stores) {
-  //     map.on("load", function () {
-
-  //       map.addLayer({
-  //         id: "points",
-  //         type: "symbol",
-  //         source: {
-  //           type: "geojson",
-  //           data: {
-  //             type: "FeatureCollection",
-  //             features: stores,
-  //           },
-  //         },
-  //         layout: {
-  //           "icon-image": "{icon}-15",
-  //           "icon-size": 1.5,
-  //           "text-field": "{city}",
-  //           "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-  //           "text-offset": [0, 0.9],
-  //           "text-anchor": "top",
-  //         },
-  //       });
-  //     });
-  //   }
-  //   getStores();
-  //   map.on("click", "points", (e) => {
-
-
-  //     // Copy coordinates array.
-  //     const coordinates = e.features[0].geometry.coordinates.slice();
-  //     const address = e.features[0].properties.formattedAddress;
-  //     const image = e.features[0].properties.image;
-  //     const storeId = e.features[0].properties._id;
-  //     const userId = e.features[0].properties.userId;
-  //     const city = e.features[0].properties.city;
-  //     const price = e.features[0].properties.price;
-
-  //     // Ensure that if the map is zoomed out such that multiple
-  //     // copies of the feature are visible, the popup appears
-  //     // over the copy being pointed to.
-  //     while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-  //       coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-  //     }
-
-  //     new mapboxgl.Popup()
-  //       .setLngLat(coordinates)
-  //       .setHTML(
-  //         `
-  //       <img src='/images/${image}' style="width:100%;max-height:200px; border-radius:3%;max-height: 182px;object-fit: cover">
-  //       <div>
-  //       <span style="overflow: hidden;
-  //           text-overflow: ellipsis;
-  //           display: -webkit-box;
-  //           -webkit-line-clamp: 3;
-  //                   line-clamp: 3; 
-  //           -webkit-box-orient: vertical;
-  //           max-height: 60px;">
-  //         </strong>
-  //         ${city}
-  //       </span>
-  //       <span style="overflow: hidden;
-  //           text-overflow: ellipsis;
-  //           display: -webkit-box;
-  //           -webkit-line-clamp: 3;
-  //                   line-clamp: 3; 
-  //           -webkit-box-orient: vertical;
-  //           max-height: 60px;">
-  //         </strong>
-  //         ${price}
-  //       </span>
-  //       </div>
-  //       <a href='/api/${storeId}' class="btn">Details</a>
-  //       `
-  //       )
-  //       .addTo(map);
-  //     });
-
-      
-    
-      
-  // }, [backendData, radius]);
-
-
   useEffect(() => {
     const map = new mapboxgl.Map({
-      container: mapContainer.current,  
+      container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v11",
-      center: coordinates, 
+      center: [lng, lat],
       zoom: zoom,
     });
+    function getStores() {
+      try {
+        const stores = backendData.map((store) => {
+          return {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [
+                store.location.coordinates[0],
+                store.location.coordinates[1],
+              ],
+            },
+            properties: {
+              _id: store._id,
+              storeId: store.storeId,
+              formattedAddress: store.location.formattedAddress,
+              icon: "rocket",
+              image: store.image,
+              userId: store.userId,
+              city: store.city,
+              price: store.price,
+            },
+          };
+        });
 
-    map.on('load', function () {
-      var center = coordinates;
-      
-      var options = {steps: 20, units: 'kilometers', properties: {foo: 'bar'}};
-      const circle2 = turf.circle(center, radius, options);
-      // I add the circle to the map
-      map.addLayer({
-        'id': 'circle2',
-        'type': 'fill',
-        'source': {
-          'type': 'geojson',
-          'data': circle2,
-        },
-        'layout': {
-          'visibility': 'visible',
-
-        },
-        'paint': {
-          'fill-color': '#007cbf',
-          'fill-opacity': 0.5,
-        },
+        console.log("---end of line 1---");
+        loadMap(stores);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+      map.on("load", function () {
+        console.log("center", center);
+        var options = { steps: 20, units: "kilometers", properties: { foo: "bar" } };
+        const circle2 = turf.circle(center, radius, options);
+        // I add the layer on click, centered on the click location
+        map.addLayer({
+          id: "circle2",
+          type: "fill",
+          source: {
+            type: "geojson",
+            data: circle2,
+          },
+          layout: {
+            visibility: "visible",
+          },
+          paint: {
+            "fill-color": "#007cbf",
+            "fill-opacity": 0.5,
+          },
+        });
       });
-
-
-
-      
-    });
-    // Selection of stores within a radius of 2 km
-    // map.on("click", function (e) {
-    //   // I add a marker to the point I just clicked
-    //   alert("You clicked on the map at: " + e.lngLat);
-    //   console.log("radius", radius);
-    //   const coordinates = e.lngLat;
-    //   map.addSource('circle', {
-    //     type: 'geojson',
-    //     data: {
-    //       type: 'FeatureCollection',
-    //       features: [
-    //         {
-    //           type: 'Feature',
-    //           geometry: {
-    //             type: 'Point',
-    //             coordinates: [coordinates.lng, coordinates.lat]
-    //           },
-    //           properties: {
-    //             radius: radius,
-    //             color: '#007cbf',
-    //             opacity: 0.1,
-    //             stroke: '#007cbf',
-    //             circleLayout: {
-    //               visibility: 'visible',
-    //             },
-
-
-
-
-    //           }
-    //         }
-    //       ]
-    //     }
-        
-    //   });
-    //   console.log("features", map.getSource('circle'));
-    //   map.addLayer({
-    //     id: 'circle',
-    //     source: 'circle',
-    //     type: 'circle',
-    //     paint: {
-    //       'circle-radius': radius*100,
-
-    //       'circle-color': '#007cbf',
-    //       'circle-opacity': 0.1,
-    //       'circle-stroke-width': 3,
-    //       'circle-stroke-color': '#007cbf'
           
-    //     },
+
+    // Load map with stores
+    function loadMap(stores) {
+      map.on("load", function () {
+
+        map.addLayer({
+          id: "points",
+          type: "symbol",
+          source: {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: stores,
+            },
+          },
+          layout: {
+            "icon-image": "{icon}-15",
+            "icon-size": 1.5,
+            "text-field": "{city}",
+            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+            "text-offset": [0, 0.9],
+            "text-anchor": "top",
+          },
+        });
+
+        map.on('click', function (e) {
+          // if the layer exists, remove it and readd it
+          if (map.getLayer('circle2')) {
+            alert("circle2 exists")
+            
+            map.removeLayer('circle2');
+            map.removeSource('circle2');
+            const center = [e.lngLat.lng, e.lngLat.lat];
+            setCenter(center);
+            console.log("center", center);
+            var options = {steps: 20, units: 'kilometers', properties: {foo: 'bar'}};
+            const circle2 = turf.circle(center, radius, options);
+            // I add the layer on click, centered on the click location
+            map.addLayer({
+              'id': 'circle2',
+              'type': 'fill',
+              'source': {
+                'type': 'geojson',
+                'data': circle2,
+              },
+              'layout': {
+                'visibility': 'visible',
+              },
+              'paint': {
+                'fill-color': '#007cbf',
+                'fill-opacity': 0.5,
+              },
+            });
+            getStores();
+  
+          } else {
+            // if the layer does not exist, add it
+            const center = [e.lngLat.lng, e.lngLat.lat];
+            console.log("center", center);
+            var options = {steps: 20, units: 'kilometers', properties: {foo: 'bar'}};
+            const circle2 = turf.circle(center, radius, options);
+            // I add the layer on click, centered on the click location
+            map.addLayer({
+              'id': 'circle2',
+              'type': 'fill',
+              'source': {
+                'type': 'geojson',
+                'data': circle2,
+              },
+              'layout': {
+                'visibility': 'visible',
+              },
+              'paint': {
+                'fill-color': '#007cbf',
+                'fill-opacity': 0.5,
+              },
+            });
+            
+          }
+          const markers = document.getElementsByClassName("mapboxgl-marker");
+          console.log(markers);
+          console.log('markers[0]', markers[0])
+  
+          if (markers[0]) markers[0].remove();
+          console.log(markers);
+          const coordinates = e.lngLat;
+          console.log(markers)
+  
+          const marker = new mapboxgl.Marker({
+            color: "red",
+            draggable: true,
+          });
+          console.log("marker", typeof(marker));
+          // I retrieve all the distances from the point I just clicked and I sort them
+          if (markers[0]) markers[0].remove();
+          marker.setLngLat(coordinates).addTo(map);
+          const arrayCoordinates = [coordinates.lng, coordinates.lat];
+          const stores = backendData.map((store) => {
+            const mystore = store.location.coordinates;
+            const distance = Math.round(
+              turf.distance(turf.point(arrayCoordinates), turf.point(mystore), {
+                units: "meters",
+              })
+            );
+            store.distance = distance;
+            return store;
+          });
+          console.log("stores", stores);
+          stores.sort((a, b) => {
+            if (a.distance > b.distance) {
+              return 1;
+            }
+            if (a.distance < b.distance) {
+              return -1;
+            }
+            return 0; // a must be equal to b
+          });
+          // I display the stores by distance
+          const storesByDistance = stores.filter((store) => store.distance < radius * 1000);
+          console.log("storesByDistance", storesByDistance);
+          setBackendData(storesByDistance);
+        });
+
         
-    //   });
-      
-    // });
+      });
+    }
+    getStores();
+    map.on("click", "points", (e) => {
 
+      // Copy coordinates array.
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      const address = e.features[0].properties.formattedAddress;
+      const image = e.features[0].properties.image;
+      const storeId = e.features[0].properties._id;
+      const userId = e.features[0].properties.userId;
+      const city = e.features[0].properties.city;
+      const price = e.features[0].properties.price;
+
+      // Ensure that if the map is zoomed out such that multiple
+      // copies of the feature are visible, the popup appears
+      // over the copy being pointed to.
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+
+      new mapboxgl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(
+          `
+        <img src='/images/${image}' style="width:100%;max-height:200px; border-radius:3%;max-height: 182px;object-fit: cover">
+        <div>
+        <span style="overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+                    line-clamp: 3; 
+            -webkit-box-orient: vertical;
+            max-height: 60px;">
+          </strong>
+          ${city}
+        </span>
+        <span style="overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+                    line-clamp: 3; 
+            -webkit-box-orient: vertical;
+            max-height: 60px;">
+          </strong>
+          ${price}
+        </span>
+        </div>
+        <a href='/api/${storeId}' class="btn">Details</a>
+        `
+        )
+        .addTo(map);
+    });
     
-  }, [radius]);
+      
+  }, [backendData, radius, center]);
 
+
+  
 
   const deleteStore = async (id) => {
     try {
@@ -352,6 +383,21 @@ const DisplayMap = (props) => {
     );
   };
 
+
+  const handleCheckSelection = (e) => {
+    if (checkRadius === true) {
+    console.log(false);
+    setCheckRadius(false);
+    } else {
+      
+      setCheckRadius(true);
+
+      console.log("true");
+    }
+  };
+  console.log("checkRadius", checkRadius);
+
+
   const [rangeValue, setRangeValue] = useState(1000000);
 
   // console.log("checked", checked);
@@ -421,9 +467,8 @@ console.log("backendData after pull data", backendData);
                   );
                 })
             : null}
-        <SearchBar func={pull_data} />
-        
-        
+          <SearchBar func={pull_data} />
+
           <input
             type="number"
             min="0"
@@ -431,20 +476,25 @@ console.log("backendData after pull data", backendData);
             value={radius}
             onChange={handleRadiusChange}
             className="slider"
-            style = {
-              {
-                width: "100px",
-                height: "20px",
-                margin: "0 10px"
-              }
-            }
+            style={{
+              width: "100px",
+              height: "20px",
+              margin: "0 10px",
+            }}
             id="myRange"
             step={0.1}
           />
           <p>Value: {radius} km</p>
+          <input type="checkbox"
+            id="myCheck"
+            name="myCheck"
+            onChange={handleCheckSelection}
 
-            </div>
-        
+            value={checkRadius}
+          
+          />
+          
+        </div>
 
         <div ref={mapContainer}></div>
       </div>
