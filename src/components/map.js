@@ -19,7 +19,7 @@ mapboxgl.accessToken =
 const DisplayMap = (props) => {
   const [backendData, setBackendData] = useState(null);
   const [radius, setRadius] = useState(0.5);
-  const coordinates = [-123.07, 49.31];
+  // const coordinates = [-123.07, 49.31];
   const [checkRadius, setCheckRadius] = useState(false);
   const [center, setCenter] = useState([0, 0]);
   
