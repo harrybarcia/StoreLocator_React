@@ -140,7 +140,7 @@ const DisplayMap = (props) => {
         console.log("center", center);
         var options = { steps: 30, units: "kilometers", properties: { foo: "bar" } };
         const circle2 = turf.circle(center, radius, options);
-        // I add the layer circle on click, centered on the click location
+        // I add the layer circle on click, centered on the click locations
         map.addLayer({
           id: "circle2",
           type: "fill",
