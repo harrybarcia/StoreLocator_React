@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import "../pages/NewStoreForm.css";
 import SearchBar from "./SearchBar";
 import * as turf from '@turf/turf';
+import { Popup } from "react-leaflet";
 
 
 
@@ -49,6 +50,45 @@ const DisplayMap = (props) => {
     setRadius(e.target.value);
     console.log("radius", radius);
     console.log(typeof(radius))
+
+    const map = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [lng, lat],
+      zoom: zoom,
+    });
+
+            
+            
+            
+            const arrayCoordinates = [center[0], center[1]];
+            console.log("arrayCoordinates", arrayCoordinates);
+            const stores = backendData2.map((store) => {
+              const mystore = store.location.coordinates;
+              const distance = Math.round(
+                turf.distance(turf.point(arrayCoordinates), turf.point(mystore), {
+                  units: "meters",
+                })
+              );
+              
+              store.distance = distance;
+              return store;
+            });
+            console.log("stores", stores);
+            stores.sort((a, b) => {
+              if (a.distance > b.distance) {
+                return 1;
+              }
+              if (a.distance < b.distance) {
+                return -1;
+              }
+              return 0; // a must be equal to b
+            });
+            // I display the stores by distance
+            const storesByDistance = stores.filter((store) => store.distance < radius * 1000);
+            console.log("storesByDistance", storesByDistance);
+            setBackendData(storesByDistance);
+    
 }
 
 
@@ -81,7 +121,7 @@ const DisplayMap = (props) => {
               _id: store._id,
               storeId: store.storeId,
               formattedAddress: store.location.formattedAddress,
-              icon: "rocket",
+              icon: "shop",
               image: store.image,
               userId: store.userId,
               city: store.city,
@@ -98,9 +138,9 @@ const DisplayMap = (props) => {
     }
       map.on("load", function () {
         console.log("center", center);
-        var options = { steps: 20, units: "kilometers", properties: { foo: "bar" } };
+        var options = { steps: 30, units: "kilometers", properties: { foo: "bar" } };
         const circle2 = turf.circle(center, radius, options);
-        // I add the layer on click, centered on the click location
+        // I add the layer circle on click, centered on the click location
         map.addLayer({
           id: "circle2",
           type: "fill",
@@ -144,106 +184,118 @@ const DisplayMap = (props) => {
         });
 
         map.on('click', function (e) {
-          // if the layer exists, remove it and readd it
+          // if the layer exists, remove it and readd it with the new center
           if (map.getLayer('circle2')) {
-            alert("circle2 exists")
-            
             map.removeLayer('circle2');
             map.removeSource('circle2');
-            const center = [e.lngLat.lng, e.lngLat.lat];
-            setCenter(center);
-            console.log("center", center);
-            var options = {steps: 20, units: 'kilometers', properties: {foo: 'bar'}};
-            const circle2 = turf.circle(center, radius, options);
-            // I add the layer on click, centered on the click location
-            map.addLayer({
-              'id': 'circle2',
-              'type': 'fill',
-              'source': {
-                'type': 'geojson',
-                'data': circle2,
-              },
-              'layout': {
-                'visibility': 'visible',
-              },
-              'paint': {
-                'fill-color': '#007cbf',
-                'fill-opacity': 0.5,
-              },
-            });
-            getStores();
-  
-          } else {
-            // if the layer does not exist, add it
-            const center = [e.lngLat.lng, e.lngLat.lat];
-            console.log("center", center);
-            var options = {steps: 20, units: 'kilometers', properties: {foo: 'bar'}};
-            const circle2 = turf.circle(center, radius, options);
-            // I add the layer on click, centered on the click location
-            map.addLayer({
-              'id': 'circle2',
-              'type': 'fill',
-              'source': {
-                'type': 'geojson',
-                'data': circle2,
-              },
-              'layout': {
-                'visibility': 'visible',
-              },
-              'paint': {
-                'fill-color': '#007cbf',
-                'fill-opacity': 0.5,
-              },
-            });
-            
           }
-          const markers = document.getElementsByClassName("mapboxgl-marker");
-          console.log(markers);
-          console.log('markers[0]', markers[0])
-  
-          if (markers[0]) markers[0].remove();
-          console.log(markers);
-          const coordinates = e.lngLat;
-          console.log(markers)
-  
-          const marker = new mapboxgl.Marker({
-            color: "red",
-            draggable: true,
-          });
-          console.log("marker", typeof(marker));
-          // I retrieve all the distances from the point I just clicked and I sort them
-          if (markers[0]) markers[0].remove();
-          marker.setLngLat(coordinates).addTo(map);
-          const arrayCoordinates = [coordinates.lng, coordinates.lat];
-          const stores = backendData.map((store) => {
-            const mystore = store.location.coordinates;
-            const distance = Math.round(
-              turf.distance(turf.point(arrayCoordinates), turf.point(mystore), {
-                units: "meters",
-              })
-            );
-            store.distance = distance;
-            return store;
-          });
-          console.log("stores", stores);
-          stores.sort((a, b) => {
-            if (a.distance > b.distance) {
-              return 1;
-            }
-            if (a.distance < b.distance) {
-              return -1;
-            }
-            return 0; // a must be equal to b
-          });
-          // I display the stores by distance
-          const storesByDistance = stores.filter((store) => store.distance < radius * 1000);
-          console.log("storesByDistance", storesByDistance);
-          setBackendData(storesByDistance);
+          // If the layer "points" does not exists, display the information
+          if (!map.queryRenderedFeatures(e.point, { layers: ['points'] }).length) {
+              const center = [e.lngLat.lng, e.lngLat.lat];
+              setCenter(center);
+              console.log("center", center);
+              var options = {steps: 20, units: 'kilometers', properties: {foo: 'bar', 
+            }};
+              const circle2 = turf.circle(center, radius, options);
+              // I add the layer on click, centered on the click location
+              map.addLayer({
+                'id': 'circle2',
+                'type': 'fill',
+                'source': {
+                  'type': 'geojson',
+                  'data': circle2,
+                },
+                'layout': {
+                  'visibility': 'visible',
+                },
+                'paint': {
+                  'fill-color': '#007cbf',
+                  'fill-opacity': 0.5,
+                },
+              });
+              function getStores() {
+                try {
+                  const stores = backendData.map((store) => {
+                    return {
+                      type: "Feature",
+                      geometry: {
+                        type: "Point",
+                        coordinates: [
+                          store.location.coordinates[0],
+                          store.location.coordinates[1],
+                        ],
+                      },
+                      properties: {
+                        _id: store._id,
+                        storeId: store.storeId,
+                        formattedAddress: store.location.formattedAddress,
+                        icon: "rocket",
+                        image: store.image,
+                        userId: store.userId,
+                        city: store.city,
+                        price: store.price,
+                      },
+                    };
+                  });
+          
+                  console.log("---end of line 1---");
+                  loadMap(stores);
+                } catch (err) {
+                  console.log(err);
+                }
+              }
+              getStores();
+    
+            
+            const markers = document.getElementsByClassName("mapboxgl-marker");
+            console.log(markers);
+            console.log('markers[0]', markers[0])
+    
+            if (markers[0]) markers[0].remove();
+            console.log(markers);
+            const coordinates = e.lngLat;
+            console.log(markers)
+    
+            const marker = new mapboxgl.Marker({
+              color: "red",
+              draggable: true,
+            });
+            console.log("marker", typeof(marker));
+            // I retrieve all the distances from the point I just clicked and I sort them
+            if (markers[0]) markers[0].remove();
+            marker.setLngLat(coordinates).addTo(map);
+            const arrayCoordinates = [coordinates.lng, coordinates.lat];
+            const stores = backendData.map((store) => {
+              const mystore = store.location.coordinates;
+              const distance = Math.round(
+                turf.distance(turf.point(arrayCoordinates), turf.point(mystore), {
+                  units: "meters",
+                })
+              );
+              store.distance = distance;
+              return store;
+            });
+            console.log("stores", stores);
+            stores.sort((a, b) => {
+              if (a.distance > b.distance) {
+                return 1;
+              }
+              if (a.distance < b.distance) {
+                return -1;
+              }
+              return 0; // a must be equal to b
+            });
+            // I display the stores by distance
+            const storesByDistance = stores.filter((store) => store.distance < radius * 1000);
+            console.log("storesByDistance", storesByDistance);
+            setBackendData(storesByDistance);
+          }
         });
 
         
       });
     }
+    // I call the function to load the map with the stores
     getStores();
     map.on("click", "points", (e) => {
 
@@ -262,7 +314,7 @@ const DisplayMap = (props) => {
       while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
         coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
       }
-
+      // Populate the popup and set its coordinates
       new mapboxgl.Popup()
         .setLngLat(coordinates)
         .setHTML(
@@ -382,7 +434,12 @@ const DisplayMap = (props) => {
       backendData2.filter((store) => updatedList.includes(store.city))
     );
   };
+  const handleReset = () => {
+    setChecked([]); 
+    setBackendData(backendData2);
+    setCenter([0, 0]);
 
+  };
 
   const handleCheckSelection = (e) => {
     if (checkRadius === true) {
@@ -489,12 +546,19 @@ console.log("backendData after pull data", backendData);
             id="myCheck"
             name="myCheck"
             onChange={handleCheckSelection}
-
             value={checkRadius}
-          
           />
+          <button type="reset"
+            onClick={handleReset}
           
+          >
+            Reset
+          </button>
         </div>
+
+        <p>
+        `"stores found: "{backendData && backendData.length}`
+        </p>
 
         <div ref={mapContainer}></div>
       </div>
