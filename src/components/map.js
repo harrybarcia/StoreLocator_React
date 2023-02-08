@@ -1,18 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import mapboxgl from 'mapbox-gl';
+import mapboxgl from "mapbox-gl";
 
 import "./map.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "../pages/NewStoreForm.css";
 import SearchBar from "./SearchBar";
-import * as turf from '@turf/turf';
+import * as turf from "@turf/turf";
 import { Popup } from "react-leaflet";
-
-
-
-
-
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ";
@@ -23,6 +18,7 @@ const DisplayMap = (props) => {
   // const coordinates = [-123.07, 49.31];
   const [checkRadius, setCheckRadius] = useState(false);
   const [center, setCenter] = useState([0, 0]);
+  const [rangeValue, setRangeValue] = useState(620000);
   
 
   useEffect(() => {
@@ -42,14 +38,18 @@ const DisplayMap = (props) => {
         setBackendData2(response.data);
       });
     };
+
     fetchData2();
+    
+    
   }, []);
 
+  console.log("rangeValue", rangeValue);
 
   const handleRadiusChange = (e) => {
     setRadius(e.target.value);
     console.log("radius", radius);
-    console.log(typeof(radius))
+    console.log(typeof radius);
 
     const map = new mapboxgl.Map({
       container: mapContainer.current,
@@ -58,39 +58,36 @@ const DisplayMap = (props) => {
       zoom: zoom,
     });
 
-            
-            
-            
-            const arrayCoordinates = [center[0], center[1]];
-            console.log("arrayCoordinates", arrayCoordinates);
-            const stores = backendData2.map((store) => {
-              const mystore = store.location.coordinates;
-              const distance = Math.round(
-                turf.distance(turf.point(arrayCoordinates), turf.point(mystore), {
-                  units: "meters",
-                })
-              );
-              
-              store.distance = distance;
-              return store;
-            });
-            console.log("stores", stores);
-            stores.sort((a, b) => {
-              if (a.distance > b.distance) {
-                return 1;
-              }
-              if (a.distance < b.distance) {
-                return -1;
-              }
-              return 0; // a must be equal to b
-            });
-            // I display the stores by distance
-            const storesByDistance = stores.filter((store) => store.distance < radius * 1000);
-            console.log("storesByDistance", storesByDistance);
-            setBackendData(storesByDistance);
-    
-}
+    const arrayCoordinates = [center[0], center[1]];
+    console.log("arrayCoordinates", arrayCoordinates);
+    const stores = backendData2.map((store) => {
+      const mystore = store.location.coordinates;
+      const distance = Math.round(
+        turf.distance(turf.point(arrayCoordinates), turf.point(mystore), {
+          units: "meters",
+        })
+      );
 
+      store.distance = distance;
+      return store;
+    });
+    console.log("stores", stores);
+    stores.sort((a, b) => {
+      if (a.distance > b.distance) {
+        return 1;
+      }
+      if (a.distance < b.distance) {
+        return -1;
+      }
+      return 0; // a must be equal to b
+    });
+    // I display the stores by distance
+    const storesByDistance = stores.filter(
+      (store) => store.distance < radius * 1000
+    );
+    console.log("storesByDistance", storesByDistance);
+    setBackendData(storesByDistance);
+  };
 
   // console.log("backendData", backendData);
   const mapContainer = useRef(null);
@@ -136,33 +133,35 @@ const DisplayMap = (props) => {
         console.log(err);
       }
     }
-      map.on("load", function () {
-        console.log("center", center);
-        var options = { steps: 30, units: "kilometers", properties: { foo: "bar" } };
-        const circle2 = turf.circle(center, radius, options);
-        // I add the layer circle on click, centered on the click locations
-        map.addLayer({
-          id: "circle2",
-          type: "fill",
-          source: {
-            type: "geojson",
-            data: circle2,
-          },
-          layout: {
-            visibility: "visible",
-          },
-          paint: {
-            "fill-color": "#007cbf",
-            "fill-opacity": 0.5,
-          },
-        });
+    map.on("load", function () {
+      
+      var options = {
+        steps: 30,
+        units: "kilometers",
+        properties: { foo: "bar" },
+      };
+      const circle2 = turf.circle(center, radius, options);
+      // I add the layer circle on click, centered on the click locations
+      map.addLayer({
+        id: "circle2",
+        type: "fill",
+        source: {
+          type: "geojson",
+          data: circle2,
+        },
+        layout: {
+          visibility: "visible",
+        },
+        paint: {
+          "fill-color": "#007cbf",
+          "fill-opacity": 0.5,
+        },
       });
-          
+    });
 
     // Load map with stores
     function loadMap(stores) {
       map.on("load", function () {
-
         map.addLayer({
           id: "points",
           type: "symbol",
@@ -183,84 +182,89 @@ const DisplayMap = (props) => {
           },
         });
 
-        map.on('click', function (e) {
+        map.on("click", function (e) {
           // if the layer exists, remove it and readd it with the new center
-          if (map.getLayer('circle2')) {
-            map.removeLayer('circle2');
-            map.removeSource('circle2');
+
+          if (map.getLayer("circle2")) {
+            map.removeLayer("circle2");
+            map.removeSource("circle2");
           }
           // If the layer "points" does not exists, display the information
-          if (!map.queryRenderedFeatures(e.point, { layers: ['points'] }).length) {
-              const center = [e.lngLat.lng, e.lngLat.lat];
-              setCenter(center);
-              console.log("center", center);
-              var options = {steps: 20, units: 'kilometers', properties: {foo: 'bar', 
-            }};
-              const circle2 = turf.circle(center, radius, options);
-              // I add the layer on click, centered on the click location
-              map.addLayer({
-                'id': 'circle2',
-                'type': 'fill',
-                'source': {
-                  'type': 'geojson',
-                  'data': circle2,
-                },
-                'layout': {
-                  'visibility': 'visible',
-                },
-                'paint': {
-                  'fill-color': '#007cbf',
-                  'fill-opacity': 0.5,
-                },
-              });
-              function getStores() {
-                try {
-                  const stores = backendData.map((store) => {
-                    return {
-                      type: "Feature",
-                      geometry: {
-                        type: "Point",
-                        coordinates: [
-                          store.location.coordinates[0],
-                          store.location.coordinates[1],
-                        ],
-                      },
-                      properties: {
-                        _id: store._id,
-                        storeId: store.storeId,
-                        formattedAddress: store.location.formattedAddress,
-                        icon: "rocket",
-                        image: store.image,
-                        userId: store.userId,
-                        city: store.city,
-                        price: store.price,
-                      },
-                    };
-                  });
-          
-                  console.log("---end of line 1---");
-                  loadMap(stores);
-                } catch (err) {
-                  console.log(err);
-                }
+          if (
+            !map.queryRenderedFeatures(e.point, { layers: ["points"] }).length
+          ) {
+            const center = [e.lngLat.lng, e.lngLat.lat];
+            setCenter(center);
+            console.log("center", center);
+            var options = {
+              steps: 20,
+              units: "kilometers",
+              properties: { foo: "bar" },
+            };
+            const circle2 = turf.circle(center, radius, options);
+            // I add the layer on click, centered on the click location
+            map.addLayer({
+              id: "circle2",
+              type: "fill",
+              source: {
+                type: "geojson",
+                data: circle2,
+              },
+              layout: {
+                visibility: "visible",
+              },
+              paint: {
+                "fill-color": "#007cbf",
+                "fill-opacity": 0.5,
+              },
+            });
+            function getStores() {
+              try {
+                const stores = backendData.map((store) => {
+                  return {
+                    type: "Feature",
+                    geometry: {
+                      type: "Point",
+                      coordinates: [
+                        store.location.coordinates[0],
+                        store.location.coordinates[1],
+                      ],
+                    },
+                    properties: {
+                      _id: store._id,
+                      storeId: store.storeId,
+                      formattedAddress: store.location.formattedAddress,
+                      icon: "rocket",
+                      image: store.image,
+                      userId: store.userId,
+                      city: store.city,
+                      price: store.price,
+                    },
+                  };
+                });
+
+                console.log("---end of line 1---");
+                loadMap(stores);
+              } catch (err) {
+                console.log(err);
               }
-              getStores();
-    
-            
+            }
+            getStores();
+
             const markers = document.getElementsByClassName("mapboxgl-marker");
             console.log(markers);
-            console.log('markers[0]', markers[0])
-    
+            console.log("markers[0]", markers[0]);
+
             if (markers[0]) markers[0].remove();
             console.log(markers);
             const coordinates = e.lngLat;
-            console.log(markers)
-    
+            console.log(markers);
+
             const marker = new mapboxgl.Marker({
               color: "red",
               draggable: true,
             });
-            console.log("marker", typeof(marker));
+            console.log("marker", typeof marker);
             // I retrieve all the distances from the point I just clicked and I sort them
             if (markers[0]) markers[0].remove();
             marker.setLngLat(coordinates).addTo(map);
@@ -268,9 +272,13 @@ const DisplayMap = (props) => {
             const stores = backendData.map((store) => {
               const mystore = store.location.coordinates;
               const distance = Math.round(
-                turf.distance(turf.point(arrayCoordinates), turf.point(mystore), {
-                  units: "meters",
-                })
+                turf.distance(
+                  turf.point(arrayCoordinates),
+                  turf.point(mystore),
+                  {
+                    units: "meters",
+                  }
+                )
               );
               store.distance = distance;
               return store;
@@ -286,19 +294,18 @@ const DisplayMap = (props) => {
               return 0; // a must be equal to b
             });
             // I display the stores by distance
-            const storesByDistance = stores.filter((store) => store.distance < radius * 1000);
+            const storesByDistance = stores.filter(
+              (store) => store.distance < radius * 1000
+            );
             console.log("storesByDistance", storesByDistance);
             setBackendData(storesByDistance);
           }
         });
-
-        
       });
     }
     // I call the function to load the map with the stores
     getStores();
     map.on("click", "points", (e) => {
-
       // Copy coordinates array.
       const coordinates = e.features[0].geometry.coordinates.slice();
       const address = e.features[0].properties.formattedAddress;
@@ -347,12 +354,7 @@ const DisplayMap = (props) => {
         )
         .addTo(map);
     });
-    
-      
   }, [backendData, radius, center]);
-
-
-  
 
   const deleteStore = async (id) => {
     try {
@@ -435,18 +437,16 @@ const DisplayMap = (props) => {
     );
   };
   const handleReset = () => {
-    setChecked([]); 
+    setChecked([]);
     setBackendData(backendData2);
     setCenter([0, 0]);
-
   };
 
   const handleCheckSelection = (e) => {
     if (checkRadius === true) {
-    console.log(false);
-    setCheckRadius(false);
+      console.log(false);
+      setCheckRadius(false);
     } else {
-      
       setCheckRadius(true);
 
       console.log("true");
@@ -454,46 +454,101 @@ const DisplayMap = (props) => {
   };
   console.log("checkRadius", checkRadius);
 
-
-  const [rangeValue, setRangeValue] = useState(1000000);
+  
+  
 
   // console.log("checked", checked);
   // console.log("backenData", backendData);
-
 
   // I use this function to retrieve the data fetched on the SearchBar component
   const pull_data = (data) => {
     setBackendData(data);
   };
-  
-console.log("backendData after pull data", backendData);
+
+  console.log("backendData after pull data", backendData);
   return (
     <div className="map-wrapper">
-      <div className="map">
-        <ul>
+      <div className="content">
+      <div className="range">
+        <div className="sliderValue">
+          <span
+
+          > 
+            </span>
+        </div>
+        <div className="field">
+          <div className="value left">0</div>
           <input
-            type="range"
-            min={
-              backendData2 &&
-              Math.min(...backendData2.map((store) => store.price))
-            }
-            max={
-              backendData2 &&
-              Math.max(...backendData2.map((store) => store.price))
-            }
-            value={rangeValue}
-            step="10000"
-            onChange={(e) => {
-              setRangeValue(e.target.value);
-              setBackendData(
-                backendData2.filter((store) => store.price <= e.target.value)
-              );
+          type="range" 
+          min="0" 
+          max={backendData2 && Math.max(...backendData2.map((store) => store.price))}  
+          value={rangeValue? rangeValue : 620000} 
+          step="10000"
+          onChange={(e) => {
+            setRangeValue(e.target.value);
+            setBackendData(
+              backendData2.filter((store) => store.price <= e.target.value)
+            );
+
+            const slideValue = document.querySelector("span");
+            const inputSlider = document.querySelector("input");
+            inputSlider.oninput = (()=>{
+              let value = inputSlider.value;
+              console.log("value", value);
+              slideValue.textContent = parseInt(value).toLocaleString();
+              slideValue.style.left = value? (value/13333) + "%" : "50%";
+              slideValue.classList.add("show");
+            console.log("slideValue", slideValue);
+            })
+            
+          }}
+          onBlur={(e) => {
+            const slideValue = document.querySelector("span");
+            slideValue.classList.remove("show");
+            
+            
             }}
           />
-          <li>
-            <span>Price range: {rangeValue}</span>
-          </li>
-        </ul>
+          <div className="value right">{backendData2 && Math.max(...backendData2.map((store) => store.price)).toLocaleString()}</div>
+        </div>
+      </div>
+        {backendData && backendData.length > 0 ? (
+          backendData
+            .filter((store) => store.price <= rangeValue)
+            .map((store, index) => {
+              return (
+                <div className="grid_stores" key={index}>
+                  <div className="content-box">
+                    {/* <p>{store.location.formattedAddress}</p>
+                            <p>{store.address}</p> */}
+                    <p>{store.city}</p>
+                    <p>{store.image}</p>
+                    <p>{store.price}</p>
+                  </div>
+                  <div className="content-box-button">
+                    <button
+                      className="stores_button"
+                      value={store._id}
+                      name={store._id}
+                      onClick={() => deleteStore(store._id)}
+                      type="button"
+                    >
+                      Delete
+                    </button>
+                    <button>
+                      <Link to={`/edit-store/${store._id}`}>Edit my store</Link>
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+        ) : (
+          <p>No Store, please login and add a new one!</p>
+        )}
+        ;
+      </div>
+      <div className="map">
+        
         <div className="map-filter">
           {backendData2 && backendData2.length > 0
             ? backendData2
@@ -542,61 +597,19 @@ console.log("backendData after pull data", backendData);
             step={0.1}
           />
           <p>Value: {radius} km</p>
-          <input type="checkbox"
+          <input
+            type="checkbox"
             id="myCheck"
             name="myCheck"
             onChange={handleCheckSelection}
             value={checkRadius}
           />
-          <button type="reset"
-            onClick={handleReset}
-          
-          >
+          <button type="reset" onClick={handleReset}>
             Reset
           </button>
         </div>
 
-        <p>
-        `"stores found: "{backendData && backendData.length}`
-        </p>
-
         <div ref={mapContainer}></div>
-      </div>
-      <div className="content">
-        {backendData && backendData.length > 0 ? (
-          backendData
-            .filter((store) => store.price <= rangeValue)
-            .map((store, index) => {
-              return (
-                <div className="grid_stores" key={index}>
-                  <div className="content-box">
-                    {/* <p>{store.location.formattedAddress}</p>
-                            <p>{store.address}</p> */}
-                    <p>{store.city}</p>
-                    <p>{store.image}</p>
-                    <p>{store.price}</p>
-                  </div>
-                  <div className="content-box-button">
-                    <button
-                      className="stores_button"
-                      value={store._id}
-                      name={store._id}
-                      onClick={() => deleteStore(store._id)}
-                      type="button"
-                    >
-                      Delete
-                    </button>
-                    <button>
-                      <Link to={`/edit-store/${store._id}`}>Edit my store</Link>
-                    </button>
-                  </div>
-                </div>
-              );
-            })
-        ) : (
-          <p>No Store, please login and add a new one!</p>
-        )}
-        ;
       </div>
     </div>
   );

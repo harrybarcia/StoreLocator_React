@@ -62,9 +62,7 @@ ul{
     
 }
 
-.map{
-    min-height: 50%;
-}
+
 .map-wrapper {
     display: flex;
     flex-direction: column;
@@ -76,15 +74,7 @@ ul{
     
 }
 
-.content {
-    display: flex;
-    flex-wrap: wrap;
-    overflow:scroll;
-    transition:1s;
-    max-height: 30%;
-    justify-content: space-between;
 
-}
 
 .content:hover {
     height: 100%;
