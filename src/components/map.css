@@ -1,3 +1,4 @@
+
 :root{
     --main-height:40px;
     --ul-height: auto;
@@ -35,8 +36,6 @@ ul{
     display: flex;
     flex-wrap: wrap;
     overflow:scroll;
-    
-    
     justify-content: space-between;
     width: 20%;
     max-width: 350px;
@@ -70,10 +69,10 @@ ul{
   }
 
 .map-filter {
-  /* position: absolute; */
   z-index: 10;
   display: flex;
   margin: 2px;
+  flex-direction: row;
   padding: 0.5em;
   /* margin-right: 10px; */
   margin-left: 17px;
@@ -81,9 +80,9 @@ ul{
   border-radius: 10px;
   align-items: center;
   padding: -1px;
-  min-width: 78%;
   overflow: hidden;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .search {
@@ -119,7 +118,7 @@ ul{
 {
   background:#fff;
   height:80px;
-  width:350px;
+  width:280px;
   border-radius:10px;
   padding:0 65px 0 45px;
   

@@ -435,7 +435,10 @@ const DisplayMap = (props) => {
   const handleReset = () => {
     setChecked([]);
     setBackendData(backendData2);
+    setRangeValue(620000);
+
     setCenter([0, 0]);
+
   };
 
   const handleCheckSelection = (e) => {
@@ -469,10 +472,17 @@ const DisplayMap = (props) => {
               return (
                 <div className="grid_stores" key={index}>
                   <div className="content-box">
-                    {/* <p>{store.location.formattedAddress}</p>
-                            <p>{store.address}</p> */}
                     <p>{store.city}</p>
-                    <p>{store.image}</p>
+                    <div>
+                      
+                    <img  src={`images/${store.image}`} 
+                    alt = "images"
+                    
+                    />
+                    
+                      
+                    </div>
+                    
                     <p>{store.price}</p>
                   </div>
                   <div className="content-box-button">

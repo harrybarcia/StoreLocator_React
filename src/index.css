@@ -2,6 +2,7 @@ body, .map, #root, html {
   margin: 0;
   padding: 0;
   height: 100%;
+  width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -63,18 +64,6 @@ ul{
 }
 
 
-.map-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    width: 100%;
-    
-    height: calc(100% - (var(--ul-height)));
-    min-height: calc(100% - 40px);
-    
-}
-
-
 
 .content:hover {
     height: 100%;
@@ -82,9 +71,6 @@ ul{
     transition: 1s;
 } 
 
-.content-box {
-    max-width: 70%;
-}
 
 .grid_stores {
     display: flex;
