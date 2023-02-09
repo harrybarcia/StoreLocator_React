@@ -26,7 +26,7 @@ ul{
     
     top: 0;
     bottom: 0;
-    width: 100%;
+    width: 80%;
     height: 100%;
     z-index: 0;
 }
@@ -38,7 +38,8 @@ ul{
     
     
     justify-content: space-between;
-    max-width: 20%;
+    width: 20%;
+    max-width: 350px;
 
 }
 
@@ -60,7 +61,7 @@ ul{
     flex-direction: column;
     
     
-  }
+  } 
 
   .content-box-button {
     display: flex;
@@ -69,12 +70,20 @@ ul{
   }
 
 .map-filter {
-    position: absolute;
-    z-index: 10;
-    display: flex;
-    margin: 1em;
-    padding: 0.5em;
-    margin-right: 10px;
+  /* position: absolute; */
+  z-index: 10;
+  display: flex;
+  margin: 2px;
+  padding: 0.5em;
+  /* margin-right: 10px; */
+  margin-left: 17px;
+  background-color: aliceblue;
+  border-radius: 10px;
+  align-items: center;
+  padding: -1px;
+  min-width: 78%;
+  overflow: hidden;
+  justify-content: space-between;
 }
 
 .search {
@@ -110,10 +119,10 @@ ul{
 {
   background:#fff;
   height:80px;
-  width:380px;
+  width:350px;
   border-radius:10px;
   padding:0 65px 0 45px;
-  margin-top: 30px;
+  
 }
 .range .sliderValue
 {
@@ -133,6 +142,7 @@ ul{
   transition: transform 0.3s ease-in-out;
   line-height:55px;
   z-index:2;
+  margin-left: -7%;
 }
 .range .sliderValue span.show
 {

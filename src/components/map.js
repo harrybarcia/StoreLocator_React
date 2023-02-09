@@ -19,7 +19,6 @@ const DisplayMap = (props) => {
   const [checkRadius, setCheckRadius] = useState(false);
   const [center, setCenter] = useState([0, 0]);
   const [rangeValue, setRangeValue] = useState(620000);
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,8 +39,6 @@ const DisplayMap = (props) => {
     };
 
     fetchData2();
-    
-    
   }, []);
 
   console.log("rangeValue", rangeValue);
@@ -134,7 +131,6 @@ const DisplayMap = (props) => {
       }
     }
     map.on("load", function () {
-      
       var options = {
         steps: 30,
         units: "kilometers",
@@ -454,9 +450,6 @@ const DisplayMap = (props) => {
   };
   console.log("checkRadius", checkRadius);
 
-  
-  
-
   // console.log("checked", checked);
   // console.log("backenData", backendData);
 
@@ -469,49 +462,6 @@ const DisplayMap = (props) => {
   return (
     <div className="map-wrapper">
       <div className="content">
-      <div className="range">
-        <div className="sliderValue">
-          <span
-
-          > 
-            </span>
-        </div>
-        <div className="field">
-          <div className="value left">0</div>
-          <input
-          type="range" 
-          min="0" 
-          max={backendData2 && Math.max(...backendData2.map((store) => store.price))}  
-          value={rangeValue? rangeValue : 620000} 
-          step="10000"
-          onChange={(e) => {
-            setRangeValue(e.target.value);
-            setBackendData(
-              backendData2.filter((store) => store.price <= e.target.value)
-            );
-
-            const slideValue = document.querySelector("span");
-            const inputSlider = document.querySelector("input");
-            inputSlider.oninput = (()=>{
-              let value = inputSlider.value;
-              console.log("value", value);
-              slideValue.textContent = parseInt(value).toLocaleString();
-              slideValue.style.left = value? (value/13333) + "%" : "50%";
-              slideValue.classList.add("show");
-            console.log("slideValue", slideValue);
-            })
-            
-          }}
-          onBlur={(e) => {
-            const slideValue = document.querySelector("span");
-            slideValue.classList.remove("show");
-            
-            
-            }}
-          />
-          <div className="value right">{backendData2 && Math.max(...backendData2.map((store) => store.price)).toLocaleString()}</div>
-        </div>
-      </div>
         {backendData && backendData.length > 0 ? (
           backendData
             .filter((store) => store.price <= rangeValue)
@@ -548,39 +498,87 @@ const DisplayMap = (props) => {
         ;
       </div>
       <div className="map">
-        
         <div className="map-filter">
-          {backendData2 && backendData2.length > 0
-            ? backendData2
-                .reduce((acc, store) => {
-                  if (!acc.includes(store.city)) {
-                    acc.push(store.city);
-                  }
-                  return acc;
-                }, [])
-                .map((item, index) => {
-                  return (
-                    <div key={index}>
-                      <input
-                        type="checkbox"
-                        id={item}
-                        name={item}
-                        value={item}
-                        defaultChecked={true}
-                        onChange={handleCheck}
-                      />
-                      <label
-                        // className={isChecked(item)}
-                        htmlFor={item}
-                      >
-                        {item}
-                      </label>
-                    </div>
-                  );
-                })
-            : null}
-          <SearchBar func={pull_data} />
+          
+        <select
+        onChange={(e) => {
+          if (
+            e.target.value === "All") { 
+            setBackendData(backendData2);
+          } else {
+          setBackendData(backendData2.filter((store) => store.city === e.target.value));
+          }
+        }}
+        
+        >
+                <option value="All">Select All</option>
 
+          { backendData2 && backendData2.length > 0 ? 
+            backendData2.reduce((acc, store) => {
+              if (!acc.includes(store.city)) {
+                acc.push(store.city);
+              }
+              return acc;
+            }, [])
+            .map((store) => {
+              console.log(store)
+              return <option key={store._id} value={store}>{store}</option>
+            })
+            : <option value="No City yet">No city yet</option>
+          }
+        </select>
+                  
+                
+          <SearchBar func={pull_data} />
+          <div className="range">
+            <div className="sliderValue">
+              <span id="span_range"></span>
+            </div>
+            <div className="field">
+              <div className="value left">0</div>
+              <input
+              id = "input_range"
+                type="range"
+                min="0"
+                max={
+                  backendData2 &&
+                  Math.max(...backendData2.map((store) => store.price))
+                }
+                value={rangeValue}
+                step="10000"
+                onChange={(e) => {
+                  setRangeValue(e.target.value);
+                  setBackendData(
+                    backendData2.filter(
+                      (store) => store.price <= e.target.value
+                    )
+                  );
+                  const slideValue = document.getElementById("span_range");
+                  const inputSlider = document.getElementById("input_range");
+                  console.log("inputSlider", inputSlider);
+                  console.log("slideValue", slideValue);
+                  inputSlider.oninput = () => {
+                    let value = inputSlider.value;
+                    console.log("value", value);
+                    slideValue.textContent = parseInt(value).toLocaleString();
+                    slideValue.style.left = value ? value / 13333 + "%" : "50%";
+                    slideValue.classList.add("show");
+                    console.log("slideValue", slideValue);
+                  };
+                }}
+                onBlur={(e) => {
+                  const slideValue = document.querySelector("span");
+                  slideValue.classList.remove("show");
+                }}
+              />
+              <div className="value right">
+                {backendData2 &&
+                  Math.max(
+                    ...backendData2.map((store) => store.price)
+                  ).toLocaleString()}
+              </div>
+            </div>
+          </div>
           <input
             type="number"
             min="0"
