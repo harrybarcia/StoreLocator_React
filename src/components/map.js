@@ -197,20 +197,15 @@ const DisplayMap = (props) => {
               const listingId = listing.id;
               if (stores[i].properties._id === listingId) {
 
-                listings[i].addEventListener("mouseover", function () {
+                listings[i].addEventListener("mouseenter", function () {
                 popup.setLngLat(stores[i].geometry.coordinates)
                   .setHTML(
                     `<h3>${stores[i].properties.formattedAddress}</h3><p>${stores[i].properties.price}</p>`
                   )
                   .addTo(map);
-              }
-              )
+                })
               };
-            
-
-            
-              
-            listings[i].addEventListener("mouseout", function () {
+            listings[i].addEventListener("mouseleave", function () {
               console.log('out')
               popup.remove();
             });
