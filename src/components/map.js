@@ -520,7 +520,9 @@ const DisplayMap = (props) => {
             .map((store, index) => {
               return (
                 <div className="grid_stores" key={index}>
-                  <div className="listings" id={store._id}>
+                  <div className="listings" id={store._id} key={
+                    store._id
+                  }>
                     <p>{store.city}</p>
                     <div style={{
                       height: "100%",
