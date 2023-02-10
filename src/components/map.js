@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 
 import "./map.css";
+import "../index.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "../pages/NewStoreForm.css";
 import SearchBar from "./SearchBar";
 import * as turf from "@turf/turf";
 import { Popup } from "react-leaflet";
+import { Layer } from "react-map-gl";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ";
@@ -99,6 +101,9 @@ const DisplayMap = (props) => {
       center: [lng, lat],
       zoom: zoom,
     });
+
+    
+
     function getStores() {
       try {
         const stores = backendData.map((store) => {
@@ -115,11 +120,10 @@ const DisplayMap = (props) => {
               _id: store._id,
               storeId: store.storeId,
               formattedAddress: store.location.formattedAddress,
-              icon: "shop",
               image: store.image,
               userId: store.userId,
               city: store.city,
-              price: store.price,
+              price: store.price
             },
           };
         });
@@ -130,12 +134,15 @@ const DisplayMap = (props) => {
         console.log(err);
       }
     }
+
+    
     map.on("load", function () {
       var options = {
         steps: 30,
         units: "kilometers",
         properties: { foo: "bar" },
       };
+      
       const circle2 = turf.circle(center, radius, options);
       // I add the layer circle on click, centered on the click locations
       map.addLayer({
@@ -169,18 +176,54 @@ const DisplayMap = (props) => {
             },
           },
           layout: {
-            "icon-image": "{icon}-15",
-            "icon-size": 1.5,
-            "text-field": "{city}",
+            "text-field": "{price}",
             "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-            "text-offset": [0, 0.9],
+            "text-offset": [0, 0.6],
             "text-anchor": "top",
+            
           },
         });
 
+          const popup = new mapboxgl.Popup({closeOnClick: false,
+             offset: [20, 0],
+              closeButton: false
+            })
+;
+        // Highlight the store on hover
+        const listings = document.getElementsByClassName("listings");
+        function renderListings() {
+          for (let i = 0; i < listings.length; i++) {
+              const listing = listings[i];
+              const listingId = listing.id;
+              if (stores[i].properties._id === listingId) {
+
+                listings[i].addEventListener("mouseover", function () {
+                popup.setLngLat(stores[i].geometry.coordinates)
+                  .setHTML(
+                    `<h3>${stores[i].properties.formattedAddress}</h3><p>${stores[i].properties.price}</p>`
+                  )
+                  .addTo(map);
+              }
+              )
+              };
+            
+
+            
+              
+            listings[i].addEventListener("mouseout", function () {
+              console.log('out')
+              popup.remove();
+            });
+            
+          }
+        }
+        
+        renderListings();
+
+        
         map.on("click", function (e) {
           // if the layer exists, remove it and readd it with the new center
-
+          
           if (map.getLayer("circle2")) {
             map.removeLayer("circle2");
             map.removeSource("circle2");
@@ -189,6 +232,7 @@ const DisplayMap = (props) => {
           if (
             !map.queryRenderedFeatures(e.point, { layers: ["points"] }).length
           ) {
+            
             const center = [e.lngLat.lng, e.lngLat.lat];
             setCenter(center);
             console.log("center", center);
@@ -247,6 +291,7 @@ const DisplayMap = (props) => {
             }
             getStores();
 
+              
             const markers = document.getElementsByClassName("mapboxgl-marker");
             console.log(markers);
             console.log("markers[0]", markers[0]);
@@ -299,6 +344,15 @@ const DisplayMap = (props) => {
         });
       });
     }
+
+    map.on('mousemove', 'points', (e) => {
+      // Change the cursor style as a UI indicator.
+      map.getCanvas().style.cursor = 'pointer';
+      });
+    map.on('mouseleave', 'points', () => {
+      map.getCanvas().style.cursor = '';
+      });
+
     // I call the function to load the map with the stores
     getStores();
     map.on("click", "points", (e) => {
@@ -471,11 +525,13 @@ const DisplayMap = (props) => {
             .map((store, index) => {
               return (
                 <div className="grid_stores" key={index}>
-                  <div className="content-box">
+                  <div className="listings" id={store._id}>
                     <p>{store.city}</p>
-                    <div>
+                    <div style={{
+                      height: "100%",
+                    }}>
                       
-                    <img  src={`images/${store.image}`} 
+                    <img  src={`images/${store.image}`} style={{width: "100%", objectFit: "cover", borderRadius: "5%"}}
                     alt = "images"
                     
                     />
@@ -485,9 +541,9 @@ const DisplayMap = (props) => {
                     
                     <p>{store.price}</p>
                   </div>
-                  <div className="content-box-button">
+                  <div className="listings-button">
                     <button
-                      className="stores_button"
+                      
                       value={store._id}
                       name={store._id}
                       onClick={() => deleteStore(store._id)}
@@ -495,7 +551,9 @@ const DisplayMap = (props) => {
                     >
                       Delete
                     </button>
-                    <button>
+                    <button
+                    
+                    >
                       <Link to={`/edit-store/${store._id}`}>Edit my store</Link>
                     </button>
                   </div>
