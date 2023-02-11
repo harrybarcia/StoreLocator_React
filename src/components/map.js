@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
 
 import "./map.css";
@@ -50,13 +50,6 @@ const DisplayMap = (props) => {
     console.log("radius", radius);
     console.log(typeof radius);
 
-    const map = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [lng, lat],
-      zoom: zoom,
-    });
-
     const arrayCoordinates = [center[0], center[1]];
     console.log("arrayCoordinates", arrayCoordinates);
     const stores = backendData2.map((store) => {
@@ -94,6 +87,16 @@ const DisplayMap = (props) => {
   const [lat, setLat] = useState(49.31);
   const [zoom, setZoom] = useState(13);
 
+  useCallback(() => {
+    console.log("mapContainer", mapContainer);
+    const map = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [lng, lat],
+      zoom: zoom,
+    });
+  }, [lng, lat, zoom]);
+
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainer.current,
@@ -102,7 +105,61 @@ const DisplayMap = (props) => {
       zoom: zoom,
     });
 
-    
+    const listings = document.getElementsByClassName("listings");
+
+    const popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+      offset: 0,
+    });
+
+
+
+    for (let i = 0; i < listings.length; i++) {
+      const listing = listings[i];
+      const listingId = listing.id;
+      
+      listings[i].addEventListener("mouseover", function () {
+        
+      console.log('-----------');
+        console.log("i enter the function");
+        console.log("popup: ");
+        console.log(popup);
+
+        let popUps = document.getElementsByClassName('mapboxgl-popup');
+        console.log("popUps length", popUps.length);
+        console.log("popUps before remove", popUps);
+        for (let i = 0; i < popUps.length; i++) {
+          popUps[i].remove();
+        }
+      
+        console.log("popUps after remove", popUps);
+        console.log("popUps length", popUps.length);
+
+        console.log("pop ready to display)")
+        popup
+
+          .setLngLat(backendData[i].location.coordinates)
+          .setHTML(
+            `<h3>${backendData[i].location.formattedAddress}</h3><p>${backendData[i].price}</p>`
+          )
+          .addTo(map);
+          
+      });
+      console.log("popup display");
+
+      listings[i].addEventListener("mouseout", function () {
+        let popUps = document.getElementsByClassName('mapboxgl-popup');
+        console.log("popUps on mouseout ready to be removed");
+        for (let i = 0; i < popUps.length; i++) {
+          popUps[i].remove();
+        }
+        console.log("popUps on mouseout removed");
+        
+        
+        
+      });
+    }
 
     function getStores() {
       try {
@@ -123,7 +180,7 @@ const DisplayMap = (props) => {
               image: store.image,
               userId: store.userId,
               city: store.city,
-              price: store.price
+              price: store.price,
             },
           };
         });
@@ -135,14 +192,13 @@ const DisplayMap = (props) => {
       }
     }
 
-    
     map.on("load", function () {
       var options = {
         steps: 30,
         units: "kilometers",
         properties: { foo: "bar" },
       };
-      
+
       const circle2 = turf.circle(center, radius, options);
       // I add the layer circle on click, centered on the click locations
       map.addLayer({
@@ -180,45 +236,12 @@ const DisplayMap = (props) => {
             "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
             "text-offset": [0, 0.6],
             "text-anchor": "top",
-            
           },
         });
 
-          const popup = new mapboxgl.Popup({closeOnClick: false,
-             offset: [20, 0],
-              closeButton: false
-            })
-;
-        // Highlight the store on hover
-        const listings = document.getElementsByClassName("listings");
-        function renderListings() {
-          for (let i = 0; i < listings.length; i++) {
-              const listing = listings[i];
-              const listingId = listing.id;
-              if (stores[i].properties._id === listingId) {
-
-                listings[i].addEventListener("mouseenter", function () {
-                popup.setLngLat(stores[i].geometry.coordinates)
-                  .setHTML(
-                    `<h3>${stores[i].properties.formattedAddress}</h3><p>${stores[i].properties.price}</p>`
-                  )
-                  .addTo(map);
-                })
-              };
-            listings[i].addEventListener("mouseleave", function () {
-              console.log('out')
-              popup.remove();
-            });
-            
-          }
-        }
-        
-        renderListings();
-
-        
         map.on("click", function (e) {
           // if the layer exists, remove it and readd it with the new center
-          
+
           if (map.getLayer("circle2")) {
             map.removeLayer("circle2");
             map.removeSource("circle2");
@@ -227,7 +250,6 @@ const DisplayMap = (props) => {
           if (
             !map.queryRenderedFeatures(e.point, { layers: ["points"] }).length
           ) {
-            
             const center = [e.lngLat.lng, e.lngLat.lat];
             setCenter(center);
             console.log("center", center);
@@ -286,7 +308,6 @@ const DisplayMap = (props) => {
             }
             getStores();
 
-              
             const markers = document.getElementsByClassName("mapboxgl-marker");
             console.log(markers);
             console.log("markers[0]", markers[0]);
@@ -340,13 +361,13 @@ const DisplayMap = (props) => {
       });
     }
 
-    map.on('mousemove', 'points', (e) => {
+    map.on("mousemove", "points", (e) => {
       // Change the cursor style as a UI indicator.
-      map.getCanvas().style.cursor = 'pointer';
-      });
-    map.on('mouseleave', 'points', () => {
-      map.getCanvas().style.cursor = '';
-      });
+      map.getCanvas().style.cursor = "pointer";
+    });
+    map.on("mouseleave", "points", () => {
+      map.getCanvas().style.cursor = "";
+    });
 
     // I call the function to load the map with the stores
     getStores();
@@ -486,8 +507,9 @@ const DisplayMap = (props) => {
     setBackendData(backendData2);
     setRangeValue(620000);
 
-    setCenter([0, 0]);
 
+
+    setCenter([0, 0]);
   };
 
   const handleCheckSelection = (e) => {
@@ -510,37 +532,41 @@ const DisplayMap = (props) => {
     setBackendData(data);
   };
 
-  console.log("backendData after pull data", backendData);
   return (
     <div className="map-wrapper">
-      <div className="content">
+      <div className="content"
+      
+      >
         {backendData && backendData.length > 0 ? (
           backendData
             .filter((store) => store.price <= rangeValue)
             .map((store, index) => {
               return (
                 <div className="grid_stores" key={index}>
-                  <div className="listings" id={store._id} key={
-                    store._id
-                  }>
+                  <div className="listings" id={store._id} key={store._id}>
                     <p>{store.city}</p>
-                    <div style={{
-                      height: "100%",
-                    }}>
-                      
-                    <img  src={`images/${store.image}`} style={{width: "100%", objectFit: "cover", borderRadius: "5%"}}
-                    alt = "images"
-                    
-                    />
-                    
-                      
+                    <div
+                      style={{
+                        height: "100%",
+                      }}
+                      key={store._id}
+                    >
+                      <img
+                      key={store._id}
+                        src={`images/${store.image}`}
+                        style={{
+                          width: "100%",
+                          objectFit: "cover",
+                          borderRadius: "5%",
+                        }}
+                        alt="images"
+                      />
                     </div>
-                    
+
                     <p>{store.price}</p>
                   </div>
                   <div className="listings-button">
                     <button
-                      
                       value={store._id}
                       name={store._id}
                       onClick={() => deleteStore(store._id)}
@@ -548,9 +574,7 @@ const DisplayMap = (props) => {
                     >
                       Delete
                     </button>
-                    <button
-                    
-                    >
+                    <button>
                       <Link to={`/edit-store/${store._id}`}>Edit my store</Link>
                     </button>
                   </div>
@@ -564,36 +588,40 @@ const DisplayMap = (props) => {
       </div>
       <div className="map">
         <div className="map-filter">
-          
-        <select
-        onChange={(e) => {
-          if (
-            e.target.value === "All") { 
-            setBackendData(backendData2);
-          } else {
-          setBackendData(backendData2.filter((store) => store.city === e.target.value));
-          }
-        }}
-        
-        >
-                <option value="All">Select All</option>
-
-          { backendData2 && backendData2.length > 0 ? 
-            backendData2.reduce((acc, store) => {
-              if (!acc.includes(store.city)) {
-                acc.push(store.city);
+          <select
+            onChange={(e) => {
+              if (e.target.value === "All") {
+                setBackendData(backendData2);
+              } else {
+                setBackendData(
+                  backendData2.filter((store) => store.city === e.target.value)
+                );
               }
-              return acc;
-            }, [])
-            .map((store) => {
-              console.log(store)
-              return <option key={store._id} value={store}>{store}</option>
-            })
-            : <option value="No City yet">No city yet</option>
-          }
-        </select>
-                  
-                
+            }}
+          >
+            <option value="All">Select All</option>
+
+            {backendData2 && backendData2.length > 0 ? (
+              backendData2
+                .reduce((acc, store) => {
+                  if (!acc.includes(store.city)) {
+                    acc.push(store.city);
+                  }
+                  return acc;
+                }, [])
+                .map((store) => {
+                  console.log(store);
+                  return (
+                    <option key={store._id} value={store}>
+                      {store}
+                    </option>
+                  );
+                })
+            ) : (
+              <option value="No City yet">No city yet</option>
+            )}
+          </select>
+
           <SearchBar func={pull_data} />
           <div className="range">
             <div className="sliderValue">
@@ -602,7 +630,7 @@ const DisplayMap = (props) => {
             <div className="field">
               <div className="value left">0</div>
               <input
-              id = "input_range"
+                id="input_range"
                 type="range"
                 min="0"
                 max={
