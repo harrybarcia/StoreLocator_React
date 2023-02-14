@@ -231,14 +231,26 @@ const DisplayMap = (props) => {
               type: "FeatureCollection",
               features: stores,
             },
-          },
-          layout: {
-            "text-field": "{price}",
-            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-            "text-offset": [0, 0.6],
-            "text-anchor": "top",
-          },
+          }
         });
+        backendData.map((store) => {
+          var el = document.createElement('div');
+          el.className = 'marker';
+          el.innerHTML =`<div style="position: absolute; left:0px;top:0px;touch-action:pan-xpan-y;transform:translate(-2.045px,-2.7039px);z-index:2002;display:block;"><div style="transform:translate(calc(-50%+0px),calc(50% + 0px)); transition: transform 0.2s ease 0s; left: 50%; position: absolute; bottom: 0px; z-index: 0; pointer-events: auto; font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, &quot;Helvetica Neue&quot;, sans-serif;">		<button class="_fwxpgr" aria-label="" data-veloute="map/markers/BasePillMarker" style="color: inherit; border: none; margin: 0px; padding: 0px; background: transparent; width: auto; overflow: visible; font: inherit;">			<div style="--content-mini-box-shadow:0 0 0 1px rgba(0, 0, 0, 0.32), 0px 2px 4px rgba(0, 0, 0, 0.18); align-items: center; cursor: pointer; display: flex; height: 28px; position: relative; transform: scale(1); transform-origin: 50% 50%; transition: transform 150ms ease 0s;">				<div style="background-color: rgb(250, 250, 250); border-radius: 28px; box-shadow: rgb(176, 176, 176) 0px 0px 0px 1px inset; color: rgb(34, 34, 34); height: 28px; padding: 0px 8px; position: relative; transform: scale(1); transform-origin: 50% 50%; transition: transform 250ms cubic-bezier(0, 0, 0.1, 1) 0s;">					<div style="align-items: center; display: flex; height: 100%; justify-content: center; opacity: 1; transition: opacity 250ms ease 0s; white-space: nowrap;"><span style="font-weight:bold" class="_1rhps41">${store.price.toLocaleString()} €</span></div></div></div></button></div></div>`  ;
+
+          new mapboxgl.Marker(el, {closeOnClick:true, closeButton:false })
+          
+          .setLngLat([store.location.coordinates[0],store.location.coordinates[1]])
+          .setPopup(new mapboxgl.Popup().setHTML(`
+            <a style='position:absolute;top:0px;left:0px;width:100%;height:100%;display:inline; <a href='/api/${store.storeId}' class="btn">Details</a>' 
+            <img src='/images/${store.image}' alt="" style="width:274px;border-radius:3%;max-height: 182px;object-fit: cover">
+          `
+          ))
+          .addTo(map);
+        });
+          
+
+
         const bounds = new mapboxgl.LngLatBounds(); // Create a bounding box
         stores.forEach((store) => {
           // Add each store to the bounding box
@@ -264,8 +276,9 @@ const DisplayMap = (props) => {
             map.removeSource("circle2");
           }
           // If the layer "points" does not exists, display the information
+          console.log("popup", popup);
           if (
-            !map.queryRenderedFeatures(e.point, { layers: ["points"] }).length
+            !popup
           ) {
             const center = [e.lngLat.lng, e.lngLat.lat];
             setCenter(center);
@@ -391,55 +404,8 @@ const DisplayMap = (props) => {
 
     // I call the function to load the map with the stores
     getStores();
-    map.on("click", "points", (e) => {
-      // Copy coordinates array.
-      const coordinates = e.features[0].geometry.coordinates.slice();
-      const address = e.features[0].properties.formattedAddress;
-      const image = e.features[0].properties.image;
-      const storeId = e.features[0].properties._id;
-      const userId = e.features[0].properties.userId;
-      const city = e.features[0].properties.city;
-      const price = e.features[0].properties.price;
 
-      // Ensure that if the map is zoomed out such that multiple
-      // copies of the feature are visible, the popup appears
-      // over the copy being pointed to.
-      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-      }
-      // Populate the popup and set its coordinates
-      new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(
-          `
-        <img src='/images/${image}' style="width:100%;max-height:200px; border-radius:3%;max-height: 182px;object-fit: cover">
-        <div>
-        <span style="overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-                    line-clamp: 3; 
-            -webkit-box-orient: vertical;
-            max-height: 60px;">
-          </strong>
-          ${city}
-        </span>
-        <span style="overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-                    line-clamp: 3; 
-            -webkit-box-orient: vertical;
-            max-height: 60px;">
-          </strong>
-          ${price}
-        </span>
-        </div>
-        <a href='/api/${storeId}' class="btn">Details</a>
-        `
-        )
-        .addTo(map);
-    });
+      
   }, [backendData, radius, center]);
 
   const deleteStore = async (id) => {
@@ -658,7 +624,7 @@ const DisplayMap = (props) => {
                   Math.max(...backendData2.map((store) => store.price))
                 }
                 value={rangeValue}
-                step="10000"
+                step="1000"
                 onChange={(e) => {
                   setRangeValue(e.target.value);
                   setBackendData(
