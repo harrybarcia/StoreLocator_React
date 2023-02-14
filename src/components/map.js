@@ -192,6 +192,7 @@ const DisplayMap = (props) => {
       }
     }
 
+
     map.on("load", function () {
       var options = {
         steps: 30,
@@ -217,7 +218,7 @@ const DisplayMap = (props) => {
         },
       });
     });
-
+    console.log(backendData);
     // Load map with stores
     function loadMap(stores) {
       map.on("load", function () {
@@ -238,7 +239,23 @@ const DisplayMap = (props) => {
             "text-anchor": "top",
           },
         });
+        const bounds = new mapboxgl.LngLatBounds(); // Create a bounding box
+        stores.forEach((store) => {
+          // Add each store to the bounding box
+          bounds.extend(store.geometry.coordinates);
+        });
+        map.fitBounds(bounds, {
+          padding: {
+            top: 200,
+            bottom: 200,
+            left: 100,
+            right: 100,
+          },
+          maxZoom: 14,
 
+
+
+        });
         map.on("click", function (e) {
           // if the layer exists, remove it and readd it with the new center
 
@@ -368,6 +385,9 @@ const DisplayMap = (props) => {
     map.on("mouseleave", "points", () => {
       map.getCanvas().style.cursor = "";
     });
+
+
+
 
     // I call the function to load the map with the stores
     getStores();
