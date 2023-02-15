@@ -242,8 +242,14 @@ const DisplayMap = (props) => {
           
           .setLngLat([store.location.coordinates[0],store.location.coordinates[1]])
           .setPopup(new mapboxgl.Popup().setHTML(`
-            <a style='position:absolute;top:0px;left:0px;width:100%;height:100%;display:inline; <a href='/api/${store.storeId}' class="btn">Details</a>' 
-            <img src='/images/${store.image}' alt="" style="width:274px;border-radius:3%;max-height: 182px;object-fit: cover">
+            <a style={{position:absolute;top:0px;left:0px;width:100%;height:100%;display:inline}}; href='/api/${store.storeId}' className={{btn}}>
+              <img src='/images/${store.image}' alt="" style="width:100%;border-radius:3%;max-height: 182px;object-fit: cover">
+            </a>'
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <h3>${store.location.formattedAddress}</h3>
+              <h3>${store.price.toLocaleString()} €</h3>
+              <h3>${store.rating}</h3>
+            </div>
           `
           ))
           .addTo(map);
@@ -390,15 +396,6 @@ const DisplayMap = (props) => {
         });
       });
     }
-
-    map.on("mousemove", "points", (e) => {
-      // Change the cursor style as a UI indicator.
-      map.getCanvas().style.cursor = "pointer";
-    });
-    map.on("mouseleave", "points", () => {
-      map.getCanvas().style.cursor = "";
-    });
-
 
 
 

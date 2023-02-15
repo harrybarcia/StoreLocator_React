@@ -8,7 +8,7 @@ const AllStores = () => {
     useEffect(() => {
         const fetchStores = async () => {
             // console.log("fetching");
-            const response = await fetch("http://localhost:3000/api");
+            const response = await fetch("api");
             const data = await response.json();
             setStores(data);
         }
