@@ -23,6 +23,7 @@ const StoreSchema=new Schema(
       userId: {type: Schema.Types.ObjectId, ref: 'model_User'},
       city:String,
       price:{type:Number, required:[true, 'Please add a price']},
+      rating:{type:Number, default:0}
 
     });
 

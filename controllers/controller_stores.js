@@ -10,6 +10,7 @@ const ObjectId = require('mongodb').ObjectId;
 exports.getStore = async (req, res, next) => {
   console.log('dans get store de controller_stores, req.user:', req.user);
   const storeId = (req.params.storeId).trim();
+  console.log('storeId', storeId);
   if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated.' });
   } else {
@@ -71,10 +72,11 @@ exports.addStore = async (req, res, next)=>{
   const userId = req.user.userId;
   const city = req.body.city;
   const price = req.body.price;
+  const rating = null;
   
         const store=await new Store({
           storeId:storeId,
-          address, image, userId, city, price});
+          address, image, userId, city, price, rating});
         store
         .save()
         .then(results => {
@@ -104,6 +106,7 @@ exports.updateStore = (req, res, next) => {
   const updatedImage = req.file.filename;
   const price = 250000;
   const userId = req.user.userId?req.user.userId:null;
+  
   Store.findById(storeId, userId)
     .then(store => {
       console.log('store', store);
