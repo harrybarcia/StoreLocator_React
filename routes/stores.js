@@ -18,7 +18,7 @@ const Store = require('../models/model_Store');
 const app = express.Router();
 app.get('/api', authenticateToken, adminController.getStores);
 app.get('/api/search/:city', authenticateToken, adminController.getStoresByCity);
-app.get('/api/:storeId',authenticateToken, adminController.getStore);
+app.get('/api/:id',authenticateToken, adminController.getStore);
 app.post('/add-store', authenticateToken, upload, adminController.addStore)
 app.delete('/api/:id',adminController.deleteStore)
 app.put('/edit-store/:id',authenticateToken, upload, adminController.updateStore)

@@ -9,8 +9,11 @@ const ObjectId = require('mongodb').ObjectId;
 
 exports.getStore = async (req, res, next) => {
   console.log('dans get store de controller_stores, req.user:', req.user);
-  const storeId = (req.params.storeId).trim();
-  console.log('storeId', storeId);
+  console.log('dans get store de controller_stores, req.params:', req.params);
+  // const storeId = req.params.id;
+  const storeId = req.params.id;
+  const userId = req.user.userId;
+  console.log('storeId', storeId,"userid:", userId);
   if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated.' });
   } else {
@@ -19,7 +22,7 @@ exports.getStore = async (req, res, next) => {
       console.log('data in controller try', data);
       
       return (
-        res.status(200).json({ message: 'Success!', data: data })
+        res.status(200).json(data )
       );
     } catch (err) {
       if (!err.statusCode) {
@@ -101,6 +104,7 @@ exports.updateStore = (req, res, next) => {
   console.log('in update controller');
   
   const storeId =req.params.id;
+  console.log('store id', storeId);
   const updatedCity = req.body.city;
   const updatedAddress = req.body.address;
   const updatedImage = req.file.filename;
