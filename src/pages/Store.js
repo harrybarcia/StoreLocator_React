@@ -14,23 +14,18 @@ const Store = () => {
             const response = await fetch(`/api/${id}`);
             const data = await response.json();
             setStore(data);
-
-            
         };
         fetchStore();
     }, []);
-console.log(store);
+console.log("store dans dtore.js", store);
     return (
         <div id="contact">
             
             <h1>Store</h1>
             
             <h2>{params.id}</h2>
-            <h2>{store.data.rating}</h2>
-            
-
-            
-
+            <h2>Rating: {store.rating}</h2>
+            <h2>City: {store.city}</h2>
         </div>
     );
 };

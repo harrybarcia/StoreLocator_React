@@ -4,13 +4,14 @@ import React, { useEffect, useState } from 'react';
 
 
 const SearchBar = (props) => {
-    console.log("props", props);
+    // console.log("props", props);
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
 
   useEffect(() => {
-    
-    axios.get(`/api/search/${searchTerm}`)
+   
+   const search = searchTerm.toLowerCase();
+    axios.get(`/api/search/${search}`)
       .then((res) => {
         // console.log("res", res);
         setResults(res.data.data);

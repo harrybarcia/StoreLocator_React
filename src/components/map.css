@@ -43,8 +43,10 @@ ul{
 
 
 .listings {
-    max-width: 70%;
-    width: 100%;
+  max-width: 70%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .grid_stores {

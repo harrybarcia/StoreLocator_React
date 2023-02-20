@@ -242,7 +242,7 @@ const DisplayMap = (props) => {
           
           .setLngLat([store.location.coordinates[0],store.location.coordinates[1]])
           .setPopup(new mapboxgl.Popup().setHTML(`
-            <a style={{position:absolute;top:0px;left:0px;width:100%;height:100%;display:inline}}; href='/api/${store.storeId}' className={{btn}}>
+            <a style={{position:absolute;top:0px;left:0px;width:100%;height:100%;display:inline}}; href='/api/${store._id}' className={{btn}}>
               <img src='/images/${store.image}' alt="" style="width:100%;border-radius:3%;max-height: 182px;object-fit: cover">
             </a>'
             <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -527,7 +527,7 @@ const DisplayMap = (props) => {
               return (
                 <div className="grid_stores" key={index}>
                   <div className="listings" id={store._id} key={store._id}>
-                    <p>{store.city}</p>
+                    <p>City: {store.city}</p>
                     <div
                       style={{
                         height: "100%",
@@ -546,7 +546,10 @@ const DisplayMap = (props) => {
                       />
                     </div>
 
-                    <p>{store.price}</p>
+                    <p>Price: {store.price}</p>
+                    <p>
+                      Rating: {store.rating}
+                    </p>
                   </div>
                   <div className="listings-button">
                     <button
