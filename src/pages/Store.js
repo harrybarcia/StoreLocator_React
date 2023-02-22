@@ -31,7 +31,7 @@ console.log("store dans store.js", store);
             <h1>Store</h1>
             
             <h2>{params.id}</h2>
-            <h2>Rating: {store.rating}</h2>
+            <h2>Rating: {store.rating? store.rating.toFixed(2):"No rating yet"}</h2>
             <h2>City: {store.city}</h2>
             <StarRating
             id = {id}

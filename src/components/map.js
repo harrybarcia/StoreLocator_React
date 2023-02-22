@@ -248,7 +248,7 @@ const DisplayMap = (props) => {
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <h3>${store.location.formattedAddress}</h3>
               <h3>${store.price.toLocaleString()} €</h3>
-              <h3>${store.rating}</h3>
+              <h3>${store.rating? store.rating.toFixed(2):"No rating yet"}</h3>
               
             </div>
           `
@@ -557,7 +557,7 @@ const DisplayMap = (props) => {
 
                     <p>Price: {store.price}</p>
                     <p>
-                      Rating: {store.rating}
+                      Rating: {store.rating? store.rating.toFixed(2) : "No rating yet"}
                     </p>
                     <p>
                       User: 
