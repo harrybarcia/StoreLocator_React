@@ -62,7 +62,7 @@ exports.login = async (req, res, next)=>{
           userId: user._id.toString()
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '45m' }
+      { expiresIn: '240m' }
   );
   res.cookie('access-token', token, { httpOnly: true });
   res.json({ token: token, userId: user._id.toString() });
@@ -72,6 +72,7 @@ exports.login = async (req, res, next)=>{
 };
 
 exports.logout = async (req, res, next)=>{
+  
   res.cookie('access-token', '', { maxAge: 1 });
   res.redirect('/');
 };

@@ -2,6 +2,12 @@ const mongoose=require('mongoose');
 const geocoder=require('../utils/geocoder');
 
 const Schema=mongoose.Schema;
+
+const ratingSchema=new Schema({
+  user: {type: Schema.Types.ObjectId, ref: 'model_User'},
+  rating:{type:Number, required:[true, 'Please add a rating']},
+});
+
 const StoreSchema=new Schema(
   {storeId:{type: Schema.Types.ObjectId},
     address:{type:String,required:[true, 'Please add an address']},
@@ -20,12 +26,14 @@ const StoreSchema=new Schema(
           default:Date.now
       },
       image:String,
-      userId: {type: Schema.Types.ObjectId, ref: 'model_User'},
+      userId: {type: Schema.Types.ObjectId, ref: 'User'},
       city:String,
       price:{type:Number, required:[true, 'Please add a price']},
-      rating:{type:Number, default:0}
-
+      rating:{type:Number, required:[true, 'Please add a rating']},
+      reviews:[ratingSchema]
     });
+
+    
 
 // Geocode & create locat
 // we awnt to save before it is sent to the db

@@ -16,11 +16,13 @@ const fileStorage=multer.diskStorage({
 const upload=multer({storage:fileStorage}).single('image');
 const Store = require('../models/model_Store');
 const app = express.Router();
-app.get('/api', authenticateToken, adminController.getStores);
-app.get('/api/search/:city', authenticateToken, adminController.getStoresByCity);
-app.get('/api/:id',authenticateToken, adminController.getStore);
-app.post('/add-store', authenticateToken, upload, adminController.addStore)
+app.get('/allStores', adminController.getStores);
+app.get('/myStores', authenticateToken, adminController.getMyStores);
 app.delete('/api/:id',adminController.deleteStore)
+app.get('/search/:city',  adminController.getStoresByCity);
+app.get('/:id', adminController.getStore);
+app.post('/add-store', authenticateToken,  upload, adminController.addStore)
 app.put('/edit-store/:id',authenticateToken, upload, adminController.updateStore)
+app.post('/rate/:id',authenticateToken, adminController.rateStore)
 
 module.exports = app;

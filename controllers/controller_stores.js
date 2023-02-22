@@ -8,45 +8,22 @@ const ObjectId = require('mongodb').ObjectId;
 
 
 exports.getStore = async (req, res, next) => {
-  console.log('dans get store de controller_stores, req.user:', req.user);
-  console.log('dans get store de controller_stores, req.params:', req.params);
-  // const storeId = req.params.id;
   const storeId = req.params.id;
-  const userId = req.user.userId;
-  console.log('storeId', storeId,"userid:", userId);
-  if (!req.user) {
-    return res.status(401).json({ message: 'Not authenticated.' });
-  } else {
-    try {
-      const data = await Store.findById(storeId);
-      console.log('data in controller try', data);
-      
-      return (
-        res.status(200).json(data )
-      );
-    } catch (err) {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    }
-  }
-
-};
+  const data = await Store.findById(storeId);
+  return (
+    res.status(200).json(data )
+  );
+}
 
 exports.getStoresByCity = async (req, res, next) => {
   
   const city = (req.params.city).trim();
-  const userId = req.user.userId;
-  if (!req.user) {
-    return res.status(401).json({ message: 'Not authenticated.' });
-  }
   if (!city) {
-     const result = await Store.find({userId});
+     const result = await Store.find();
     return res.status(401).json({ message: 'All cities', data: result });
   } else {
     try {
-      const result = await Store.find({ city, userId});
+      const result = await Store.find({ city});
       console.log('result in controller try', result);
       return (
         res.status(200).json({ message: 'Success!', data: result })
@@ -135,7 +112,8 @@ exports.deleteStore = (req, res, next) => {
   console.log('delete body store', req.params.id);
   
   const storeId = req.params.id;
-  Store.deleteOne({ _id: storeId })
+  const userId = req.user.userId?req.user.userId:null;
+  Store.deleteOne({ _id: storeId, userId: userId })
     .then(() => {
       console.log('DESTROYED PRODUCT');
       res.status(200).json({ message: 'Success!' });
@@ -144,16 +122,66 @@ exports.deleteStore = (req, res, next) => {
 };
 
 exports.getStores = async (req, res, next) => {
-  console.log('in controller stores', req.user);
+  
+  console.log("loggedin?:", req.user?"yes":"no");
+
+    const data = await Store.find();
+      return res.status(200).json(data)
+  };
+
+exports.getMyStores = async (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Not authenticated.' });
+  }
+  const userId = req.user.userId;
+  const data = await Store.find(
+    {userId: userId}
+  );
+  return res.status(200).json(data)
+};
+
+
+  exports.rateStore = async (req, res, next) => {
+    console.log('in controller stores', req.user);
+    
     if (!req.user) {
       return res.status(401).json({ message: 'Not authenticated.' });
     }
-    const userId = req.user.userId;
-    const data = await Store.find({userId:req.user.userId});
+    // I retrieve the rating from the request body
+    const {rating} = req.body;
+    // I retrieve the store from the database
+    const store = await Store.findById(req.params.id);
+    // I check if the store has been rated by the user
+    if (store) {
+      const alreadyReviewed = store.reviews.find(
+        (r) => r.userId.toString() === req.user.userId.toString()
+      );
+      console.log('alreadyReviewed', alreadyReviewed);
+      if (alreadyReviewed) {
+        res.status(400)
+        throw new Error('Product already reviewed')
+      }
 
-    
-    // console.log('data in controller', data);
-    
-    return res.status(200).json(data)
+      const review = {
+        rating: Number(rating),
+        user: req.user.userId,
+    }
 
-  };
+    store.reviews.push(review)
+    store.numReviews = store.reviews.length
+    store.rating = store.reviews.reduce((acc, item) => item.rating + acc, 0) / store.reviews.length
+
+    if (alreadyReviewed) {
+      res.status(400)
+      throw new Error('Product already reviewed')
+    }    
+    Store.findByIdAndUpdate(store, {reviews: store.reviews, numReviews: store.numReviews, rating: store.rating})
+    .then(result => {
+      res.status(200).json({ message: 'Store updated!', data: result });
+    })
+  } else {
+    res.status(404)
+    throw new Error('Store not found')
+  }
+};
+    
