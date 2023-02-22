@@ -29,7 +29,7 @@ const StoreSchema=new Schema(
       userId: {type: Schema.Types.ObjectId, ref: 'User'},
       city:String,
       price:{type:Number, required:[true, 'Please add a price']},
-      rating:{type:Number, required:[true, 'Please add a rating']},
+      rating:{type:Number},
       reviews:[ratingSchema]
     });
 

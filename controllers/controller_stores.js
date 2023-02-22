@@ -122,8 +122,6 @@ exports.deleteStore = (req, res, next) => {
 };
 
 exports.getStores = async (req, res, next) => {
-  
-  console.log("loggedin?:", req.user?"yes":"no");
 
     const data = await Store.find();
       return res.status(200).json(data)
@@ -154,34 +152,35 @@ exports.getMyStores = async (req, res, next) => {
     // I check if the store has been rated by the user
     if (store) {
       const alreadyReviewed = store.reviews.find(
-        (r) => r.userId.toString() === req.user.userId.toString()
+        (r) => r.user.toString() === req.user.userId.toString()
       );
-      console.log('alreadyReviewed', alreadyReviewed);
-      if (alreadyReviewed) {
-        res.status(400)
-        throw new Error('Product already reviewed')
-      }
-
+      console.log('alreadyReviewed', alreadyReviewed); // returns the review object { rating: 5, user: 5f9f9f9f9f9f9f9f9f9f9f9f, _id: 5f9f9f9f9f9f9f9f9f9f9f9f}
       const review = {
         rating: Number(rating),
         user: req.user.userId,
+      }
+
+      if (alreadyReviewed) {
+      // if the user has already rated the store, I delete the old review and add the new one
+        var index = store.reviews.indexOf(alreadyReviewed);
+        if (index > -1) {
+          store.reviews.splice(index, 1);
+        }
+      }
+
+      // if the user has not rated the store, I add the new review
+      store.reviews.push(review)
+
+      store.numReviews = store.reviews.length
+      store.rating = store.reviews.reduce((acc, item) => item.rating + acc, 0) / store.reviews.length
+      Store.findByIdAndUpdate(store, {rating: store.rating, reviews: store.reviews, numReviews: store.numReviews})
+      .then(result => {
+        res.status(200).json({ message: 'Store updated!', data: result });
+      })
+    } else {
+      res.status(404)
+      throw new Error('Store not found')
     }
-
-    store.reviews.push(review)
-    store.numReviews = store.reviews.length
-    store.rating = store.reviews.reduce((acc, item) => item.rating + acc, 0) / store.reviews.length
-
-    if (alreadyReviewed) {
-      res.status(400)
-      throw new Error('Product already reviewed')
-    }    
-    Store.findByIdAndUpdate(store, {reviews: store.reviews, numReviews: store.numReviews, rating: store.rating})
-    .then(result => {
-      res.status(200).json({ message: 'Store updated!', data: result });
-    })
-  } else {
-    res.status(404)
-    throw new Error('Store not found')
-  }
+    console.log('reviews', store.reviews.length);
 };
     
