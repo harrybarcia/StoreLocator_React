@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import Logout from './pages/Logout';
 import Register from './pages/Register';
 import Users from './pages/Users';
+import StarRating from './components/StarRating';
 import './App.css';
 
 
@@ -24,22 +25,14 @@ import EditPollen from './pages/EditPollen';
 import Cluster from './components/cluster';
 
 const App = () => {
-
-		
-		
-
 		return (
 			<div className='main'>
-
-			
 				< MainHeader />
-
-				    
 				<Routes>
 					<Route path="/" element={<MapData />} />
 					<Route path="/welcome"  element={<Welcome />} />
 					<Route path="/stores" element={<AllStores />} />
-					<Route path="/api/:id" element={<Store />} />
+					<Route path="/:id" element={<Store />} />
 					<Route path="/pollen/:id" element={<Pollen />} />
 					<Route path="/add-store" element={<NewStoreForm />} />
 					<Route path="/edit-store/:id" element={<EditStore />} />
@@ -54,16 +47,9 @@ const App = () => {
 					<Route path="/update-pollen/:id" element={<EditPollen />} />
 					<Route path="/cluster" element={<Cluster />} />
 					<Route path="/api/search" element={<AllStores />} />
-
+					<Route path="/rate/:id" element={<StarRating />} />
 				</Routes>
-
 			</div>
 		);
-		
-  
 }
-
 export default App;
-
-// our-domain.com/new-meetup => NewMeetupPage
-// our-domain.com/meetups => AllMeetupsPage

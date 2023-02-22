@@ -18,13 +18,13 @@ const DisplayMap = (props) => {
   const [backendData, setBackendData] = useState(null);
   const [radius, setRadius] = useState(0.5);
   // const coordinates = [-123.07, 49.31];
-  const [checkRadius, setCheckRadius] = useState(false);
+  const [checkRadius, setCheckRadius] = useState(true);
   const [center, setCenter] = useState([0, 0]);
   const [rangeValue, setRangeValue] = useState(620000);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = axios("http://localhost:3000/api").then((response) => {
+      const response = axios("/allStores").then((response) => {
         setBackendData(response.data);
       });
     };
@@ -35,14 +35,14 @@ const DisplayMap = (props) => {
 
   useEffect(() => {
     const fetchData2 = async () => {
-      const response = axios("http://localhost:3000/api").then((response) => {
+      const response = axios("/allStores").then((response) => {
         setBackendData2(response.data);
       });
     };
 
     fetchData2();
   }, []);
-
+  console.log("1", backendData);
   console.log("rangeValue", rangeValue);
 
   const handleRadiusChange = (e) => {
@@ -242,13 +242,14 @@ const DisplayMap = (props) => {
           
           .setLngLat([store.location.coordinates[0],store.location.coordinates[1]])
           .setPopup(new mapboxgl.Popup().setHTML(`
-            <a style={{position:absolute;top:0px;left:0px;width:100%;height:100%;display:inline}}; href='/api/${store._id}' className={{btn}}>
+            <a style={{position:absolute;top:0px;left:0px;width:100%;height:100%;display:inline}}; href='/${store._id}' className={{btn}}>
               <img src='/images/${store.image}' alt="" style="width:100%;border-radius:3%;max-height: 182px;object-fit: cover">
             </a>'
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <h3>${store.location.formattedAddress}</h3>
               <h3>${store.price.toLocaleString()} €</h3>
               <h3>${store.rating}</h3>
+              
             </div>
           `
           ))
@@ -422,8 +423,11 @@ const DisplayMap = (props) => {
 
   useEffect(() => {
     const getCities = async () => {
+      const user = localStorage;
+      console.log("user", user);
       try {
-        const res = await axios("http://localhost:3000/api");
+        
+        const res = await axios("/allStores");
         const response = await res.data;
         const reducedCities = response.reduce((acc, store) => {
           if (!acc.includes(store.city)) {
@@ -447,19 +451,19 @@ const DisplayMap = (props) => {
   useEffect(() => {
     function test() {
       try {
-        console.log(apiCities);
-        console.log(checked);
+        // console.log(apiCities);
+        // console.log(checked);
         const checkBox = document.querySelectorAll('input[type="checkbox"]');
         const arrayChecked = [];
         for (let i = 0; i < checkBox.length; i++) {
-          console.log(checkBox[i].checked);
+          // console.log(checkBox[i].checked);
           if (checkBox[i].checked) {
             arrayChecked.push(checkBox[i].value);
           }
         }
         // console.log("arraychecked", arrayChecked);
         setChecked(arrayChecked);
-        console.log("checked", checked);
+        // console.log("checked", checked);
       } catch (err) {
         console.log(err);
       }
@@ -497,12 +501,17 @@ const DisplayMap = (props) => {
 
   const handleCheckSelection = (e) => {
     if (checkRadius === true) {
-      console.log(false);
+      axios.get("/myStores").then((res) => {
+        setBackendData(res.data);
+      });
       setCheckRadius(false);
     } else {
+      axios.get("/allStores").then((res) => {
+      setBackendData(res.data);
+      });
       setCheckRadius(true);
 
-      console.log("true");
+      console.log("false");
     }
   };
   console.log("checkRadius", checkRadius);
@@ -550,6 +559,10 @@ const DisplayMap = (props) => {
                     <p>
                       Rating: {store.rating}
                     </p>
+                    <p>
+                      User: 
+                      {store.userId}
+                    </p>
                   </div>
                   <div className="listings-button">
                     <button
@@ -596,7 +609,7 @@ const DisplayMap = (props) => {
                   return acc;
                 }, [])
                 .map((store) => {
-                  console.log(store);
+                  
                   return (
                     <option key={store._id} value={store}>
                       {store}
@@ -608,7 +621,7 @@ const DisplayMap = (props) => {
             )}
           </select>
 
-          <SearchBar func={pull_data} />
+          {/* <SearchBar func={pull_data} /> */}
           <div className="range">
             <div className="sliderValue">
               <span id="span_range"></span>
@@ -680,6 +693,7 @@ const DisplayMap = (props) => {
             name="myCheck"
             onChange={handleCheckSelection}
             value={checkRadius}
+            
           />
           <button type="reset" onClick={handleReset}>
             Reset

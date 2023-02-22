@@ -2,6 +2,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import './NewStoreForm.css';
 import { useState, useEffect } from "react";
+import StarRating  from "../components/StarRating";
 
 const Store = () => {
     const params = useParams();
@@ -9,15 +10,21 @@ const Store = () => {
     console.log(params);
     console.log(id);
     const [store, setStore] = useState([]);
+    const [rating, setRating] = useState(0);
     useEffect(() => {
         const fetchStore = async () => {
-            const response = await fetch(`/api/${id}`);
+            const response = await fetch(`/${id}`);
             const data = await response.json();
             setStore(data);
         };
         fetchStore();
-    }, []);
-console.log("store dans dtore.js", store);
+    }, [rating]);
+    console.log("newrating", rating);
+    const pull_data = (rating) => {
+        setRating(rating);
+    };
+    
+console.log("store dans store.js", store);
     return (
         <div id="contact">
             
@@ -26,6 +33,13 @@ console.log("store dans dtore.js", store);
             <h2>{params.id}</h2>
             <h2>Rating: {store.rating}</h2>
             <h2>City: {store.city}</h2>
+            <StarRating
+            id = {id}
+            func = {pull_data}
+            
+            />
+
+
         </div>
     );
 };

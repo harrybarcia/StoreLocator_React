@@ -45,7 +45,9 @@ const SimpleInput2 = () => {
   return (
     <div>
 
-    <form onSubmit={handleSubmit2}>
+    <form  
+    style={{display: 'flex', flexDirection: 'column', width: '300px', margin: "40px"}}
+    onSubmit={handleSubmit2}>
       <div >
         <label >Your Email</label>
         <input 

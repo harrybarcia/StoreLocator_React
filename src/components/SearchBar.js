@@ -11,14 +11,14 @@ const SearchBar = (props) => {
   useEffect(() => {
    
    const search = searchTerm.toLowerCase();
-    axios.get(`/api/search/${search}`)
+    axios.get(`/search/${search}`)
       .then((res) => {
         // console.log("res", res);
         setResults(res.data.data);
       });
       
       if (searchTerm === '') {
-        axios.get(`/api`)
+        axios.get(`/`)
         .then((res) => {
           console.log("res", res);
           setResults(res.data);

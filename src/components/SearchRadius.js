@@ -10,7 +10,7 @@ const SearchRadius = (props) => {
 
     useEffect(() => {
       const fetchData = async () => {
-        const result = await axios.get(`/api`);
+        const result = await axios.get(`/`);
         setResults(result.data);
       };
       fetchData();
