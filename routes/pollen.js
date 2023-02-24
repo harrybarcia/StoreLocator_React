@@ -1,10 +1,10 @@
 const express = require('express');
 const Pollen = require('../models/model_Pollen');
-const { db } = require('../models/model_Store');
+
 const router = express.Router();
 
 router.get("/pollens", async function(req, res, next) {
-    const data = await db.collection('pollens').find().toArray();
+    const data = await Pollen.find();
     
     res.status(200).json({ data });
 });
