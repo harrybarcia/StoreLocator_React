@@ -28,15 +28,15 @@ const Pollen = () => {
       setPlaces(response.data);
     };
     fetchData();
-  }, [places]);
+  }, []);
   console.log("places", places);
 
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainer.current, // container id
       style: "mapbox://styles/mapbox/streets-v11",
-      center: [-123.8, 43.7],
-      zoom: 4.02,
+      center: [-103.8, 60.7],
+      zoom: 2.02,
       minZoom: 3,
       maxZoom: 19,
     });
@@ -144,36 +144,38 @@ const Pollen = () => {
     map.on("load", function () {
       map.addSource("provinces", {
         type: "vector",
-        url: "mapbox://harrybarcia.ah2i0hfc", //tilesetID
+        url: "mapbox://harrybarcia.3oa2yiz2", //tilesetID
       });
       map.addLayer({
         id: "provinces",
         type: "fill",
         source: "provinces",
-        "source-layer": "data2-6x12k7",
+        "source-layer": "provinces",
         layout: {
           visibility: "visible",
         },
         paint: {
           "fill-color": {
             type: "categorical",
-            property: "PRNAME",
+            property: "PRENAME",
             stops: [
               ["Alberta", "#fbb03b"],
-              ["British Columbia", "#223b53"],
-              ["Manitoba", "#e55e5e"],
-              ["New Brunswick", "#3bb2d0"],
-              ["Newfoundland and Labrador", "#3bb2d0"],
+              ["British Columbia", "#fbb03b"],
+              ["Manitoba", "#fbb03b"],
+              ["New Brunswick", "#fbb03b"],
+              ["Newfoundland and Labrador", "#fbb03b"],
               ["Northwest Territories", "#3bb2d0"],
-              ["Nova Scotia", "#3bb2d0"],
+              ["Nova Scotia", "#fbb03b"],
               ["Nunavut", "#3bb2d0"],
-              ["Ontario", "#3bb2d0"],
-              ["Prince Edward Island", "#3bb2d0"],
-              ["Quebec", "#3bb2d0"],
-              ["Saskatchewan", "#3bb2d0"],
+              ["Ontario", "#fbb03b"],
+              ["Prince Edward Island", "#fbb03b"],
+              ["Quebec", "#fbb03b"],
+              ["Saskatchewan", "#fbb03b"],
+              ["Yukon", "#3bb2d0"],
             ],
           },
-          "fill-opacity": 0.5,
+          "fill-opacity": 0.4,
+          "fill-outline-color": "black",
         },
       });
       map.addSource("points_provinces", {
@@ -207,9 +209,9 @@ const Pollen = () => {
           visibility: "visible",
         },
         paint: {
-          "fill-color": "#7C0A02",
+          "fill-color": "#f7f1f1",
           "fill-opacity": 0.5,
-          "fill-outline-color": "#7C0A02",
+          "fill-outline-color": "#000000",
         }
       });
     });
@@ -309,22 +311,11 @@ const Pollen = () => {
     
 
   return (
-    <div className="map-wrapper">
+    <div className="map-wrapper" style = {{flexDirection:"column"}}>
       <div className="map">
         <div ref={mapContainer}></div>
       </div>
       <div  id="menu"></div>
-      <div className="footer">
-        {backendData && backendData.length > 0
-          ? backendData.map((item, index) => {
-              return (
-                <div key={index}>
-                  {item.province},{item.color}
-                </div>
-              );
-            })
-          : "Loading..."}
-      </div>
 
       <div style={{ textAlign: "center" }}>
 					<h1>REACTJS CSV IMPORT EXAMPLE </h1>
