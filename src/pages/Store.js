@@ -13,7 +13,7 @@ const Store = () => {
     const [rating, setRating] = useState(0);
     useEffect(() => {
         const fetchStore = async () => {
-            const response = await fetch(`/${id}`);
+            const response = await fetch(`/api/${id}`);
             const data = await response.json();
             setStore(data);
         };

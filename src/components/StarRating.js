@@ -22,7 +22,7 @@ const StarRating = (props) => {
       useEffect(() => {
         const fetchRating = async () => {
           try {
-            const response = await axios.get(`/${id}`);
+            const response = await axios.get(`/api/${id}`);
             console.log("response", response);
             setRating(response.data.rating);
           } catch (error) {
