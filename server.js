@@ -3,7 +3,7 @@ const path=require('path');
 const express=require('express');
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
-
+const PORT = process.env.PORT || 3000;
 const cors=require('cors');
 const multer=require('multer');
 const mongoose = require('mongoose');
@@ -59,13 +59,15 @@ app.use(pollenRoutes);
 
 app.use(cookieParser());
 
-
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('public/build'));
+} 
 mongoose
   .connect(MONGODB_URI)
   .then(result => {
-
-  console.log('connected to db on port 3000');
-  app.listen(3001);
+    app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);  
+    })
   })
   .catch(err => {
     console.log(err);
