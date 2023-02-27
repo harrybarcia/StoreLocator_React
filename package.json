@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "SET NODE_ENV=production& SET MONGO_USERNAME=admin& SET MONGO_PASSWORD=doudou& SET MONGO_DB=storelocatordb& nodemon server.js"
   },
   "dependencies": {
     "axios": "^1.1.3",
