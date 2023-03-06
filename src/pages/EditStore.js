@@ -15,6 +15,7 @@ const EditStore = (props) => {
   const [city, setCity] = useState('');
   const [image, setFile] = useState('');
   const [imagePath, setImagePath] = useState('');
+  const [price, setPrice] = useState('');
   
   useEffect(() => {
     fetchStore();
@@ -29,6 +30,7 @@ const EditStore = (props) => {
     setCity(result.data.city);
     setFile(result.data.image);
     setImagePath(result.data.image);
+    setPrice(result.data.price);
     
     
     
@@ -49,6 +51,7 @@ const EditStore = (props) => {
     formData.append('address', address);
     formData.append('city', city);
     formData.append('image', image);
+    formData.append('price', price);
     const response = await fetch(`/edit-store/${storeId}`, {
       method: 'PUT',
       body: formData,
@@ -103,6 +106,17 @@ const EditStore = (props) => {
               }
             }
             
+            />
+            <label >Price</label>
+            <input
+            name="price"
+            type="text"
+            value={price}
+            onChange={
+              (evt) => {
+                setPrice(evt.target.value);
+              }
+            }
             />
           </div>
           <div className="form-actions">

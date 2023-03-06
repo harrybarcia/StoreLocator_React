@@ -36,7 +36,7 @@ export default function Cluster() {
   }, []);
 
 
-  const token = "pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ";
+  const token = process.env.REACT_APP_MAPBOX_TOKEN;
   const url =
     "https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson";
     console.log("url", url);

@@ -1,6 +1,7 @@
 import {useRef, useState, useEffect} from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import './NewStoreForm.css';
+import axios from 'axios';
 
 const SimpleInput = () => {
   const [address, setAddress] = useState('');
@@ -32,11 +33,8 @@ const SimpleInput = () => {
     formData.append('city', city);
     formData.append('image', image);
     formData.append('price', price);
-    const response = await fetch('/add-store', {
-      method: 'POST',
-      body: formData,
-    });
-    const data = await response.json();
+    const response = axios.post('/add-store', formData);
+    const data = await response;
     console.log(data);
     navigate('/');
   }

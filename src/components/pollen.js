@@ -11,8 +11,7 @@ import Supercluster from "supercluster";
 
 import csvtojson from 'csvtojson';
 import axios from 'axios';
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ";
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN
 
 const Pollen = () => {
   const mapContainer = useRef(null);

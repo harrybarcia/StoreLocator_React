@@ -6,13 +6,9 @@ import "../index.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "../pages/NewStoreForm.css";
-import SearchBar from "./SearchBar";
 import * as turf from "@turf/turf";
-import { Popup } from "react-leaflet";
-import { Layer } from "react-map-gl";
-
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ";
+ 
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN
 
 const DisplayMap = (props) => {
   const [backendData, setBackendData] = useState(null);
