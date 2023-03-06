@@ -8,7 +8,7 @@ const fileStorage=multer.diskStorage({
         cb(null, 'public/images');
     },
     filename:(req,file,cb)=>{
-      console.log('file in stores.js', file);
+      // console.log('file in stores.js', file);
         cb(null, file.originalname);
     }
   });
@@ -18,7 +18,7 @@ const Store = require('../models/model_Store');
 const app = express.Router();
 app.get('/allStores', adminController.getStores);
 app.get('/myStores', authenticateToken, adminController.getMyStores);
-app.delete('/api/:id',adminController.deleteStore)
+app.delete('/api/:id', authenticateToken, adminController.deleteStore)
 app.get('/search/:city',  adminController.getStoresByCity);
 app.get('/api/:id', adminController.getStore);
 app.post('/add-store', authenticateToken,  upload, adminController.addStore)

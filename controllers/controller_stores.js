@@ -85,7 +85,7 @@ exports.updateStore = (req, res, next) => {
   const updatedCity = req.body.city;
   const updatedAddress = req.body.address;
   const updatedImage = req.file.filename;
-  const price = 250000;
+  const price = req.body.price;
   const userId = req.user.userId?req.user.userId:null;
   
   Store.findById(storeId, userId)
@@ -110,6 +110,7 @@ exports.updateStore = (req, res, next) => {
 exports.deleteStore = (req, res, next) => {
   
   console.log('delete body store', req.params.id);
+  console.log('req.user in controller stores', req.user);
   
   const storeId = req.params.id;
   const userId = req.user.userId?req.user.userId:null;

@@ -3,7 +3,7 @@ const path=require('path');
 const express=require('express');
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const cors=require('cors');
 const multer=require('multer');
 const mongoose = require('mongoose');
@@ -59,9 +59,9 @@ app.use(pollenRoutes);
 
 app.use(cookieParser());
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('public/build'));
-} 
+// if (process.env.NODE_ENV === 'production') {
+//   app.use(express.static('public/build'));
+// } 
 mongoose
   .connect(MONGODB_URI)
   .then(result => {
