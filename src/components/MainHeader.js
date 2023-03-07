@@ -11,7 +11,7 @@ const MainHeader = () => {
                     <Link to="/">Welcome</Link>
                 </li>
                 <li>
-                    <Link to="/stores">Stores</Link>
+                    <Link to="/all-stores">Stores</Link>
                 </li>
                 <li>
                     <Link to="/add-store">Add a new store</Link>

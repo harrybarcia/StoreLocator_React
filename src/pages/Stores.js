@@ -8,7 +8,7 @@ const AllStores = () => {
     useEffect(() => {
         const fetchStores = async () => {
             // console.log("fetching");
-            const response = await fetch("api");
+            const response = await fetch("/allStores");
             const data = await response.json();
             setStores(data);
         }

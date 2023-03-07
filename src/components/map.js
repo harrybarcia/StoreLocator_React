@@ -6,7 +6,10 @@ import "../index.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "../pages/NewStoreForm.css";
+import SearchBar from "./SearchBar";
 import * as turf from "@turf/turf";
+mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default; // eslint-disable-line
+
  
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN
 
