@@ -22,7 +22,7 @@ const Pollen = () => {
   
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios("http://localhost:3000/pollens");
+      const result = await axios("/pollens");
       const response = result.data;
       setPlaces(response.data);
     };
@@ -43,7 +43,7 @@ const Pollen = () => {
     console.log("places", places);
 
     function getPlaces() {
-      fetch("http://localhost:3000/pollens")
+      fetch("/pollens")
         .then((response) => response.json())
         .then((data) => {
           loadMap(data.data);
@@ -264,7 +264,7 @@ const Pollen = () => {
     });
 
     const fetchData = async () => {
-      const response = axios("http://localhost:3000/pollens").then(
+      const response = axios("/pollens").then(
         (response) => {
           setBackendData(response.data.data);
         }
