@@ -2,7 +2,9 @@ const fs=require('fs');
 const path=require('path');
 const express=require('express');
 const jwt = require('jsonwebtoken')
-require('dotenv').config()
+require('dotenv').config(
+  {path: path.join(__dirname, '../.env')}
+)
 const PORT = process.env.PORT || 3001;
 const cors=require('cors');
 const multer=require('multer');
@@ -25,7 +27,9 @@ const morgan = require('morgan');
 
 const bodyParser=require('body-parser');
 const cookieParser = require("cookie-parser");
-
+console.log(process.env.MONGO_USER);
+console.log(process.env.MONGO_PASSWORD);
+console.log(process.env.MONGO_DATABASE);
 const MONGODB_URI =
   
   `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.iaepn.mongodb.net/${process.env.MONGO_DATABASE}`;
