@@ -1,0 +1,17 @@
+{
+"type": "FeatureCollection",
+"name": "centroides",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "color": "#FF00FF", "PRNAME": "Prince Edward Island / Île-du-Prince-Édouard", "PRENAME": "Prince Edward Island", "PRFNAME": "Île-du-Prince-Édouard", "PREABBR": "P.E.I.", "PRFABBR": "Î.-P.-É." }, "geometry": { "type": "Point", "coordinates": [ -63.245814900175795, 46.390296070501442 ] } },
+{ "type": "Feature", "properties": { "color": "#FF00FF", "PRNAME": "Nova Scotia / Nouvelle-Écosse", "PRENAME": "Nova Scotia", "PRFNAME": "Nouvelle-Écosse", "PREABBR": "N.S.", "PRFABBR": "N.-É." }, "geometry": { "type": "Point", "coordinates": [ -63.331890691248709, 45.146047106497896 ] } },
+{ "type": "Feature", "properties": { "color": "13", "PRNAME": "New Brunswick / Nouveau-Brunswick", "PRENAME": "New Brunswick", "PRFNAME": "Nouveau-Brunswick", "PREABBR": "N.B.", "PRFABBR": "N.-B." }, "geometry": { "type": "Point", "coordinates": [ -66.377146701296667, 46.618234210813753 ] } },
+{ "type": "Feature", "properties": { "color": "24", "PRNAME": "Quebec / Québec", "PRENAME": "Quebec", "PRFNAME": "Québec", "PREABBR": "Que.", "PRFABBR": "Qc" }, "geometry": { "type": "Point", "coordinates": [ -71.781616427635782, 53.393014964355999 ] } },
+{ "type": "Feature", "properties": { "color": "35", "PRNAME": "Ontario", "PRENAME": "Ontario", "PRFNAME": "Ontario", "PREABBR": "Ont.", "PRFABBR": "Ont." }, "geometry": { "type": "Point", "coordinates": [ -86.045989813610504, 50.444432171806589 ] } },
+{ "type": "Feature", "properties": { "color": "46", "PRNAME": "Manitoba", "PRENAME": "Manitoba", "PRFNAME": "Manitoba", "PREABBR": "Man.", "PRFABBR": "Man." }, "geometry": { "type": "Point", "coordinates": [ -97.429377287410091, 54.92998226643747 ] } },
+{ "type": "Feature", "properties": { "color": "47", "PRNAME": "Saskatchewan", "PRENAME": "Saskatchewan", "PRFNAME": "Saskatchewan", "PREABBR": "Sask.", "PRFABBR": "Sask." }, "geometry": { "type": "Point", "coordinates": [ -105.889510502512024, 54.418080864501569 ] } },
+{ "type": "Feature", "properties": { "color": "48", "PRNAME": "Alberta", "PRENAME": "Alberta", "PRFNAME": "Alberta", "PREABBR": "Alta.", "PRFABBR": "Alb." }, "geometry": { "type": "Point", "coordinates": [ -114.510821599940542, 55.16934438797265 ] } },
+{ "type": "Feature", "properties": { "color": "59", "PRNAME": "British Columbia / Colombie-Britannique", "PRENAME": "British Columbia", "PRFNAME": "Colombie-Britannique", "PREABBR": "B.C.", "PRFABBR": "C.-B." }, "geometry": { "type": "Point", "coordinates": [ -124.76505039475046, 54.754712595795354 ] } },
+{ "type": "Feature", "properties": { "color": "60", "PRNAME": "Yukon", "PRENAME": "Yukon", "PRFNAME": "Yukon", "PREABBR": "Y.T.", "PRFABBR": "Yn" }, "geometry": { "type": "Point", "coordinates": [ -135.511186415722875, 63.631176100927121 ] } }
+]
+}
