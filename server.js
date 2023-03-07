@@ -29,6 +29,7 @@ const cookieParser = require("cookie-parser");
 const MONGODB_URI =
   
   `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.iaepn.mongodb.net/${process.env.MONGO_DATABASE}`;
+  
 
   
 const app=express();
@@ -64,7 +65,11 @@ app.use(cookieParser());
 //   app.use(express.static('public/build'));
 // } 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGODB_URI || 'mongodb://localhost:27017/storelocatordb', 
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+},)
   .then(result => {
     app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);  
