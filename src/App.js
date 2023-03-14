@@ -30,11 +30,12 @@ const App = () => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const loginHandler = (email, password) => {
 
-
+		console.log('login');
 		localStorage.setItem('isLoggedIn', '1');
 		setIsLoggedIn(true);
 	};
 	const logoutHandler = () => {
+		console.log('logout');
 		localStorage.removeItem('isLoggedIn');
 		setIsLoggedIn(false);
 	};
