@@ -43,10 +43,22 @@ ul{
 
 
 .listings {
-  max-width: 70%;
+  
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.listings p {
+  font-size: calc(5px +2vmin);
+  font-weight: bold
+}
+
+.listings-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  
 }
 
 .grid_stores {

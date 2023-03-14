@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
-const Logout = () => {
-
+const Logout = (props) => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [logout, setLogout] = useState([]);
     const navigate = useNavigate();
     useEffect(() => {
@@ -12,9 +12,14 @@ const Logout = () => {
             // console.log("fetching");
             const response = await fetch("http://localhost:3000/logout");
             const data = await response.json();
+            console.log("data", data);
             setLogout(data);
+            localStorage.removeItem('isLoggedIn');
+            setIsLoggedIn(false);
+
         }
         fetchLogout();
+        
         navigate("/");
 
 }, []);

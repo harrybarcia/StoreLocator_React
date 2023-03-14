@@ -1,20 +1,34 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import './NewStoreForm.css';
-export default function Login() {
+
+export default function Login(props) {
+
+  
+
+  const [loggedIn, setLoggedIn] = useState(false);
+  console.log("loggedIn", loggedIn);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  
+  
     
+	useEffect(() => {
+		const storedUserLoggedInInformation = localStorage.getItem('isLoggedIn');
+
+		if (storedUserLoggedInInformation === '1') {
+			setLoggedIn(true);
+		}
+	}, []);
+
   function validateForm() {
     return email.length > 0 && password.length > 0;
   }
 
   function handleSubmit(event) {
     event.preventDefault();
-
-
     axios({
       method: "post",
       url: "/login",
@@ -24,18 +38,20 @@ export default function Login() {
         password: password
       },
     })
+      
       .then(function (response) {
-        
         console.log("response");
         console.log(response);
-        
       })
+      .then(() => props.onLogin(email, password))
+      
       .then(() => navigate("/"))
       
       
       .catch(function (error) {
         console.log(error);
       });
+      
     }
     
 

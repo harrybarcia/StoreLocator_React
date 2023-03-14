@@ -535,7 +535,6 @@ const DisplayMap = (props) => {
               return (
                 <div className="grid_stores" key={index}>
                   <div className="listings" id={store._id} key={store._id}>
-                    <p>City: {store.city}</p>
                     <div
                       style={{
                         height: "100%",
@@ -551,17 +550,15 @@ const DisplayMap = (props) => {
                           borderRadius: "5%",
                         }}
                         alt="images"
-                      />
+                        />
                     </div>
-
-                    <p>Price: {store.price}</p>
+                    <div className = "listings-info">
+                    <p>{store.city}</p>
                     <p>
-                      Rating: {store.rating? store.rating.toFixed(2) : "No rating yet"}
+                    <span>&#9733;</span> {store.rating? store.rating.toFixed(2)  : ""} 
                     </p>
-                    <p>
-                      User: 
-                      {store.userId}
-                    </p>
+                    </div>
+                    <p>$ {store.price.toLocaleString()} CAD</p>
                   </div>
                   <div className="listings-button">
                     <button
@@ -620,7 +617,7 @@ const DisplayMap = (props) => {
             )}
           </select>
 
-          {/* <SearchBar func={pull_data} /> */}
+          <SearchBar func={pull_data} />
           <div className="range">
             <div className="sliderValue">
               <span id="span_range"></span>
