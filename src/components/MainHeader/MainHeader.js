@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 import './MainHeader.css';
 import {useState} from 'react';
 import AuthContext from "../../contexts/auth-context";
-
-
-
+import Navigation from "./Navigation";
 
 
 const MainHeader = () => {
@@ -33,12 +31,8 @@ const MainHeader = () => {
                                     to="/login">Login</Link>
                                 </li>
                                 )}
-                                {context.isLoggedIn && (
-                                <li>
-                                    <Link to="/logout">Logout</Link>
-                                </li>
-                                )}
-                                {context.isLoggedIn && (
+                                
+                                {!context.isLoggedIn && (
                                 <li>
                                     <Link to="/register">Sign up</Link>
                                 </li>
@@ -67,7 +61,7 @@ const MainHeader = () => {
                                 </li>
                                 
                             </ul>
-                            
+                            <Navigation />
                         </header>
                     )
                 }

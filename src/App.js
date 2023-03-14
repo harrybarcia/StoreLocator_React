@@ -26,24 +26,12 @@ import Cluster from './components/cluster';
 import AuthContext from './contexts/auth-context';
 
 const App = () => {
-
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
-	const loginHandler = (email, password) => {
-
-		console.log('login');
-		localStorage.setItem('isLoggedIn', '1');
-		setIsLoggedIn(true);
-	};
-	const logoutHandler = () => {
-		console.log('logout');
-		localStorage.removeItem('isLoggedIn');
-		setIsLoggedIn(false);
-	};
+	
 
 	return (
 		<div className='main'>
 			{/* all the child components are wrapped in the AuthContext.Provider and have access to the isLoggedIn, onLogout, and onLogin functions */}
-			<AuthContext.Provider value={{isLoggedIn: isLoggedIn}}>
+			
 				< MainHeader />
 				<Routes>
 					<Route path="/" element={<MapData />} />
@@ -53,8 +41,8 @@ const App = () => {
 					<Route path="/pollen/:id" element={<Pollen />} />
 					<Route path="/add-store" element={<NewStoreForm />} />
 					<Route path="/edit-store/:id" element={<EditStore />} />
-					<Route path="/login" element={!isLoggedIn && <Login onLogin={loginHandler} />}/>
-					<Route path="/logout" element={isLoggedIn && <Logout onLogout={logoutHandler}/>} />
+					<Route path="/login" element={<Login />}/>
+					<Route path="/logout" element={<Logout />} />
 					<Route path="/register" element={<Register />} /> 
 					<Route path="/api/users" element={<Users />} />
 					<Route path="/stores2" element={<AllStores2 />} />
@@ -66,7 +54,7 @@ const App = () => {
 					<Route path="/api/search" element={<AllStores />} />
 					<Route path="/rate/:id" element={<StarRating />} />
 				</Routes>
-			</AuthContext.Provider>
+			
 		</div>
 	);
 }

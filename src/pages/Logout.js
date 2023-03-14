@@ -1,23 +1,25 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import AuthContext from "../contexts/auth-context";
 
-const Logout = (props) => {
+const Logout = () => {
 
     const [logout, setLogout] = useState([]);
     const navigate = useNavigate();
+    const authCtx = useContext(AuthContext);
     useEffect(() => {
         const fetchLogout = async () => {
             // console.log("fetching");
-            const response = await fetch("http://localhost:3000/logout");
+            const response = await fetch("/logout");
             const data = await response.json();
             console.log("data", data);
             setLogout(data);
 
         }
         fetchLogout();
-        props.onLogout();
+        authCtx.onLogout();
         navigate("/");
 
 }, []);

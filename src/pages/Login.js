@@ -1,9 +1,9 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import './NewStoreForm.css';
-
-export default function Login(props) {
+import AuthContext from "../contexts/auth-context";
+export default function Login() {
 
   
 
@@ -14,7 +14,7 @@ export default function Login(props) {
   const navigate = useNavigate();
   
   
-    
+const authCtx = useContext(AuthContext);
 	useEffect(() => {
 		const storedUserLoggedInInformation = localStorage.getItem('isLoggedIn');
 
@@ -43,7 +43,7 @@ export default function Login(props) {
         console.log("response");
         console.log(response);
       })
-      .then(() => props.onLogin(email, password))
+      .then(() => authCtx.onLogin())
       
       .then(() => navigate("/"))
       
