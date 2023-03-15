@@ -14,9 +14,9 @@ const MainHeader = () => {
             {(
                 context => {
                     return (
-                        <header>
-                            <ul className="banner">
-                                <li>
+                        <header className="bg-gray-800 px-4 py-2 flex items-center justify-between ">
+                            <ul className="text-white text-xl">
+                                <li className="white">
                                     <Link to="/">Welcome</Link>
                                 </li>
                                 <li>
@@ -25,26 +25,11 @@ const MainHeader = () => {
                                 <li>
                                     <Link to="/add-store">Add a new store</Link>
                                 </li>
-                                {!context.isLoggedIn && (
-                                <li>
-                                    <Link 
-                                    to="/login">Login</Link>
-                                </li>
-                                )}
-                                
-                                {!context.isLoggedIn && (
-                                <li>
-                                    <Link to="/register">Sign up</Link>
-                                </li>
-                                )}
                                 <li>
                                     <Link to="/api/users">Users</Link>
                                 </li>
                                 <li>
                                     <Link to="/stores2">Stores with Auth</Link>
-                                </li>
-                                <li>
-                                    <Link to="/pollens">Pollen</Link>
                                 </li>
                                 <li>
                                     <Link to="/pollens">Pollen</Link>
@@ -59,6 +44,20 @@ const MainHeader = () => {
                                 <li>
                                     <Link to="/cluster">Cluster</Link>
                                 </li>
+                            </ul>
+                            <ul className="text-white text-xl">
+                                {!context.isLoggedIn && (
+                                <li>
+                                    <Link 
+                                    to="/login">Login</Link>
+                                </li>
+                                )}
+                                
+                                {!context.isLoggedIn && (
+                                <li>
+                                    <Link to="/register">Sign up</Link>
+                                </li>
+                                )}
                                 
                             </ul>
                             <Navigation />

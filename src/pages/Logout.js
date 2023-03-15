@@ -9,8 +9,10 @@ const Logout = () => {
     const [logout, setLogout] = useState([]);
     const navigate = useNavigate();
     const authCtx = useContext(AuthContext);
+    
     useEffect(() => {
         const fetchLogout = async () => {
+            alert("here")
             // console.log("fetching");
             const response = await fetch("/logout");
             const data = await response.json();
@@ -19,8 +21,8 @@ const Logout = () => {
 
         }
         fetchLogout();
-        authCtx.onLogout();
         navigate("/");
+        authCtx.onLogout();
 
 }, []);
 

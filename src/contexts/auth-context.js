@@ -1,11 +1,12 @@
 import React, { createContext, useEffect, useState } from "react";
+import Logout from "../pages/Logout";
 
 const AuthContext = createContext(
     
     {
         isLoggedIn: false,
         onLogout: () => { },
-        onLogin: (email, password) => { },
+        onLogin: () => { },
     }
 
 );
@@ -19,11 +20,13 @@ export const AuthContextProvider = (props) => {
         }
     }, []);
     const logoutHandler = () => {
+        
         localStorage.removeItem("isLoggedIn");
         setIsLoggedIn(false);
+        
     };
 
-    const loginHandler = (email, password) => {
+    const loginHandler = () => {
         localStorage.setItem("isLoggedIn", "1");
         setIsLoggedIn(true);
     };

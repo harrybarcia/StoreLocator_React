@@ -24,6 +24,7 @@ import Pollen from './components/pollen';
 import EditPollen from './pages/EditPollen';
 import Cluster from './components/cluster';
 import AuthContext from './contexts/auth-context';
+import Navigation from './components/MainHeader/Navigation';
 
 const App = () => {
 
@@ -41,7 +42,7 @@ const App = () => {
 					<Route path="/add-store" element={<NewStoreForm />} />
 					<Route path="/edit-store/:id" element={<EditStore />} />
 					<Route path="/login" element={<Login />}/>
-					<Route path="/logout" element={<Logout />} />
+					<Route path="/logout" element={<Navigation />} />
 					<Route path="/register" element={<Register />} /> 
 					<Route path="/api/users" element={<Users />} />
 					<Route path="/stores2" element={<AllStores2 />} />

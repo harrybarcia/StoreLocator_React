@@ -561,8 +561,8 @@ const DisplayMap = (props) => {
                     </div>
                     <p>$ {store.price.toLocaleString()} CAD</p>
                   </div>
-                  <div className="listings-button">
-                    <button
+                  <div className="flex justify-center">
+                    <button 
                       value={store._id}
                       name={store._id}
                       onClick={() => deleteStore(store._id)}
@@ -570,7 +570,7 @@ const DisplayMap = (props) => {
                     >
                       Delete
                     </button>
-                    <button>
+                    <button className="mx-2">
                       <Link to={`/edit-store/${store._id}`}>Edit my store</Link>
                     </button>
                   </div>
