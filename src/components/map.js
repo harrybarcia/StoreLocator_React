@@ -525,6 +525,7 @@ const DisplayMap = (props) => {
 
   return (
     <div className="map-wrapper">
+
       <div className="content"
       
       >

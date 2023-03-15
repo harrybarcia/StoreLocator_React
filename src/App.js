@@ -26,7 +26,6 @@ import Cluster from './components/cluster';
 import AuthContext from './contexts/auth-context';
 
 const App = () => {
-	
 
 	return (
 		<div className='main'>

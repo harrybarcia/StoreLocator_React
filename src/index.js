@@ -6,6 +6,7 @@ import App from './App';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthContextProvider } from './contexts/auth-context';
+import './styles.css';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
