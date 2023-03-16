@@ -18,6 +18,7 @@ exports.getStore = async (req, res, next) => {
 exports.getStoresByCity = async (req, res, next) => {
   
   const city = (req.params.city).trim();
+  console.log('city in controller', city);
   if (!city) {
      const result = await Store.find();
     return res.status(401).json({ message: 'All cities', data: result });
