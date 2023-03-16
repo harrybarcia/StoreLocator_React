@@ -19,18 +19,21 @@ const EditStore = (props) => {
   
   useEffect(() => {
     fetchStore();
-  }, []);
+  }, [
+    id, address, city, image, price
+  ]);
 
   const fetchStore = async () => {
     const response = await fetch(`/api/${id}`);
     const result = await response.json();
     console.warn("data", result);
+    console.log("result.data.location.formattedAddress", result.location.formattedAddress)
     
-    setAddress(result.data.location.formattedAddress);
-    setCity(result.data.city);
-    setFile(result.data.image);
-    setImagePath(result.data.image);
-    setPrice(result.data.price);
+    setAddress(result.location.formattedAddress);
+    setCity(result.city);
+    setFile(result.image);
+    setImagePath(result.image);
+    setPrice(result.price);
     
     
     
@@ -63,11 +66,11 @@ const EditStore = (props) => {
   }
     
     return (
-      <div className="container">
-        <form id='contact' onSubmit={handleEdit}>
+      <div className="flex justify-center">
+        <form className="w-full max-w-lg bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 mt-36" onSubmit={handleEdit}>
           <div >
-            <label >Your Address</label>
-            <input 
+          <label className="block text-gray-700 font-bold mb-2">Your Address</label>
+          <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
             type="text" 
             name="address"
             value={address} 
@@ -78,8 +81,8 @@ const EditStore = (props) => {
               }
             } />
             
-            <label >Image</label>
-            <input 
+            <label className="block text-gray-700 font-bold mb-2">Image</label>
+            <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
             name="image"
             type="file"
             defaultValue={image}
@@ -95,8 +98,8 @@ const EditStore = (props) => {
             />
             <img src={"/images/"+imagePath} alt="store" style={{width:"100px"}}/>             
             
-            <label >City</label>
-            <input 
+            <label className="block text-gray-700 font-bold mb-2">City</label>
+          <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             name="city"
             type="text"
             value={city} 
@@ -107,8 +110,8 @@ const EditStore = (props) => {
             }
             
             />
-            <label >Price</label>
-            <input
+            <label className="block text-gray-700 font-bold mb-2">Price</label>
+          <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             name="price"
             type="text"
             value={price}
@@ -120,7 +123,9 @@ const EditStore = (props) => {
             />
           </div>
           <div className="form-actions">
-            <button>Submit</button>
+            <button
+            className="rounded-lg px-4 py-2 border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-gray-100 duration-300"
+            >Submit</button>
           </div>
         </form>
       </div>

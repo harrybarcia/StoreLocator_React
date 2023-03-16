@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useLayoutEffect, useState, useEffect, useRef, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
 
 import "./map.css";
@@ -41,16 +41,16 @@ const DisplayMap = (props) => {
 
     fetchData2();
   }, []);
-  console.log("1", backendData);
-  console.log("rangeValue", rangeValue);
+  
+  
 
   const handleRadiusChange = (e) => {
     setRadius(e.target.value);
-    console.log("radius", radius);
-    console.log(typeof radius);
+    
+    
 
     const arrayCoordinates = [center[0], center[1]];
-    console.log("arrayCoordinates", arrayCoordinates);
+    
     const stores = backendData2.map((store) => {
       const mystore = store.location.coordinates;
       const distance = Math.round(
@@ -62,7 +62,7 @@ const DisplayMap = (props) => {
       store.distance = distance;
       return store;
     });
-    console.log("stores", stores);
+    
     stores.sort((a, b) => {
       if (a.distance > b.distance) {
         return 1;
@@ -76,18 +76,18 @@ const DisplayMap = (props) => {
     const storesByDistance = stores.filter(
       (store) => store.distance < radius * 1000
     );
-    console.log("storesByDistance", storesByDistance);
+    
     setBackendData(storesByDistance);
   };
 
-  // console.log("backendData", backendData);
+  // 
   const mapContainer = useRef(null);
   const [lng, setLng] = useState(-123.07);
   const [lat, setLat] = useState(49.31);
   const [zoom, setZoom] = useState(13);
 
   useCallback(() => {
-    console.log("mapContainer", mapContainer);
+    
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v11",
@@ -111,52 +111,26 @@ const DisplayMap = (props) => {
       closeOnClick: false,
       offset: 0,
     });
-
-
-
     for (let i = 0; i < listings.length; i++) {
       const listing = listings[i];
       const listingId = listing.id;
-      
       listings[i].addEventListener("mouseover", function () {
-        
-      console.log('-----------');
-        console.log("i enter the function");
-        console.log("popup: ");
-        console.log(popup);
-
         let popUps = document.getElementsByClassName('mapboxgl-popup');
-        console.log("popUps length", popUps.length);
-        console.log("popUps before remove", popUps);
         for (let i = 0; i < popUps.length; i++) {
           popUps[i].remove();
         }
-      
-        console.log("popUps after remove", popUps);
-        console.log("popUps length", popUps.length);
-
-        console.log("pop ready to display)")
         popup
-
           .setLngLat(backendData[i].location.coordinates)
           .setHTML(
             `<h3>${backendData[i].location.formattedAddress}</h3><p>${backendData[i].price}</p>`
           )
           .addTo(map);
-          
       });
-      console.log("popup display");
-
       listings[i].addEventListener("mouseout", function () {
         let popUps = document.getElementsByClassName('mapboxgl-popup');
-        console.log("popUps on mouseout ready to be removed");
         for (let i = 0; i < popUps.length; i++) {
           popUps[i].remove();
         }
-        console.log("popUps on mouseout removed");
-        
-        
-        
       });
     }
 
@@ -183,15 +157,11 @@ const DisplayMap = (props) => {
             },
           };
         });
-
-        console.log("---end of line 1---");
         loadMap(stores);
       } catch (err) {
-        console.log(err);
+        
       }
     }
-
-
     map.on("load", function () {
       var options = {
         steps: 30,
@@ -217,7 +187,7 @@ const DisplayMap = (props) => {
         },
       });
     });
-    console.log(backendData);
+    
     // Load map with stores
     function loadMap(stores) {
       map.on("load", function () {
@@ -244,12 +214,15 @@ const DisplayMap = (props) => {
             <a style={{position:absolute;top:0px;left:0px;width:100%;height:100%;display:inline}}; href='/api/${store._id}' className={{btn}}>
               <img src='/images/${store.image}' alt="" style="width:100%;border-radius:3%;max-height: 182px;object-fit: cover">
             </a>'
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <h3>${store.location.formattedAddress}</h3>
-              <h3>${store.price.toLocaleString()} €</h3>
-              <h3>${store.rating? store.rating.toFixed(2):"No rating yet"}</h3>
-              
+            
+            <div>
+              <div style="justify-content: space-between;display:flex;flex-direction:row">
+                <p>${store.city}</p>
+                <p><span>&#9733;</span> ${store.rating? store.rating.toFixed(2)  : ""}             </p>
+              </div>
+                <p>$ ${store.price.toLocaleString()} CAD</p>
             </div>
+            
           `
           ))
           .addTo(map);
@@ -282,13 +255,13 @@ const DisplayMap = (props) => {
             map.removeSource("circle2");
           }
           // If the layer "points" does not exists, display the information
-          console.log("popup", popup);
+          
           if (
             !popup
           ) {
             const center = [e.lngLat.lng, e.lngLat.lat];
             setCenter(center);
-            console.log("center", center);
+          
             var options = {
               steps: 20,
               units: "kilometers",
@@ -335,29 +308,21 @@ const DisplayMap = (props) => {
                     },
                   };
                 });
-
-                console.log("---end of line 1---");
+                
                 loadMap(stores);
               } catch (err) {
-                console.log(err);
+                
               }
             }
             getStores();
 
-            const markers = document.getElementsByClassName("mapboxgl-marker");
-            console.log(markers);
-            console.log("markers[0]", markers[0]);
-
+            const markers = document.getElementsByClassName("mapboxgl-marker");          
             if (markers[0]) markers[0].remove();
-            console.log(markers);
             const coordinates = e.lngLat;
-            console.log(markers);
-
             const marker = new mapboxgl.Marker({
               color: "red",
               draggable: true,
             });
-            console.log("marker", typeof marker);
             // I retrieve all the distances from the point I just clicked and I sort them
             if (markers[0]) markers[0].remove();
             marker.setLngLat(coordinates).addTo(map);
@@ -376,7 +341,7 @@ const DisplayMap = (props) => {
               store.distance = distance;
               return store;
             });
-            console.log("stores", stores);
+            
             stores.sort((a, b) => {
               if (a.distance > b.distance) {
                 return 1;
@@ -390,7 +355,7 @@ const DisplayMap = (props) => {
             const storesByDistance = stores.filter(
               (store) => store.distance < radius * 1000
             );
-            console.log("storesByDistance", storesByDistance);
+            
             setBackendData(storesByDistance);
           }
         });
@@ -423,7 +388,7 @@ const DisplayMap = (props) => {
   useEffect(() => {
     const getCities = async () => {
       const user = localStorage;
-      console.log("user", user);
+      
       try {
         
         const res = await axios("/allStores");
@@ -445,39 +410,39 @@ const DisplayMap = (props) => {
   // I create a state to store the checked cities
 
   const [checked, setChecked] = useState([apiCities]);
-  // console.log(checked);
+  // 
 
   useEffect(() => {
     function test() {
       try {
-        // console.log(apiCities);
-        // console.log(checked);
+        // 
+        // 
         const checkBox = document.querySelectorAll('input[type="checkbox"]');
         const arrayChecked = [];
         for (let i = 0; i < checkBox.length; i++) {
-          // console.log(checkBox[i].checked);
+          // 
           if (checkBox[i].checked) {
             arrayChecked.push(checkBox[i].value);
           }
         }
-        // console.log("arraychecked", arrayChecked);
+        // 
         setChecked(arrayChecked);
-        // console.log("checked", checked);
+        // 
       } catch (err) {
-        console.log(err);
+        
       }
     }
     test();
   }, [apiCities]);
 
   const handleCheck = (e) => {
-    // console.log(checked);
+    // 
     let updatedList = [...checked];
-    // console.log(updatedList);
+    // 
     if (e.target.checked) {
-      console.log("unselected to selected");
+      
       updatedList = [...checked, e.target.value];
-      console.log("updatedList", updatedList);
+      
     } else {
       updatedList.splice(checked.indexOf(e.target.value), 1);
     }
@@ -510,31 +475,53 @@ const DisplayMap = (props) => {
       });
       setCheckRadius(true);
 
-      console.log("false");
+      
     }
   };
-  console.log("checkRadius", checkRadius);
+  
 
-  // console.log("checked", checked);
-  // console.log("backenData", backendData);
+  // 
+  // 
 
   // I use this function to retrieve the data fetched on the SearchBar component
   const pull_data = (data) => {
     setBackendData(data);
   };
+  console.log(backendData? backendData.length : "no data");
+
+  // The map is removed on mobile
+  const [showMap, setShowMap] = useState(false);
+  const addMap = () => {
+    setShowMap(!showMap);
+    
+  };
+  
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useLayoutEffect(() => {
+    function updateIsMobile() {
+      setIsMobile(window.innerWidth < 640); // set breakpoint for mobile screens
+    }
+    updateIsMobile();
+    window.addEventListener("resize", updateIsMobile);
+    return () => window.removeEventListener("resize", updateIsMobile);
+  }, []);
+  
+
 
   return (
-    <div className="map-wrapper">
+    <div className="map-wrapper md:flex-row">
 
-      <div className="content"
-      
-      >
+
+
+      <div id="listStore" className="flex flex-wrap overflow-scroll justify-between w-full lg:w-1/5 max-w-350">
         {backendData && backendData.length > 0 ? (
           backendData
             .filter((store) => store.price <= rangeValue)
             .map((store, index) => {
               return (
-                <div className="grid_stores" key={index}>
+                <div className="grid_stores lg:h-2/5" key={index}>
                   <div className="listings" id={store._id} key={store._id}>
                     <div
                       style={{
@@ -582,7 +569,9 @@ const DisplayMap = (props) => {
         )}
         ;
       </div>
-      <div className="map">
+      <div className={isMobile ? (showMap ? "absolute  mx-10 justify-center w-4/5 h-full z-0" : "invisible") : "flex justify-center w-4/5 h-full z-0"}>
+                      
+
         <div className="map-filter">
           <select
             onChange={(e) => {
@@ -644,15 +633,15 @@ const DisplayMap = (props) => {
                   );
                   const slideValue = document.getElementById("span_range");
                   const inputSlider = document.getElementById("input_range");
-                  console.log("inputSlider", inputSlider);
-                  console.log("slideValue", slideValue);
+                  
+                  
                   inputSlider.oninput = () => {
                     let value = inputSlider.value;
-                    console.log("value", value);
+                    
                     slideValue.textContent = parseInt(value).toLocaleString();
                     slideValue.style.left = value ? value / 13333 + "%" : "50%";
                     slideValue.classList.add("show");
-                    console.log("slideValue", slideValue);
+                    
                   };
                 }}
                 onBlur={(e) => {
@@ -698,6 +687,10 @@ const DisplayMap = (props) => {
         </div>
 
         <div ref={mapContainer}></div>
+      </div>
+      <div className={isMobile?"z-1000 m-150 absolute":"hidden"}>
+        <button onClick={addMap}>{showMap?"See list":"Show map"}</button>
+
       </div>
     </div>
   );

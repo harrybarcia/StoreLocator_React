@@ -15,7 +15,7 @@ ul{
 }
 .map-wrapper {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 102%;
     margin-top:var(--main-height);
     height: calc(100% - (var(--ul-height)));
@@ -67,7 +67,6 @@ ul{
     flex-wrap: wrap;
     justify-content: center;
     flex-direction: column;
-    height: 40%;
     align-items: center;
     
     

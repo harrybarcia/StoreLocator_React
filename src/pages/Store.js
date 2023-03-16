@@ -26,18 +26,19 @@ const Store = () => {
     
 console.log("store dans store.js", store);
     return (
-        <div id="contact">
-            
-            <h1>Store</h1>
-            
-            <h2>{params.id}</h2>
-            <h2>Rating: {store.rating? store.rating.toFixed(2):"No rating yet"}</h2>
-            <h2>City: {store.city}</h2>
-            <StarRating
-            id = {id}
-            func = {pull_data}
-            
-            />
+        <div className="flex justify-center" >
+            <div className="w-full max-w-lg bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 mt-36">
+            <img src={"/images/" + store.image} />
+                <h2>{params.id}</h2>
+                <h2>Rating: {store.rating? store.rating.toFixed(2):"No rating yet"}</h2>
+                <h2>City: {store.city}</h2>
+                <StarRating
+                id = {id}
+                func = {pull_data}
+                
+                />
+
+            </div>
 
 
         </div>

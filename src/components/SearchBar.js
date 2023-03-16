@@ -9,24 +9,23 @@ const SearchBar = (props) => {
   const [results, setResults] = useState([]);
 
   useEffect(() => {
-   
    const search = searchTerm.toLowerCase();
     axios.get(`/search/${search}`)
       .then((res) => {
         // console.log("res", res);
         setResults(res.data.data);
       });
-      
       if (searchTerm === '') {
-        axios.get(`/`)
+        
+        axios.get(`/allStores`)
         .then((res) => {
-          console.log("res", res);
           setResults(res.data);
+          
         });
       } 
     }, [searchTerm]);
-
-
+    
+    
 
 
     
