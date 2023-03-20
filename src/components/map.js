@@ -218,7 +218,7 @@ const DisplayMap = (props) => {
             <div>
               <div style="justify-content: space-between;display:flex;flex-direction:row">
                 <p>${store.city}</p>
-                <p><span>&#9733;</span> ${store.rating? store.rating.toFixed(2)  : ""}             </p>
+                
               </div>
                 <p>$ ${store.price.toLocaleString()} CAD</p>
             </div>
