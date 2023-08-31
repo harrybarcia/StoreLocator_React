@@ -1,6 +1,10 @@
 import React, { useLayoutEffect, useState, useEffect, useRef, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
-
+import { makeStyles } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import "./map.css";
 import "../index.css";
 import axios from "axios";
@@ -8,7 +12,9 @@ import { Link } from "react-router-dom";
 import "../pages/NewStoreForm.css";
 import SearchBar from "./SearchBar";
 import * as turf from "@turf/turf";
+import { isMobile } from 'react-device-detect';
 mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default; // eslint-disable-line
+
 
  
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN
@@ -29,7 +35,7 @@ const DisplayMap = (props) => {
     };
     fetchData();
   }, []);
-
+  console.log(backendData);
   const [backendData2, setBackendData2] = useState(null);
 
   useEffect(() => {
@@ -82,18 +88,19 @@ const DisplayMap = (props) => {
 
   // 
   const mapContainer = useRef(null);
+  console.log(mapContainer)
   const [lng, setLng] = useState(-123.07);
   const [lat, setLat] = useState(49.31);
   const [zoom, setZoom] = useState(13);
 
   useCallback(() => {
-    
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v11",
       center: [lng, lat],
       zoom: zoom,
     });
+
   }, [lng, lat, zoom]);
 
   useEffect(() => {
@@ -133,7 +140,6 @@ const DisplayMap = (props) => {
         }
       });
     }
-
     function getStores() {
       try {
         const stores = backendData.map((store) => {
@@ -248,8 +254,6 @@ const DisplayMap = (props) => {
 
         });
         map.on("click", function (e) {
-          // if the layer exists, remove it and readd it with the new center
-
           if (map.getLayer("circle2")) {
             map.removeLayer("circle2");
             map.removeSource("circle2");
@@ -359,6 +363,57 @@ const DisplayMap = (props) => {
             setBackendData(storesByDistance);
           }
         });
+        map.on("click", (e) => {
+          const classes = useStyles();
+
+  const longitude = -170;
+  const latitude = 48;
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Handle form submission logic here
+    // ...
+    // Close the popup after form submission
+    popup.remove();
+  };
+
+  const popupContent = (
+    <div className={classes.popupContent}>
+      <h3>Add a Pin</h3>
+      <form onSubmit={handleSubmit}>
+                  <label>Title</label>
+                  <input
+                    placeholder="Enter a title"
+                    autoFocus
+                  />
+                  <label>Description</label>
+                  <textarea
+                    placeholder="Say us something about this place."
+                  />
+                  <label>Rating</label>
+                  <select >
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                  </select>
+                  <button type="submit" className="submitButton">
+                    Add Pin
+                  </button>
+                </form>
+    </div>
+  );
+
+  // Create the Mapbox GL JS popup
+  const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false })
+    .setLngLat([longitude, latitude])
+    .setDOMContent(popupContent);
+
+  // Add the popup to the map
+  popup.addTo(map);
+
+        });
       });
     }
 
@@ -369,6 +424,8 @@ const DisplayMap = (props) => {
 
       
   }, [backendData, radius, center]);
+
+
 
   const deleteStore = async (id) => {
     try {
@@ -495,26 +552,18 @@ const DisplayMap = (props) => {
     setShowMap(!showMap);
     
   };
-  
-
-  const [isMobile, setIsMobile] = useState(false);
-
-  useLayoutEffect(() => {
-    function updateIsMobile() {
-      setIsMobile(window.innerWidth < 640); // set breakpoint for mobile screens
-    }
-    updateIsMobile();
-    window.addEventListener("resize", updateIsMobile);
-    return () => window.removeEventListener("resize", updateIsMobile);
-  }, []);
-  
-
-
+  const [mobile, setMobile] = useState(true)
+  useEffect(()=>{
+  if (window.innerWidth < 768){
+    setMobile(mobile)
+  } else{
+    setMobile(!mobile)
+  }
+  }, [])
+  console.log(window.innerWidth);
+  console.log(mobile)
   return (
-    <div className="map-wrapper md:flex-row">
-
-
-
+    <div className="map-wrapper flex-col md:flex-row ">
       <div id="listStore" className="flex flex-wrap overflow-scroll justify-between w-full lg:w-1/5 max-w-350">
         {backendData && backendData.length > 0 ? (
           backendData
@@ -570,8 +619,6 @@ const DisplayMap = (props) => {
         ;
       </div>
       <div className={isMobile ? (showMap ? "absolute  mx-10 justify-center w-4/5 h-full z-0" : "invisible") : "flex justify-center w-4/5 h-full z-0"}>
-                      
-
         <div className="map-filter">
           <select
             onChange={(e) => {

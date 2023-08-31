@@ -11,6 +11,7 @@ const SimpleInput = () => {
   const navigate = useNavigate();
 
   const handleAddressChange = (evt) => {
+    console.log(evt.target.value);
     setAddress(evt.target.value);
   };
   const handleCityChange = (evt) => {
