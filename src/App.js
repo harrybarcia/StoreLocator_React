@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import {useState, useEffect} from 'react';
-import MapData from './components/map';
+import MapData from './components/MainHeader/map';
 import Child from './components/parent';
 import Welcome from './pages/Welcome';
 import AllStores from './pages/Stores';

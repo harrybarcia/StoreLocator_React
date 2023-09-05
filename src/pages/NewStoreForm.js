@@ -42,7 +42,7 @@ const SimpleInput = () => {
   return (
     <div className="flex justify-center">
       
-      <form className="w-full max-w-lg bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 mt-36" onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <h4>Add your new store</h4>
         <div className="p-3">
           <label className="block text-gray-700 font-bold mb-2">Your Address</label>

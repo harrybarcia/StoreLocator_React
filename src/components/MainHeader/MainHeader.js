@@ -16,7 +16,10 @@ const MainHeader = () => {
             <div className="flex ">
             <p className="border  text-white border-solid text-center hidden md:block">Display</p>
 
-              <div className="text-white">02</div>
+            <button type="submit" className="my-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+  Button
+</button>
+
               <div className="text-white">03</div>
             </div>
             {/* <div className="hidden sm:block px-2 pt-2 pb-3 space-y-1 sm:px-3">
