@@ -1,6 +1,5 @@
 const mongoose=require('mongoose');
 const geocoder=require('../utils/geocoder');
-
 const Schema=mongoose.Schema;
 
 const ratingSchema=new Schema({
@@ -21,32 +20,57 @@ const StoreSchema=new Schema(
         },
         formattedAddress:String
       },
-      createdAt:{
-          type:Date,
-          default:Date.now
-      },
-      image:String,
-      userId: {type: Schema.Types.ObjectId, ref: 'User'},
-      city:String,
-      price:{type:Number, required:[true, 'Please add a price']},
-      rating:{type:Number},
-      reviews:[ratingSchema]
+    createdAt:{
+        type:Date,
+        default:Date.now
+    },
+    image:String,
+    userId: {type: Schema.Types.ObjectId, ref: 'User'},
+    city:String,
+    price:{type:Number, required:[true, 'Please add a price']},
+    rating:{type:Number},
+    reviews:[ratingSchema],
+    skipGeocoding:{
+      type: Boolean,
+      required: false,
+      default: false
+  }
     });
 
-    
+  StoreSchema.pre('save', async function(next){
+    self = this
+    if (!self.skipGeocoding) {
+      const loc = await geocoder.geocode(this.address);
+      this.location = {
+        type: 'Point',
+        coordinates: [loc[0].longitude, loc[0].latitude],
+        formattedAddress: loc[0].formattedAddress,
+      };
+      next();
+    } 
+  })
 
-// Geocode & create locat
-// we awnt to save before it is sent to the db
-StoreSchema.pre('save', async function(next) {
-  const   loc = await geocoder.geocode(this.address);
-  this.location = {
+// Create a static method for adding pins without geocoding
+StoreSchema.statics.createPinWithoutGeocoding = async function (pinData) {
+  const { address, formattedAddress, longitude, latitude, ...rest } = pinData;
+  console.log(longitude)
+  // Construct the location object
+  const location = {
     type: 'Point',
-    coordinates: [loc[0].longitude, loc[0].latitude],
-    formattedAddress: loc[0].formattedAddress
+    coordinates: [longitude, latitude],
+    formattedAddress: address,
   };
-  console.log("location in model", this.location);
-  // Do not save address
-  this.address=undefined;
-  next(); 
-})
+  // Create a new document with the missing fields
+  const store = new this({
+    address: address,
+    location: location,
+    ...rest, // Include any other fields from pinData
+  });
+
+console.log("here", store)
+  // Save the document
+  await store.save();
+  return store;
+};
+
 module.exports=mongoose.model('Store', StoreSchema)

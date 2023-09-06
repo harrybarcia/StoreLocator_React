@@ -64,6 +64,7 @@ exports.login = async (req, res, next)=>{
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: '240m' }
   );
+  console.log("token", token)
   res.cookie('access-token', token, { httpOnly: true });
   res.json({ token: token, userId: user._id.toString() });
   return user;

@@ -3,10 +3,6 @@ const mongodb=require('mongodb');
 // const { json } = require('body-parser');
 const ObjectId = require('mongodb').ObjectId; 
 
-
-
-
-
 exports.getStore = async (req, res, next) => {
   const storeId = req.params.id;
   const data = await Store.findById(storeId);
@@ -76,7 +72,23 @@ exports.addStore = async (req, res, next)=>{
     })
 }
 
-
+exports.addStoreFromClick = async (req, res) => {
+  const pinData = req.body; // Assuming req.body contains the data for the new pin
+  const storeId = new mongodb.ObjectId();
+  const userId = req.user.userId;
+  const newPinData = {
+    ...pinData, // Include properties from pinData
+    storeId: storeId, // Add the storeId property
+    userId: userId, // Add the userId property
+    skipGeocoding: true, // Set this flag to skip geocoding
+  };
+  try {
+    const savedPin = await Store.createPinWithoutGeocoding(newPinData);
+    res.status(200).json(savedPin);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
 exports.updateStore = (req, res, next) => {
   
   console.log('in update controller');
