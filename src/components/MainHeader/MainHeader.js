@@ -49,6 +49,8 @@ const MainHeader = () => {
                     <Link to="/register">Sign up</Link>
                   </li>
                 )}
+                <Navigation></Navigation>
+
               </ul>
             </div>
           </header>

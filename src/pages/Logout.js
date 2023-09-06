@@ -23,8 +23,7 @@ const Logout = () => {
         fetchLogout();
         navigate("/");
         authCtx.onLogout();
-
-}, []);
+    }, []);
 
 
     return (
