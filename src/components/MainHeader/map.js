@@ -8,6 +8,7 @@ import React, {
 import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
 import {Room } from "@mui/icons-material";
+import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "./map.css";
@@ -25,6 +26,9 @@ const DisplayMap = (props) => {
   const [backendData, setBackendData] = useState(null);
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
+  const mapRef = useRef(null);
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,16 +37,24 @@ const DisplayMap = (props) => {
       });
     };
     fetchData();
-  }, []);
+  }, [newPlace]);
 
   const handleMarkerClick = (id, lat, lng) => {
     console.log("here");
     console.log(id);
     setCurrentPlaceId(id);
-    setViewport({ ...viewport, latitude: lat, longitude: lng });
   };
 
   const handleAddClick = (e) => {
+
+    if (mapRef.current) {
+      mapRef.current.getMap().flyTo({
+        center: [e.lngLat.lng,e.lngLat.lat],
+        speed: 0.3,
+        curve: 1, // Example coordinates (New York City)
+      });
+    }
+
     if (!currentPlaceId){
       const {lat, lng} = e.lngLat;
       setNewPlace({
@@ -51,6 +63,11 @@ const DisplayMap = (props) => {
       });
     }
   };
+
+  const handleCloseForm = () => {
+    setNewPlace(null)
+    };
+
 
   console.log(newPlace);
   console.log(backendData);
@@ -64,6 +81,8 @@ const DisplayMap = (props) => {
           mapStyle="mapbox://styles/mapbox/streets-v11"
           onMove={(evt) => setViewport(evt.viewState)}
           onClick={handleAddClick}
+          ref={mapRef}
+
         >
           {backendData?.map((store, index) => (
             <>
@@ -96,6 +115,14 @@ const DisplayMap = (props) => {
                   onClose={() => setCurrentPlaceId(null)}
                   anchor="left"
                 >
+                <button className="mimic-popup-close-button">
+                  <CloseIcon style={{
+                    fontSize: 30,
+                    color: "tomato",
+                    cursor: "pointer",
+                  }}
+                   />
+                </button>
                   <div className="card">
                     <label>Place</label>
                     <h4 className="place">{store.city}</h4>
@@ -135,10 +162,20 @@ const DisplayMap = (props) => {
                 onClose={() => setNewPlace(null)}
                 anchor="left"
               >
+                <button className="mimic-popup-close-button">
+                  <CloseIcon style={{
+                    fontSize: 30,
+                    color: "tomato",
+                    cursor: "pointer",
+                  }}
+                   />
+                </button>
                 <div>
                   <SimpleInput
                   latitude={newPlace.lat}
                   longitude={newPlace.lng}
+                  newPlace={newPlace}
+                  onClose={handleCloseForm} 
                   ></SimpleInput>
                 </div>
               </Popup>

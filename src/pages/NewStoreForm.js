@@ -4,6 +4,7 @@ import "./NewStoreForm.css";
 import axios from "axios";
 
 const SimpleInput = (props) => {
+  console.log(props)
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [image, setFile] = useState("");
@@ -43,16 +44,13 @@ const SimpleInput = (props) => {
       const response = axios.post("/add-store-from-click", formData);
       const data = await response;
       console.log(data);
+      props.onClose();
       navigate("/"); 
     } 
     const response = axios.post("/add-store", formData);
       const data = await response;
       console.log(data);
       navigate("/"); 
-
-    
-    
-
   };
 
   return (

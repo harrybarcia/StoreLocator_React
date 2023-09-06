@@ -86,7 +86,6 @@
   
   form {
     width: 250px;
-    height: 250px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -155,4 +154,22 @@
   
   .register{
     background-color: slateblue;
+  }
+
+  .mapboxgl-popup-close-button{
+    opacity: 0;
+
+    height: 30px;
+    width: 30px;
+  }
+  .mimic-popup-close-button{
+    height: 30px;
+    width: 30px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    border: 0;
+    border-radius: 0 3px 0 0;
+    cursor: pointer;
+
   }
