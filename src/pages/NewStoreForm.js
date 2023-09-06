@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import "./NewStoreForm.css";
 import axios from "axios";
 
-const SimpleInput = () => {
+const SimpleInput = (props) => {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [image, setFile] = useState("");
@@ -27,21 +27,36 @@ const SimpleInput = () => {
   };
 
   const handleSubmit = async (evt) => {
+    console.log(props.latitude)
     evt.preventDefault();
+    const latitude = props.latitude;
+    const longitude = props.longitude;
     const formData = new FormData();
     formData.append("address", address);
     formData.append("city", city);
     formData.append("image", image);
     formData.append("price", price);
+
+    if (latitude && longitude) {
+      formData.append("latitude", latitude);
+      formData.append("longitude", longitude);
+      const response = axios.post("/add-store-from-click", formData);
+      const data = await response;
+      console.log(data);
+      navigate("/"); 
+    } 
     const response = axios.post("/add-store", formData);
-    const data = await response;
-    console.log(data);
-    navigate("/");
+      const data = await response;
+      console.log(data);
+      navigate("/"); 
+
+    
+    
+
   };
 
   return (
     <div className="flex justify-center">
-      
       <form onSubmit={handleSubmit}>
         <h4>Add your new store</h4>
         <div className="p-3">

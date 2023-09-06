@@ -136,7 +136,10 @@ const DisplayMap = (props) => {
                 anchor="left"
               >
                 <div>
-                  <SimpleInput></SimpleInput>
+                  <SimpleInput
+                  latitude={newPlace.lat}
+                  longitude={newPlace.lng}
+                  ></SimpleInput>
                 </div>
               </Popup>
             </>
