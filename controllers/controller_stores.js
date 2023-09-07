@@ -49,7 +49,7 @@ exports.addStore = async (req, res, next)=>{
   const userId = req.user.userId;
   const city = req.body.city;
   const price = req.body.price;
-  const rating = null;
+  const rating = req.body.rating;
   
         const store=await new Store({
           storeId:storeId,
@@ -99,6 +99,7 @@ exports.updateStore = (req, res, next) => {
   const updatedAddress = req.body.address;
   const updatedImage = req.file.filename;
   const price = req.body.price;
+  const rating = req.body.rating;
   const userId = req.user.userId?req.user.userId:null;
   
   Store.findById(storeId, userId)
@@ -108,6 +109,8 @@ exports.updateStore = (req, res, next) => {
       store.image = updatedImage;
       store.city = updatedCity;
       store.price = price;
+      store.rating = rating;
+
       return store.save();
     })
     .then(result => {
