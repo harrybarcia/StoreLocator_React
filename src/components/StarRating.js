@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./StarRating.css";
 const StarRating = (props) => {
+  console.log(props)
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
     const id = props.id;
@@ -32,8 +33,8 @@ const StarRating = (props) => {
         fetchRating();
         setRating(rating);
       }, [rating]);
-      
-      props.func(rating);
+      console.log(rating)
+      // props.func();
       
     return (
       <div className="star-rating">

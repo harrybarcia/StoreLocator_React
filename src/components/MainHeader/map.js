@@ -5,14 +5,18 @@ import React, {
   useRef,
   useCallback,
 } from "react";
+import { useParams } from "react-router-dom";
 import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
-import {Room } from "@mui/icons-material";
+import {Room,Star } from "@mui/icons-material";
 import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "./map.css";
 import SimpleInput from "../../pages/NewStoreForm";
+import StarRating from "../StarRating";
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 mapboxgl.workerClass =
   require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default; // eslint-disable-line
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
@@ -27,8 +31,8 @@ const DisplayMap = (props) => {
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
   const mapRef = useRef(null);
-
-
+  const [rating, setRating] = useState(0);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,13 +65,38 @@ const DisplayMap = (props) => {
         lat,
         lng,
       });
+      setIsEditMode(false);
     }
   };
 
   const handleCloseForm = () => {
     setNewPlace(null)
+    setIsEditMode(false);
     };
 
+    const closePopup = () => {
+      setCurrentPlaceId(null)
+      setIsEditMode(false);
+      console.log("here edit ")
+
+
+    }
+
+    const handleEditClick = () => {
+    setIsEditMode(true);
+  };
+
+    const handleCancelClick = () => {
+    // Cancel editing and revert to view mode
+    setIsEditMode(false);
+    // Optionally, you can reset the form data to its initial state
+    // setFormData(initialData);
+  };
+
+  const handleSaveClick = () => {
+    // Handle saving data and exit edit mode
+    setIsEditMode(false);
+  };
 
   console.log(newPlace);
   console.log(backendData);
@@ -82,7 +111,6 @@ const DisplayMap = (props) => {
           onMove={(evt) => setViewport(evt.viewState)}
           onClick={handleAddClick}
           ref={mapRef}
-
         >
           {backendData?.map((store, index) => (
             <>
@@ -105,39 +133,81 @@ const DisplayMap = (props) => {
                   }}
                 />
               </Marker>
-              {store._id === currentPlaceId && (
+              {store._id === currentPlaceId && isEditMode === false && (
                 <Popup
                   key={store._id}
-                  latitude={store.location.coordinates[1]}
-                  longitude={store.location.coordinates[0]}
                   closeButton={true}
                   closeOnClick={false}
-                  onClose={() => setCurrentPlaceId(null)}
+                  onClose={() => closePopup()}
                   anchor="left"
                 >
-                <button className="mimic-popup-close-button">
-                  <CloseIcon style={{
-                    fontSize: 30,
-                    color: "tomato",
-                    cursor: "pointer",
-                  }}
-                   />
-                </button>
+                  <button className="mimic-popup-close-button">
+                    <CloseIcon
+                      style={{
+                        fontSize: 30,
+                        color: "tomato",
+                        cursor: "pointer",
+                      }}
+                    />
+                  </button>
                   <div className="card">
                     <label>Place</label>
                     <h4 className="place">{store.city}</h4>
                     <label>Review</label>
                     <p className="desc">{store.price}</p>
                     <label>Rating</label>
-                    <p className="desc">{store.rating}</p>
+                    <p className="rating">
+                      <div className="rating">
+                        {Array(store.rating).fill(<Star className="star" />)}
+                      </div>
+                    </p>
                     <label>Information</label>
                     <span className="username"></span>
+                  </div>
+                  <button>
+                  <EditIcon onClick={handleEditClick}>Edit</EditIcon>
+                  </button>
+                </Popup>
+              )}
+              {store._id === currentPlaceId && isEditMode === true && (
+                <Popup
+                  key={store._id}
+                  latitude={store.location.coordinates[1]}
+                  longitude={store.location.coordinates[0]}
+                  closeButton={true}
+                  closeOnClick={false}
+                  onClose={() => closePopup()}
+                  anchor="left"
+                  
+                >
+                  <div>
+                    <button className="mimic-popup-close-button">
+                      <CloseIcon
+                        style={{
+                          fontSize: 30,
+                          color: "tomato",
+                          cursor: "pointer",
+                        }}
+                      />
+                    </button>
+                    <div>
+                      <SimpleInput
+                        latitude={store.location.coordinates[1]}
+                        longitude={store.location.coordinates[0]}
+                        onClose={handleCloseForm}
+                        onCancel={handleCancelClick}
+                        isEditMode={isEditMode}
+                        existingData={store}
+                        id = {currentPlaceId}
+                      ></SimpleInput>
+                    </div>
+                    
                   </div>
                 </Popup>
               )}
             </>
           ))}
-          
+
           {newPlace && (
             <>
               <Marker
@@ -163,24 +233,25 @@ const DisplayMap = (props) => {
                 anchor="left"
               >
                 <button className="mimic-popup-close-button">
-                  <CloseIcon style={{
-                    fontSize: 30,
-                    color: "tomato",
-                    cursor: "pointer",
-                  }}
-                   />
+                  <CloseIcon
+                    style={{
+                      fontSize: 30,
+                      color: "tomato",
+                      cursor: "pointer",
+                    }}
+                  />
                 </button>
                 <div>
                   <SimpleInput
-                  latitude={newPlace.lat}
-                  longitude={newPlace.lng}
-                  newPlace={newPlace}
-                  onClose={handleCloseForm} 
+                    latitude={newPlace.lat}
+                    longitude={newPlace.lng}
+                    newPlace={newPlace}
+                    onClose={handleCloseForm}
                   ></SimpleInput>
                 </div>
               </Popup>
             </>
-          )}              
+          )}
         </ReactMapGL>
       </div>
     </>

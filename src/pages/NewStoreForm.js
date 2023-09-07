@@ -9,6 +9,7 @@ const SimpleInput = (props) => {
   const [city, setCity] = useState("");
   const [image, setFile] = useState("");
   const [price, setPrice] = useState("");
+  const [rating, setRating] = useState("");
   const navigate = useNavigate();
 
   const handleAddressChange = (evt) => {
@@ -26,36 +27,59 @@ const SimpleInput = (props) => {
   const handlePriceChange = (evt) => {
     setPrice(evt.target.value);
   };
+  const handleRatingChange = (evt) => {
+    setRating(evt.target.value);
+  };
 
   const handleSubmit = async (evt) => {
     console.log(props.latitude)
     evt.preventDefault();
     const latitude = props.latitude;
     const longitude = props.longitude;
+    const isEditMode = props.isEditMode;
     const formData = new FormData();
-    formData.append("address", address);
-    formData.append("city", city);
-    formData.append("image", image);
-    formData.append("price", price);
 
-    if (latitude && longitude) {
+
+    if (props.newPlace) {
+      formData.append("address", address);
+      formData.append("city", city);
+      formData.append("image", image);
+      formData.append("price", price);
+      formData.append("rating", rating);
       formData.append("latitude", latitude);
       formData.append("longitude", longitude);
       const response = axios.post("/add-store-from-click", formData);
       const data = await response;
       console.log(data);
-      props.onClose();
-      navigate("/"); 
     } 
-    const response = axios.post("/add-store", formData);
+    if (isEditMode) {
+      formData.append("address", props.existingData.address);
+      formData.append("city", props.existingData.city);
+      formData.append("image", props.existingData.image);
+      formData.append("price", props.existingData.price);
+      formData.append("rating", props.existingData.rating);
+      const id = props.id
+      const response = axios.put(`/edit-store/${id}`, formData);
       const data = await response;
       console.log(data);
-      navigate("/"); 
-  };
+    } 
+    if (!isEditMode ) {
+      formData.append("address", address);
+      formData.append("city", city);
+      formData.append("image", image);
+      formData.append("price", price);
+      formData.append("rating", rating);
+      const response = axios.post("/add-store", formData);
+      const data = await response;
+      console.log(data);
+    }
+    props.onClose();
+    }
 
   return (
+    
     <div className="flex justify-center">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} >
         <h4>Add your new store</h4>
         <div className="p-3">
           <label className="block text-gray-700 font-bold mb-2">Your Address</label>
@@ -91,15 +115,30 @@ const SimpleInput = (props) => {
           />
           <br />
 
-          <button
-            className="rounded-lg px-4 py-2 border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-gray-100 duration-300"
-            name="submit"
-            type="submit"
-            id="contact-submit"
-            data-submit="...Sending"
-          >
-            Submit
-          </button>
+          <br />
+          <label className="block text-gray-700 font-bold mb-2">Rating</label>
+          <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            name="rating"
+            type="number"
+            value={rating}
+            onChange={handleRatingChange}
+          />
+          <br />
+          <div class="my-4 flex flex-row items-center justify-center">
+            <button
+              className="custom-button"
+              name="submit"
+              type="submit"
+              id="contact-submit"
+              data-submit="...Sending"
+            >
+              Save Changes
+            </button>
+            <button 
+              className="custom-button"
+              onClick={props.onCancel} >Cancel
+            </button>
+          </div>
         </div>
       </form>
     </div>
