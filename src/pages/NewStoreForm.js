@@ -5,11 +5,15 @@ import axios from "axios";
 
 const SimpleInput = (props) => {
   console.log(props)
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [image, setFile] = useState("");
-  const [price, setPrice] = useState("");
-  const [rating, setRating] = useState("");
+  const [address, setAddress] = useState(props.data?.address || "");
+  const [city, setCity] = useState(props.data?.city || "");
+  const [image, setFile] = useState(props.data?.image || "");
+  const [price, setPrice] = useState(props.data?.price || "");
+  const [rating, setRating] = useState(props.data?.rating || "");
+  const isEditMode = props.isEditMode
+
+  console.log(props.newPlace)
+
   const navigate = useNavigate();
 
   const handleAddressChange = (evt) => {
@@ -39,7 +43,6 @@ const SimpleInput = (props) => {
     const isEditMode = props.isEditMode;
     const formData = new FormData();
 
-
     if (props.newPlace) {
       formData.append("address", address);
       formData.append("city", city);
@@ -48,22 +51,26 @@ const SimpleInput = (props) => {
       formData.append("rating", rating);
       formData.append("latitude", latitude);
       formData.append("longitude", longitude);
+      console.log(formData)
       const response = axios.post("/add-store-from-click", formData);
       const data = await response;
+      props.onClose()
       console.log(data);
     } 
     if (isEditMode) {
-      formData.append("address", props.existingData.address);
-      formData.append("city", props.existingData.city);
-      formData.append("image", props.existingData.image);
-      formData.append("price", props.existingData.price);
-      formData.append("rating", props.existingData.rating);
+      formData.append("address", address);
+      formData.append("city", city);
+      formData.append("image", image);
+      formData.append("price", price);
+      formData.append("rating", rating);
       const id = props.id
-      const response = axios.put(`/edit-store/${id}`, formData);
+      console.log(id)
+      const response = axios.put(`/edit-store/${id}?bypassGeocode=true`, formData);
       const data = await response;
+      props.onClose()
       console.log(data);
     } 
-    if (!isEditMode ) {
+    if (!isEditMode && !props.newPlace ) {
       formData.append("address", address);
       formData.append("city", city);
       formData.append("image", image);
@@ -71,9 +78,9 @@ const SimpleInput = (props) => {
       formData.append("rating", rating);
       const response = axios.post("/add-store", formData);
       const data = await response;
+      navigate("/");
       console.log(data);
     }
-    props.onClose();
     }
 
   return (
@@ -94,7 +101,6 @@ const SimpleInput = (props) => {
           <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             name="image"
             type="file"
-            defaultValue={image}
             onChange={handlePhotoSelect}
           />
           <br />
@@ -125,6 +131,7 @@ const SimpleInput = (props) => {
           />
           <br />
           <div class="my-4 flex flex-row items-center justify-center">
+          {isEditMode ? (
             <button
               className="custom-button"
               name="submit"
@@ -133,10 +140,24 @@ const SimpleInput = (props) => {
               data-submit="...Sending"
             >
               Save Changes
-            </button>
-            <button 
+            </button> ) : (
+            <button
               className="custom-button"
-              onClick={props.onCancel} >Cancel
+              name="submit"
+              type="submit"
+              id="contact-submit"
+              data-submit="...Sending"
+            >
+              Submit
+            </button>
+          )}
+            <button 
+              type="button" // Specify type as "button" to prevent form submission
+              className="custom-button"
+              onClick={() => {
+                console.log('Cancel button clicked');
+                props.onCancel();
+              }} >Cancel
             </button>
           </div>
         </div>

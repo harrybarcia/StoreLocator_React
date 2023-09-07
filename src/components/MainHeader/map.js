@@ -1,22 +1,19 @@
 import React, {
-  useLayoutEffect,
   useState,
   useEffect,
   useRef,
-  useCallback,
 } from "react";
-import { useParams } from "react-router-dom";
 import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
 import {Room,Star } from "@mui/icons-material";
 import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
-import { Link } from "react-router-dom";
 import "./map.css";
 import SimpleInput from "../../pages/NewStoreForm";
-import StarRating from "../StarRating";
-import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SuppressionModal from '../SuppressionModal';
+
 mapboxgl.workerClass =
   require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default; // eslint-disable-line
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
@@ -33,6 +30,15 @@ const DisplayMap = (props) => {
   const mapRef = useRef(null);
   const [rating, setRating] = useState(0);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [address, setAddress] = useState("")
+  const [city, setCity] = useState("")
+  const [price, setPrice] = useState("")
+  const [image, setImage] = useState("")
+  const [showModal, setShowModal] = useState(false);
+  const store = {
+    address, rating, city, price, image
+  }
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,7 +47,11 @@ const DisplayMap = (props) => {
       });
     };
     fetchData();
-  }, [newPlace]);
+  }, [newPlace, isEditMode ]);
+
+  useEffect(() => {
+  }, [backendData]
+  )
 
   const handleMarkerClick = (id, lat, lng) => {
     console.log("here");
@@ -74,21 +84,35 @@ const DisplayMap = (props) => {
     setIsEditMode(false);
     };
 
-    const closePopup = () => {
-      setCurrentPlaceId(null)
-      setIsEditMode(false);
-      console.log("here edit ")
+  const closePopup = () => {
+    setCurrentPlaceId(null)
+    setIsEditMode(false);
+    console.log("here edit ")
+  }
 
-
-    }
-
-    const handleEditClick = () => {
+  const handleEditClick = () => {
     setIsEditMode(true);
+  };
+
+  const handleDeleteClick = async (id) => {
+    setShowModal(false)
+    try {
+      const response = await axios.delete(`/api/${id}`);
+      if (response.status === 200) {
+        setBackendData((prevStores) => prevStores.filter((store) => store._id !== id));
+      } else {
+        console.error('Failed to delete store');
+      }
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
   };
 
     const handleCancelClick = () => {
     // Cancel editing and revert to view mode
     setIsEditMode(false);
+    setNewPlace(null)
+
     // Optionally, you can reset the form data to its initial state
     // setFormData(initialData);
   };
@@ -140,6 +164,8 @@ const DisplayMap = (props) => {
                   closeOnClick={false}
                   onClose={() => closePopup()}
                   anchor="left"
+                  latitude={store.location.coordinates[1]}
+                  longitude={store.location.coordinates[0]}
                 >
                   <button className="mimic-popup-close-button">
                     <CloseIcon
@@ -153,8 +179,11 @@ const DisplayMap = (props) => {
                   <div className="card">
                     <label>Place</label>
                     <h4 className="place">{store.city}</h4>
-                    <label>Review</label>
+                    <label>Address</label>
+                    <h4 className="place">{store.address}</h4>
+                    <label>Price</label>
                     <p className="desc">{store.price}</p>
+                    <img src={"/images/" + store.image} />
                     <label>Rating</label>
                     <p className="rating">
                       <div className="rating">
@@ -165,8 +194,16 @@ const DisplayMap = (props) => {
                     <span className="username"></span>
                   </div>
                   <button>
-                  <EditIcon onClick={handleEditClick}>Edit</EditIcon>
+                  <EditIcon onClick={handleEditClick}></EditIcon>
                   </button>
+                  <button>
+                  <DeleteIcon onClick={() => setShowModal(true)}></DeleteIcon>
+                  </button>
+                  <SuppressionModal
+                    open={showModal}
+                    onClose={() => setShowModal(false)}
+                    onDelete={() =>handleDeleteClick(store._id)}
+                  />
                 </Popup>
               )}
               {store._id === currentPlaceId && isEditMode === true && (
@@ -178,7 +215,6 @@ const DisplayMap = (props) => {
                   closeOnClick={false}
                   onClose={() => closePopup()}
                   anchor="left"
-                  
                 >
                   <div>
                     <button className="mimic-popup-close-button">
@@ -199,6 +235,9 @@ const DisplayMap = (props) => {
                         isEditMode={isEditMode}
                         existingData={store}
                         id = {currentPlaceId}
+                        handleSaveClick={handleSaveClick}
+                        data={store}
+                        
                       ></SimpleInput>
                     </div>
                     
@@ -230,6 +269,7 @@ const DisplayMap = (props) => {
                 closeButton={true}
                 closeOnClick={false}
                 onClose={() => setNewPlace(null)}
+
                 anchor="left"
               >
                 <button className="mimic-popup-close-button">
@@ -247,12 +287,17 @@ const DisplayMap = (props) => {
                     longitude={newPlace.lng}
                     newPlace={newPlace}
                     onClose={handleCloseForm}
+                    isEditMode = {isEditMode}
+                    data={store}
+                    onCancel = {() => handleCancelClick()}
+                    
                   ></SimpleInput>
                 </div>
               </Popup>
             </>
           )}
         </ReactMapGL>
+        
       </div>
     </>
   );
