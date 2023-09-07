@@ -12,6 +12,17 @@ const fileStorage=multer.diskStorage({
         cb(null, file.originalname);
     }
   });
+
+      // Middleware function to check for the bypass tag
+function bypassGeocoding(req, res, next) {
+  // Check if the "bypassGeocode" query parameter is present and set to true
+  if (req.query.bypassGeocode === 'true') {
+    req.bypassGeocode = true;
+  } else {
+    req.bypassGeocode = false;
+  }
+  next();
+}
   
 const upload=multer({storage:fileStorage}).single('image');
 const Store = require('../models/model_Store');
@@ -23,7 +34,7 @@ app.get('/search/:city',  adminController.getStoresByCity);
 app.get('/api/:id', adminController.getStore);
 app.post('/add-store', authenticateToken,  upload, adminController.addStore)
 app.post('/add-store-from-click', authenticateToken,  upload, adminController.addStoreFromClick)
-app.put('/edit-store/:id',authenticateToken, upload, adminController.updateStore)
+app.put('/edit-store/:id',authenticateToken, bypassGeocoding, upload, adminController.updateStore)
 app.post('/rate/:id',authenticateToken, adminController.rateStore)
 
 module.exports = app;

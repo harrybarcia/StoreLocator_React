@@ -76,11 +76,13 @@ exports.addStoreFromClick = async (req, res) => {
   const pinData = req.body; // Assuming req.body contains the data for the new pin
   const storeId = new mongodb.ObjectId();
   const userId = req.user.userId;
+  const image = req.file.filename;
   const newPinData = {
     ...pinData, // Include properties from pinData
     storeId: storeId, // Add the storeId property
     userId: userId, // Add the userId property
     skipGeocoding: true, // Set this flag to skip geocoding
+    image:image
   };
   try {
     const savedPin = await Store.createPinWithoutGeocoding(newPinData);
@@ -90,19 +92,33 @@ exports.addStoreFromClick = async (req, res) => {
   }
 };
 exports.updateStore = (req, res, next) => {
-  
   console.log('in update controller');
-  
   const storeId =req.params.id;
-  console.log('store id', storeId);
   const updatedCity = req.body.city;
   const updatedAddress = req.body.address;
   const updatedImage = req.file.filename;
   const price = req.body.price;
   const rating = req.body.rating;
   const userId = req.user.userId?req.user.userId:null;
-  
-  Store.findById(storeId, userId)
+  if (req.bypassGeocode) {
+    console.log(req.bypassGeocode)
+    Store.findById(storeId, userId)
+    .then(store => {
+      console.log('store', store);
+      store.skipGeocoding = true, // Set this flag to skip geocoding
+      store.address = updatedAddress;
+      store.image = updatedImage;
+      store.city = updatedCity;
+      store.price = price;
+      store.rating = rating;
+      return store.save();
+    })
+    .then(result => {
+      res.status(200).json({ message: 'Store updated!', data: result });
+    })
+    .catch(err => console.log(err));
+  } else {
+    Store.findById(storeId, userId)
     .then(store => {
       console.log('store', store);
       store.address = updatedAddress;
@@ -117,11 +133,8 @@ exports.updateStore = (req, res, next) => {
       res.status(200).json({ message: 'Store updated!', data: result });
     })
     .catch(err => console.log(err));
+  }
 };
-
-  
-
-
 
 exports.deleteStore = (req, res, next) => {
   

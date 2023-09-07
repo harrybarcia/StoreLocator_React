@@ -16,7 +16,6 @@ const StoreSchema=new Schema(
         coordinates: {
           type: [Number],
           index:'2dsphere' //2dsphere support queries that calculates geometries on an earth like sphere
-
         },
         formattedAddress:String
       },
@@ -36,6 +35,8 @@ const StoreSchema=new Schema(
       default: false
   }
     });
+
+
 
   StoreSchema.pre('save', async function(next){
     self = this
