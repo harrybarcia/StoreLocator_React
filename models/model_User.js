@@ -11,6 +11,10 @@ const usersSchema = new Schema({
         type: String,
         required: true
     },
+    roles: {
+        type: [String],
+        default: ['user'], // Assign a default role, e.g., "user"
+      },
     
 });                                 
 
