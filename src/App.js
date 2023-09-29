@@ -13,6 +13,7 @@ import Logout from './pages/Logout';
 import Register from './pages/Register';
 import Users from './pages/Users';
 import StarRating from './components/StarRating';
+import AdminPanel from './pages/AdminPanel'
 import './App.css';
 
 
@@ -52,7 +53,9 @@ const App = () => {
 					<Route path="/update-pollen/:id" element={<EditPollen />} />
 					<Route path="/cluster" element={<Cluster />} />
 					<Route path="/api/search" element={<AllStores />} />
+					<Route path="/get-fields" element={<AdminPanel />} />
 					<Route path="/rate/:id" element={<StarRating />} />
+
 				</Routes>
 			
 		</div>

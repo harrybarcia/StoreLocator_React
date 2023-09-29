@@ -5,7 +5,7 @@ import React, {
 } from "react";
 import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
-import {Room,Star } from "@mui/icons-material";
+import {AirOutlined, Room,Star } from "@mui/icons-material";
 import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
 import "./map.css";
@@ -13,6 +13,8 @@ import SimpleInput from "../../pages/NewStoreForm";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SuppressionModal from '../SuppressionModal';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 mapboxgl.workerClass =
   require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default; // eslint-disable-line
@@ -38,6 +40,7 @@ const DisplayMap = (props) => {
   const store = {
     address, rating, city, price, image
   }
+  const [isOpen, setIsOpen] = useState(false);
   
 
   useEffect(() => {
@@ -126,7 +129,29 @@ const DisplayMap = (props) => {
   console.log(backendData);
   return (
     <>
-      <div style={{ height: "100vh", width: "100%" }}>
+      <form className=" relative flex justify-center m-2">
+        <button 
+        type="button"
+        className=" w-fit rounded-full p-2 text-black font-bold text-lg hover:gray border border-black" 
+        onClick ={()=>setIsOpen((prev) => !prev)} >Types
+        {isOpen? <ArrowDropDownIcon className="h-8" /> : <ArrowDropUpIcon className="h-8" />}
+        </button>
+        {
+          isOpen && <div className="absolute text-black font-bold flex flex-col top-12  p-2 w-fit z-10 bg-white rounded">
+            <ul className="flex flex-col text-black" >
+              <li>
+                <input type="checkbox" name="input_1" checked="checked" />
+                <label className="ml-2">Input 1</label>
+              </li>
+              <li>
+                <input type="checkbox" name="input_2" checked="checked" />
+                <label className="ml-2">Input 2</label>
+              </li>
+            </ul>
+          </div>
+        }
+      </form>
+      <div style={{ height: "80vh", width: "100%" }}>
         <ReactMapGL
           {...viewport}
           mapboxAccessToken="pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ"
@@ -144,7 +169,7 @@ const DisplayMap = (props) => {
               >
                 <Room
                   style={{
-                    fontSize: 7 * viewport.zoom,
+                    fontSize: 5 * viewport.zoom,
                     color: "red",
                     cursor: "pointer",
                   }}
@@ -252,8 +277,8 @@ const DisplayMap = (props) => {
               <Marker
                 latitude={newPlace.lat}
                 longitude={newPlace.lng}
-                offsetLeft={-3.5 * viewport.zoom}
-                offsetTop={-7 * viewport.zoom}
+                // offsetLeft={-3.5 * viewport.zoom}
+                // offsetTop={-7 * viewport.zoom}
               >
                 <Room
                   style={{

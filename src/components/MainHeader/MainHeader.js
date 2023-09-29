@@ -37,6 +37,9 @@ const MainHeader = () => {
                   <Link to="/add-pollen">Add a new pollen</Link>
                 </li>
                 <li>
+                  <Link to="/get-fields">Get my fields</Link>
+                </li>
+                <li>
                   <Link to="/cluster">Cluster</Link>
                 </li>
                 {!context.isLoggedIn && (
