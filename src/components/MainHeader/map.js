@@ -13,8 +13,8 @@ import SimpleInput from "../../pages/NewStoreForm";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SuppressionModal from '../SuppressionModal';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import Dropdown from "../UI/Dropwdown"
+
 
 mapboxgl.workerClass =
   require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default; // eslint-disable-line
@@ -124,33 +124,9 @@ const DisplayMap = (props) => {
     // Handle saving data and exit edit mode
     setIsEditMode(false);
   };
-
-  console.log(newPlace);
-  console.log(backendData);
   return (
     <>
-      <form className=" relative flex justify-center m-2">
-        <button 
-        type="button"
-        className=" w-fit rounded-full p-2 text-black font-bold text-lg hover:gray border border-black" 
-        onClick ={()=>setIsOpen((prev) => !prev)} >Types
-        {isOpen? <ArrowDropDownIcon className="h-8" /> : <ArrowDropUpIcon className="h-8" />}
-        </button>
-        {
-          isOpen && <div className="absolute text-black font-bold flex flex-col top-12  p-2 w-fit z-10 bg-white rounded">
-            <ul className="flex flex-col text-black" >
-              <li>
-                <input type="checkbox" name="input_1" checked="checked" />
-                <label className="ml-2">Input 1</label>
-              </li>
-              <li>
-                <input type="checkbox" name="input_2" checked="checked" />
-                <label className="ml-2">Input 2</label>
-              </li>
-            </ul>
-          </div>
-        }
-      </form>
+      <Dropdown></Dropdown>
       <div style={{ height: "80vh", width: "100%" }}>
         <ReactMapGL
           {...viewport}
