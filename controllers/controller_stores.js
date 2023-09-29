@@ -20,7 +20,7 @@ exports.getStoresByCity = async (req, res, next) => {
     return res.status(401).json({ message: 'All cities', data: result });
   } else {
     try {
-      const result = await Store.find({ city});
+      const result = await Store.find({city});
       console.log('result in controller try', result);
       return (
         res.status(200).json({ message: 'Success!', data: result })
@@ -161,6 +161,7 @@ exports.getMyStores = async (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated.' });
   }
+  console.log("here")
   const userId = req.user.userId;
   const data = await Store.find(
     {userId: userId}

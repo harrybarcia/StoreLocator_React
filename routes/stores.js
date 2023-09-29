@@ -1,6 +1,8 @@
 const express = require('express');
 
 const adminController = require('../controllers/controller_stores');
+const adminFieldsController = require('../controllers/controller_fields');
+
 const multer = require('multer');
 const authenticateToken = require('../utils/JWT');
 const fileStorage=multer.diskStorage({
@@ -27,7 +29,7 @@ function bypassGeocoding(req, res, next) {
 const upload=multer({storage:fileStorage}).single('image');
 const Store = require('../models/model_Store');
 const app = express.Router();
-app.get('/allStores', adminController.getStores);
+app.get('/allStores', authenticateToken, adminController.getStores);
 app.get('/myStores', authenticateToken, adminController.getMyStores);
 app.delete('/api/:id', authenticateToken, adminController.deleteStore)
 app.get('/search/:city',  adminController.getStoresByCity);

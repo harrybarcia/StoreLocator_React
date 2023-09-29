@@ -55,12 +55,13 @@ app.use(express.json());
 const storesRoutes = require('./routes/stores'); 
 const authRoutes = require('./routes/auth');
 const pollenRoutes = require('./routes/pollen');
-
+const fieldsRoutes = require('./routes/fields')
 
 
 app.use(authRoutes);
 app.use(storesRoutes);
 app.use(pollenRoutes);
+app.use(fieldsRoutes);
 
 
 app.use(cookieParser());
