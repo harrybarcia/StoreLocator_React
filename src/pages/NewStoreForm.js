@@ -54,8 +54,12 @@ const SimpleInput = (props) => {
       console.log(formData)
       const response = axios.post("/add-store-from-click", formData);
       const data = await response;
-      props.onClose()
-      console.log(data);
+      axios("/allStores").then((response) => {
+        const allData = response.data
+        console.log(allData)
+        props.onClose(allData)
+      });
+      
     } 
     if (isEditMode) {
       formData.append("address", address);
@@ -63,11 +67,13 @@ const SimpleInput = (props) => {
       formData.append("image", image);
       formData.append("price", price);
       formData.append("rating", rating);
+      formData.append("latitude", latitude);
+      formData.append("longitude", longitude);
       const id = props.id
       console.log(id)
       const response = axios.put(`/edit-store/${id}?bypassGeocode=true`, formData);
       const data = await response;
-      props.onClose()
+      props.onClose(data)
       console.log(data);
     } 
     if (!isEditMode && !props.newPlace ) {

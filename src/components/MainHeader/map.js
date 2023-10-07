@@ -26,7 +26,7 @@ const DisplayMap = (props) => {
     longitude: -123.071727,
     zoom: 7,
   });
-  const [backendData, setBackendData] = useState(null);
+  const [permanentData, setPermanentData] = useState(null);
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
   const mapRef = useRef(null);
@@ -41,19 +41,34 @@ const DisplayMap = (props) => {
     address, rating, city, price, image
   }
   const [isOpen, setIsOpen] = useState(false);
-  
+  const [dataFetched, setDataFetched] = useState(true);
+  const  [filteredData, setFilteredData] = useState([])
+  const [filter, setFilter] = useState(false)
+
+
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = axios("/allStores").then((response) => {
-        setBackendData(response.data);
-      });
-    };
-    fetchData();
-  }, [newPlace, isEditMode ]);
+    const dataFetched = false
+    const cachedData = localStorage.getItem('cachedData');
+    // if the data is in the cache, just add it to the permament data
+    if (cachedData && dataFetched) {
+      setPermanentData(JSON.parse(cachedData));
+    // if the data is not in the cache, fetch the data.
+    } else if (!dataFetched) {
+      const fetchData = async () => {
+        const response = axios("/allStores").then((response) => {
+          setPermanentData(response.data);
+          localStorage.setItem('cachedData', JSON.stringify(response.data));
+          setDataFetched(true);
+
+        });
+      };
+      fetchData();
+    }
+  }, [newPlace, isEditMode, dataFetched, filteredData]);
 
   useEffect(() => {
-  }, [backendData]
+  }, [permanentData]
   )
 
   const handleMarkerClick = (id, lat, lng) => {
@@ -82,10 +97,12 @@ const DisplayMap = (props) => {
     }
   };
 
-  const handleCloseForm = () => {
+  const handleCloseForm = (data) => {
     setNewPlace(null)
     setIsEditMode(false);
-    };
+    setPermanentData(data)
+    localStorage.setItem('cachedData', JSON.stringify(data));
+  };
 
   const closePopup = () => {
     setCurrentPlaceId(null)
@@ -102,7 +119,15 @@ const DisplayMap = (props) => {
     try {
       const response = await axios.delete(`/api/${id}`);
       if (response.status === 200) {
-        setBackendData((prevStores) => prevStores.filter((store) => store._id !== id));
+        const storesInLocalStorage = JSON.parse(localStorage.getItem('cachedData')) || [];
+        const updatedStoresInLocalStorage = storesInLocalStorage.filter((store) => store._id !== id);
+        localStorage.setItem('cachedData', JSON.stringify(updatedStoresInLocalStorage));
+        const response = axios("/allStores").then((response) => {
+          setPermanentData(response.data);
+          localStorage.setItem('cachedData', JSON.stringify(response.data));
+        })
+        
+        setCurrentPlaceId(null)
       } else {
         console.error('Failed to delete store');
       }
@@ -124,9 +149,30 @@ const DisplayMap = (props) => {
     // Handle saving data and exit edit mode
     setIsEditMode(false);
   };
+
+  const dataFromDropdown = (data) =>{
+    setFilteredData(data)
+  }
+  const checkFromDropdown = (isChecked) => {
+    console.log(isChecked)
+    if (!isChecked){
+      setFilteredData(null)
+    }
+
+  }
+  console.log("filtereddata", filteredData)
+  console.log(permanentData)
+
+  const mapData = filteredData?filteredData:permanentData
+
   return (
     <>
-      <Dropdown></Dropdown>
+      <Dropdown
+        sendDataFromDropdown = {dataFromDropdown}
+        dataFromParent = {permanentData}
+        sendCheckFromDropdown = {checkFromDropdown}
+
+      ></Dropdown>
       <div style={{ height: "80vh", width: "100%" }}>
         <ReactMapGL
           {...viewport}
@@ -137,7 +183,8 @@ const DisplayMap = (props) => {
           onClick={handleAddClick}
           ref={mapRef}
         >
-          {backendData?.map((store, index) => (
+          {
+          mapData?.map((store, index) => (
             <>
               <Marker
                 latitude={store.location.coordinates[1]}
