@@ -143,6 +143,19 @@ exports.deleteStore = (req, res, next) => {
   
   const storeId = req.params.id;
   const userId = req.user.userId?req.user.userId:null;
+  // Find the store by _id
+  Store.findById(storeId, (err, store) => {
+    if (err) {
+      console.error('Error finding store:', err);
+      mongoose.connection.close(); // Close the database connection
+      return;
+    }
+    if (store) {
+      console.log('Found Store:', store);
+    } else {
+      console.log('Store not found');
+    }
+    })
   Store.deleteOne({ _id: storeId, userId: userId })
     .then(() => {
       console.log('DESTROYED PRODUCT');
