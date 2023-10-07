@@ -100,6 +100,8 @@ exports.updateStore = (req, res, next) => {
   const price = req.body.price;
   const rating = req.body.rating;
   const userId = req.user.userId?req.user.userId:null;
+  const location = req.body.location
+  console.log("jsonparse", JSON.parse(location))
   if (req.bypassGeocode) {
     console.log(req.bypassGeocode)
     Store.findById(storeId, userId)
@@ -111,6 +113,7 @@ exports.updateStore = (req, res, next) => {
       store.city = updatedCity;
       store.price = price;
       store.rating = rating;
+      store.location = JSON.parse(location)
       return store.save();
     })
     .then(result => {
