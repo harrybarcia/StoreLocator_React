@@ -15,7 +15,7 @@ import Users from './pages/Users';
 import StarRating from './components/StarRating';
 import AdminPanel from './pages/AdminPanel'
 import './App.css';
-
+import { minify } from "terser";
 
 import Store from './pages/Store';
 import NewStoreForm from './pages/NewStoreForm';

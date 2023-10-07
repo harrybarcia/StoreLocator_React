@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import {memo} from "react"
 import "./NewStoreForm.css";
 import axios from "axios";
 
@@ -10,6 +11,8 @@ const SimpleInput = (props) => {
   const [image, setFile] = useState(props.data?.image || "");
   const [price, setPrice] = useState(props.data?.price || "");
   const [rating, setRating] = useState(props.data?.rating || "");
+  const [latitude, setLatitude] = useState(props.data?.latitude || "");
+  const [longitude, setLongitude] = useState(props.data?.latitude || "");
   const isEditMode = props.isEditMode
 
   console.log(props.newPlace)
@@ -67,8 +70,9 @@ const SimpleInput = (props) => {
       formData.append("image", image);
       formData.append("price", price);
       formData.append("rating", rating);
-      formData.append("latitude", latitude);
-      formData.append("longitude", longitude);
+      const location= { coordinates: [longitude, latitude] }
+      const jsonString = JSON.stringify(location);
+      formData.append("location", jsonString)
       const id = props.id
       console.log(id)
       const response = axios.put(`/edit-store/${id}?bypassGeocode=true`, formData);

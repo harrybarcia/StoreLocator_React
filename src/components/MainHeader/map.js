@@ -97,13 +97,32 @@ const DisplayMap = (props) => {
     }
   };
 
-  const handleCloseForm = (data) => {
+  const handleCloseForm = (updatedStoreData) => {
     setNewPlace(null)
     setIsEditMode(false);
-    setPermanentData(data)
-    localStorage.setItem('cachedData', JSON.stringify(data));
-  };
+    console.log("filterdata before", filteredData)
+    console.log(updatedStoreData.data.data._id)
+        // Create a copy of the filteredData to avoid mutating state directly
+    const updatedFilteredData = filteredData.map((store) => {
+      console.log(store._id)
+      console.log(store._id === updatedStoreData.data.data._id)
 
+      // Check if the store matches the updatedStoreData
+      if (store._id === updatedStoreData.data.data._id) {
+        // Replace the matching store with the updated data
+        return updatedStoreData.data.data;
+      }
+      // If it doesn't match, keep the store as is
+      return store;
+    });
+    console.log("in the handle close", updatedFilteredData)
+    
+    // Update the filteredData with the modified array
+    setFilteredData(updatedFilteredData);
+
+    // localStorage.setItem('cachedData', JSON.stringify(data));
+  };
+  console.log("filteredData after newform", filteredData)
   const closePopup = () => {
     setCurrentPlaceId(null)
     setIsEditMode(false);
@@ -161,9 +180,10 @@ const DisplayMap = (props) => {
 
   }
   console.log("filtereddata", filteredData)
-  console.log(permanentData)
+  console.log("permanentData", permanentData)
 
   const mapData = filteredData?filteredData:permanentData
+  console.log("mapData", mapData)
 
   return (
     <>
