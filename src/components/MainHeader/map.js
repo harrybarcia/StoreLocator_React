@@ -101,7 +101,10 @@ const DisplayMap = (props) => {
     setNewPlace(null)
     setIsEditMode(false);
     console.log("filterdata before", filteredData)
+    console.log(updatedStoreData)
     console.log(updatedStoreData.data.data._id)
+    // CHECK THE CASE OF NEWFORM
+    // Check when the user deletes when on selection, it doesn't disapear from the page
         // Create a copy of the filteredData to avoid mutating state directly
     const updatedFilteredData = filteredData.map((store) => {
       console.log(store._id)
