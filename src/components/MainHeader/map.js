@@ -5,7 +5,7 @@ import React, {
 } from "react";
 import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
-import {AirOutlined, Room,Star } from "@mui/icons-material";
+import {AirOutlined, CheckBox, Room,Star } from "@mui/icons-material";
 import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
 import "./map.css";
@@ -14,6 +14,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SuppressionModal from '../SuppressionModal';
 import Dropdown from "../UI/Dropwdown"
+import SearchBar from "../SearchBar";
+import CheckboxList from "../UI/CheckboxList"
 
 
 mapboxgl.workerClass =
@@ -24,7 +26,7 @@ const DisplayMap = (props) => {
   const [viewport, setViewport] = useState({
     latitude: 49.040182,
     longitude: -123.071727,
-    zoom: 7,
+    zoom: 5,
   });
   const [permanentData, setPermanentData] = useState(null);
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
@@ -44,6 +46,7 @@ const DisplayMap = (props) => {
   const [dataFetched, setDataFetched] = useState(true);
   const  [filteredData, setFilteredData] = useState([])
   const [filter, setFilter] = useState(false)
+  const [reloadPage, setReloadPage] = useState(true)
 
 
 
@@ -65,11 +68,12 @@ const DisplayMap = (props) => {
       };
       fetchData();
     }
-  }, [newPlace, isEditMode, dataFetched, filteredData]);
+  }, [newPlace, isEditMode, dataFetched, filteredData, reloadPage]);
 
   useEffect(() => {
   }, [permanentData]
   )
+  console.log(permanentData)
 
   const handleMarkerClick = (id, lat, lng) => {
     console.log("here");
@@ -122,6 +126,8 @@ const DisplayMap = (props) => {
     
     // Update the filteredData with the modified array
     setFilteredData(updatedFilteredData);
+    setReloadPage(true)
+
 
     // localStorage.setItem('cachedData', JSON.stringify(data));
   };
@@ -130,6 +136,8 @@ const DisplayMap = (props) => {
     setCurrentPlaceId(null)
     setIsEditMode(false);
     console.log("here edit ")
+    setReloadPage(true)
+
   }
 
   const handleEditClick = () => {
@@ -150,6 +158,7 @@ const DisplayMap = (props) => {
         })
         
         setCurrentPlaceId(null)
+        setReloadPage(true)
       } else {
         console.error('Failed to delete store');
       }
@@ -175,9 +184,11 @@ const DisplayMap = (props) => {
   const dataFromDropdown = (data) =>{
     setFilteredData(data)
   }
-  const checkFromDropdown = (isChecked) => {
-    console.log(isChecked)
-    if (!isChecked){
+  const pullData = (data) => {
+    console.log(data)
+    setFilteredData(data)
+
+    if (!data){
       setFilteredData(null)
     }
 
@@ -185,17 +196,34 @@ const DisplayMap = (props) => {
   console.log("filtereddata", filteredData)
   console.log("permanentData", permanentData)
 
-  const mapData = filteredData?filteredData:permanentData
-  console.log("mapData", mapData)
+  const mapData = filteredData?.length>=0&&filteredData?.length<permanentData?.length?filteredData:permanentData
+  console.log(mapData)
+
+  const receiveFilteredItemsFromCheckboxList = (data) => {
+    console.log("here")
+    setFilteredData(data)
+  }
 
   return (
     <>
-      <Dropdown
-        sendDataFromDropdown = {dataFromDropdown}
-        dataFromParent = {permanentData}
-        sendCheckFromDropdown = {checkFromDropdown}
+    <div className="flex flex-row">
+      <CheckboxList
+      permanentDataFromParent={permanentData}
+      sendFilteredItemsFromCheckboxList={receiveFilteredItemsFromCheckboxList}
+      ></CheckboxList>
+      {/* <Dropdown
+          sendDataFromDropdown = {dataFromDropdown}
+          dataFromParent = {mapData}
+          permanentDataFromParent={permanentData}
+          reloadPageFromP = {reloadPage}
+          // sendCheckFromDropdown = {checkFromDropdown}
 
-      ></Dropdown>
+        ></Dropdown> */}
+        <SearchBar
+        func = {pullData}
+        ></SearchBar>
+    </div>
+      
       <div style={{ height: "80vh", width: "100%" }}>
         <ReactMapGL
           {...viewport}

@@ -16,11 +16,9 @@ const SearchBar = (props) => {
         setResults(res.data.data);
       });
       if (searchTerm === '') {
-        
         axios.get(`/allStores`)
         .then((res) => {
           setResults(res.data);
-          
         });
       } 
     }, [searchTerm]);
