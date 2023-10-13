@@ -13,7 +13,6 @@ function CheckboxList(props) {
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(`/allStores`);
-
       setResults(result.data);
     };
     fetchData();
