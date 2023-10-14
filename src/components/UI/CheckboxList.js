@@ -39,7 +39,7 @@ function CheckboxList(props) {
 
   const [selectedValues, setSelectedValues] = useState({});
 
-  const handleChange = (key, selectedValue) => {
+  const handleCheckboxChange = (key, selectedValue) => {
     setSelectedValues({
       ...selectedValues,
       [key]: selectedValue,
@@ -55,9 +55,16 @@ function CheckboxList(props) {
     )
   );
   useEffect(() => {
-    props.sendFilteredItemsFromCheckboxList(filteredItems)
+    props.sendFilteredItemsFromCheckboxList(filteredItemsData)
   }, [selectedValues])
   console.log(filteredItems)
+
+  const filteredItemsData = results?.filter((item) => {
+    return Object.entries(selectedValues).every(([key, value]) => item[key] === value);
+});
+console.log(filteredItemsData)
+
+
 
   return (
     <div className=" relative flex justify-center m-2">
@@ -66,7 +73,7 @@ function CheckboxList(props) {
         <label htmlFor={key}>{key}:</label>
         <select
           id={key}
-          onChange={(e) => handleChange(key, e.target.value)}
+          onChange={(e) => handleCheckboxChange(key, e.target.value)}
         >
           <option value="">Select {key}</option>
           {reducedData[key].map((value) => (

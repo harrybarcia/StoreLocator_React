@@ -46,7 +46,7 @@ const DisplayMap = (props) => {
   const [dataFetched, setDataFetched] = useState(true);
   const  [filteredData, setFilteredData] = useState([])
   const [filter, setFilter] = useState(false)
-  const [reloadPage, setReloadPage] = useState(true)
+  const [filterCheckbox, setFilterCheckbox] = useState(null)
 
 
 
@@ -68,16 +68,13 @@ const DisplayMap = (props) => {
       };
       fetchData();
     }
-  }, [newPlace, isEditMode, dataFetched, filteredData, reloadPage]);
+  }, [newPlace, isEditMode, dataFetched, filteredData]);
 
   useEffect(() => {
   }, [permanentData]
   )
-  console.log(permanentData)
 
   const handleMarkerClick = (id, lat, lng) => {
-    console.log("here");
-    console.log(id);
     setCurrentPlaceId(id);
   };
 
@@ -104,15 +101,10 @@ const DisplayMap = (props) => {
   const handleCloseForm = (updatedStoreData) => {
     setNewPlace(null)
     setIsEditMode(false);
-    console.log("filterdata before", filteredData)
-    console.log(updatedStoreData)
-    console.log(updatedStoreData.data.data._id)
     // CHECK THE CASE OF NEWFORM
     // Check when the user deletes when on selection, it doesn't disapear from the page
         // Create a copy of the filteredData to avoid mutating state directly
     const updatedFilteredData = filteredData.map((store) => {
-      console.log(store._id)
-      console.log(store._id === updatedStoreData.data.data._id)
 
       // Check if the store matches the updatedStoreData
       if (store._id === updatedStoreData.data.data._id) {
@@ -122,21 +114,16 @@ const DisplayMap = (props) => {
       // If it doesn't match, keep the store as is
       return store;
     });
-    console.log("in the handle close", updatedFilteredData)
     
     // Update the filteredData with the modified array
     setFilteredData(updatedFilteredData);
-    setReloadPage(true)
 
 
     // localStorage.setItem('cachedData', JSON.stringify(data));
   };
-  console.log("filteredData after newform", filteredData)
   const closePopup = () => {
     setCurrentPlaceId(null)
     setIsEditMode(false);
-    console.log("here edit ")
-    setReloadPage(true)
 
   }
 
@@ -158,12 +145,9 @@ const DisplayMap = (props) => {
         })
         
         setCurrentPlaceId(null)
-        setReloadPage(true)
-      } else {
-        console.error('Failed to delete store');
+          } else {
       }
     } catch (error) {
-      console.error('An error occurred:', error);
     }
   };
 
@@ -185,7 +169,6 @@ const DisplayMap = (props) => {
     setFilteredData(data)
   }
   const pullData = (data) => {
-    console.log(data)
     setFilteredData(data)
 
     if (!data){
@@ -193,32 +176,27 @@ const DisplayMap = (props) => {
     }
 
   }
-  console.log("filtereddata", filteredData)
-  console.log("permanentData", permanentData)
+
 
   const mapData = filteredData?.length>=0&&filteredData?.length<permanentData?.length?filteredData:permanentData
-  console.log(mapData)
 
-  const receiveFilteredItemsFromCheckboxList = (data) => {
-    console.log("here")
-    setFilteredData(data)
-  }
+
+  
 
   return (
     <>
     <div className="flex flex-row">
-      <CheckboxList
+      {/* <CheckboxList
       permanentDataFromParent={permanentData}
       sendFilteredItemsFromCheckboxList={receiveFilteredItemsFromCheckboxList}
-      ></CheckboxList>
-      {/* <Dropdown
+      ></CheckboxList> */}
+      <Dropdown
           sendDataFromDropdown = {dataFromDropdown}
           dataFromParent = {mapData}
           permanentDataFromParent={permanentData}
-          reloadPageFromP = {reloadPage}
           // sendCheckFromDropdown = {checkFromDropdown}
 
-        ></Dropdown> */}
+        ></Dropdown>
         <SearchBar
         func = {pullData}
         ></SearchBar>
