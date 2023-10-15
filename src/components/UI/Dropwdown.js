@@ -11,18 +11,24 @@ const Dropdown = (props) => {
   const [permanentData, setPermanentData] =useState(props.permanentDataFromParent)
   const [isChecked, setIsChecked] = useState(filteredData);
   const [isCategoryChecked, setIsCategoryChecked] = useState([false, false]);
-  const uniqueCategories = ["cat1", "cat2"]
-  const [selectedValues, setSelectedValues] = useState({});
+  const uniqueCategories = ["455 waterfront roadf", "5"]
+  const [selectedValues, setSelectedValues] = useState();
+  const [selectedCities, setSelectedCities] = useState()
      // I keep tracks of the changes on filtered and permanent data
   useEffect(() => {
-    setFilteredData(props.permanentDataFromParent);
+    setFilteredData(props.dataFromParent);
     setPermanentData(props.permanentDataFromParent)
-  }, [props.permanentDataFromParent ]);
+  }, [props.permanentDataFromParent, props.dataFromParent ]);
   
   // I trigger selectStoreWhenClick when isChecked is changed
   useEffect(() => {
     selectStoreWhenClick();
   }, [isChecked]);
+
+  useEffect(() => {
+    console.log("here")
+  }, [isCategoryChecked]);
+  
 
   // I create my array of unique cities and set isChecked Array
   useEffect(() => {
@@ -42,8 +48,10 @@ const Dropdown = (props) => {
   const selectStoreWhenClick = () => {
     // for each truthy value of my array, i filter the city
     const selectedCities = uniqueCities?.filter((city, index) => isChecked[index]);
+    console.log(selectedCities)
+    setSelectedCities(selectedCities)
     // for each item that includes the city selected, I filter my filteredData 
-    let filteredArray = filteredData?.filter((item) => selectedCities.includes(item.city));
+    let filteredArray = permanentData?.filter((item) => selectedCities.includes(item.city));
     // i send it back to the parent component
     props.sendDataFromDropdown(filteredArray);
   };
@@ -55,9 +63,8 @@ const Dropdown = (props) => {
       updatedCityChecked[index] = !updatedCityChecked[index];
       // Update the state of the value in the array
       setIsChecked(updatedCityChecked); // outputs [true, false, true, false]
-    };
-    console.log(selectedValues)
 
+    };
     const handleCheckboxChangeCategory = (value, index) => {
       console.log(value)
       // Create a copy of the cityChecked array
@@ -66,24 +73,42 @@ const Dropdown = (props) => {
       updatedCategoryChecked[index] = !updatedCategoryChecked[index];
       // Update the state of the value in the array
       setIsCategoryChecked(updatedCategoryChecked); // outputs [true, false, true, false]
-
-      // Create a copy of the selectedValues object
-      const updatedSelectedValues = { ...selectedValues };
-
-      // If the checkbox is checked, set the value in the selectedValues object
+      const updatedSelectedValues = { ...selectedValues }
       if (updatedCategoryChecked[index]) {
         updatedSelectedValues[index] = value;
       } else {
         // If the checkbox is unchecked, remove the value from the selectedValues object
-        delete updatedSelectedValues[index];
+        updatedSelectedValues[index]=null;
       }
+      const selectedValuesArray = Object.values(updatedSelectedValues);  
+      console.log(selectedValuesArray)
+      setSelectedValues(selectedValuesArray)
+    }
 
-      // Update the selectedValues state
-      setSelectedValues(updatedSelectedValues);
-    };
-    console.log(selectedValues)
-
+    //   // Create a copy of the selectedValues object
+    //   const updatedSelectedValues = { ...selectedValues };
+    //   // If the checkbox is checked, set the value in the selectedValues object
+    //   if (updatedCategoryChecked[index]) {
+    //     updatedSelectedValues[index] = value;
+    //   } else {
+    //     // If the checkbox is unchecked, remove the value from the selectedValues object
+    //     updatedSelectedValues[index]=null;
+    //   }
+    //   const selectedValuesArray = Object.values(updatedSelectedValues);
+    //   // Update the selectedValues state
+    //   setSelectedValues(selectedValuesArray);
+    //   console.log(filteredData)
+    //   props.sendDataFromDropdown(filteredData.filter((item)=>selectedValues?.includes(item.address)))
+    // };
+    const results = filteredData?.filter((item)=>selectedValues?.includes(item.address))
     console.log(isCategoryChecked)
+    console.log(results)
+    console.log(selectedValues)
+    console.log(filteredData)
+    console.log(permanentData)
+    console.log(isCategoryChecked)
+
+
 
     return (
       <>
