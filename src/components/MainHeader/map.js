@@ -185,7 +185,7 @@ const DisplayMap = (props) => {
     <div className="flex flex-row">
       {/* <CheckboxList
       permanentDataFromParent={permanentData}
-      sendFilteredItemsFromCheckboxList={receiveFilteredItemsFromCheckboxList}
+      // sendFilteredItemsFromCheckboxList={receiveFilteredItemsFromCheckboxList}
       ></CheckboxList> */}
       <Dropdown
           sendDataFromDropdown = {dataFromDropdown}
