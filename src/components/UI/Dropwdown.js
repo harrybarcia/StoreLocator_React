@@ -83,17 +83,27 @@ useEffect(() => {
     props.sendDataFromDropdown(filteredData);
   };
 
-    const handleCheckboxChange = (index) => {
+    const handleCheckboxChange = (value, index) => {
       // Create a copy of the cityChecked array
       const updatedCityChecked = [...isChecked];
       // Toggle the checked state for the clicked city
       updatedCityChecked[index] = !updatedCityChecked[index];
       // Update the state of the value in the array
       setIsChecked(updatedCityChecked); // outputs [true, false, true, false]
+      const updatedSelectedValues = { ...selectedValues }
+      if (updatedCityChecked[index]) {
+        updatedSelectedValues[index] = value;
+      } else {
+        // If the checkbox is unchecked, remove the value from the selectedValues object
+        updatedSelectedValues[index]=null;
+      }
+      const selectedValuesArray = Object.values(updatedSelectedValues);  
+      setSelectedValues(selectedValuesArray)
 
     };
 
     const handleCheckboxChangeCategory = (value, index) => {
+      console.log(value, index)
       // Create a copy of the cityChecked array
       const updatedCategoryChecked = [...isCategoryChecked];
       // Toggle the checked state for the clicked city
@@ -110,67 +120,81 @@ useEffect(() => {
       const selectedValuesArray = Object.values(updatedSelectedValues);  
       setSelectedValues(selectedValuesArray)
     }
+    console.log("isCategoryChecked", isCategoryChecked)
+    console.log("selectedValues", selectedValues)
+
     useEffect(() => {
     }, [isCategoryChecked])
     
     useEffect(() => {
       setFilteredData(filteredData?.filter((item)=>selectedValues?.includes(item.address)))
     }, [selectedValues, isCategoryChecked])
+
+    const types = [
+      {
+        label: 'Cities',
+        data: uniqueCities,
+        isCheckedType: isChecked,
+        handleCheckboxChange: handleCheckboxChange,
+      },
+      {
+        label: 'Categories',
+        data: uniqueCategories,
+        isCheckedType: isCategoryChecked,
+        handleCheckboxChange: handleCheckboxChangeCategory,
+      },
+      // Add more types as needed
+    ];
+
+    const toggleIsOpen = (index) => {
+      setIsOpen((prevIsOpen) =>
+        prevIsOpen.map((value, i) => (i === index ? !value : value))
+      );
+    };
+
+    console.log("isChecked", isChecked)
     
     return (
-      <>
-        <form className=" relative flex justify-center m-2">
-        <button 
-        type="button"
-        className=" w-fit rounded-full p-2 text-black font-bold text-lg hover:gray border border-black" 
-        onClick={() => setIsOpen([!isOpen[0], isOpen[1]])}>Types
-        {isOpen[0]? <ArrowDropDownIcon className="h-8" /> : <ArrowDropUpIcon className="h-8" />}
-        </button>
-        {
-          isOpen[0] && <div className="absolute text-black font-bold flex flex-col top-12  p-2 w-fit z-10 bg-white rounded">
-            <ul className="flex flex-col text-black" >
-              {
-                uniqueCities.map((city, index) => (
-                  
-                <li  >
-                  <Checkbox id={index} name={city} checked={isChecked[index]}
-                  onChange={() => handleCheckboxChange(index)}
-                  />
-                  <label className="ml-2" htmlFor={index}>{city}</label>
-                </li>
-                
-                  ))
-              }
-            </ul>
-          </div>
-        }
-      </form>
-      <form className=" relative flex justify-center m-2">
-        <button 
-        type="button"
-        className=" w-fit rounded-full p-2 text-black font-bold text-lg hover:gray border border-black" 
-        onClick={() => setIsOpen([isOpen[0], !isOpen[1]])}>Types
-        {isOpen[1]? <ArrowDropDownIcon className="h-8" /> : <ArrowDropUpIcon className="h-8" />}
-        </button>
-        {
-          isOpen[1] && <div className="absolute text-black font-bold flex flex-col top-12  p-2 w-fit z-10 bg-white rounded">
-            <ul className="flex flex-col text-black" >
-              {
-                uniqueCategories.map((key, index) => (
-                <li key={index} >
-                  <Checkbox id={key} value={key} checked={isCategoryChecked[index]}
-                  onChange={(e) => handleCheckboxChangeCategory(e.target.value, index )}
-                  />
-                  <label className="ml-2" htmlFor={key}>{key}</label>
-                </li>
-                  ))
-              }
-            </ul>
-          </div>
-        }
-      </form>
-      </>
-    );
+    <div className="flex flex-row">
+      {types.map((type, index) => (
+        <form className="relative flex justify-center m-2" key={index}>
+          <button
+            type="button"
+            className="w-fit rounded-full p-2 text-black font-bold text-lg hover:gray border border-black"
+            onClick={() => toggleIsOpen(index)}
+          >
+            {type.label}
+            {isOpen[index] ? (
+              <ArrowDropDownIcon className="h-8" />
+            ) : (
+              <ArrowDropUpIcon className="h-8" />
+            )}
+          </button>
+          {isOpen[index] && (
+            <div className="absolute text-black font-bold flex flex-col top-12 p-2 w-fit z-10 bg-white rounded">
+              <ul className="flex flex-col text-black">
+                {type.data.map((item, itemIndex, index) => (
+                  <li key={itemIndex}>
+                    <Checkbox
+                      id={itemIndex}
+                      name={item}
+                      checked={type.isCheckedType[itemIndex]}
+                      onChange={() =>
+                        type.handleCheckboxChange(item, itemIndex)
+                      }
+                    />
+                    <label className="ml-2" htmlFor={itemIndex}>
+                      {item}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </form>
+      ))}
+    </div>
+  );
 }
 
 export default Dropdown;
