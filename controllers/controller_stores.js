@@ -14,13 +14,15 @@ exports.getStore = async (req, res, next) => {
 exports.getStoresByCity = async (req, res, next) => {
   
   const city = (req.params.city).trim();
+  const regex = new RegExp(city, 'i');
+
   console.log('city in controller', city);
   if (!city) {
      const result = await Store.find();
     return res.status(401).json({ message: 'All cities', data: result });
   } else {
     try {
-      const result = await Store.find({city});
+      const result = await Store.find({ city: { $regex: regex } });
       console.log('result in controller try', result);
       return (
         res.status(200).json({ message: 'Success!', data: result })
