@@ -170,6 +170,7 @@ const DisplayMap = (props) => {
     setFilteredData(data)
   }
   const pullData = (data) => {
+    console.log(data)
     setFilteredData(data)
 
     if (!data){
