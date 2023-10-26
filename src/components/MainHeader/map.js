@@ -166,6 +166,7 @@ const DisplayMap = (props) => {
   };
 
   const dataFromDropdown = (data) =>{
+    console.log("data", data)
     setFilteredData(data)
   }
   const pullData = (data) => {

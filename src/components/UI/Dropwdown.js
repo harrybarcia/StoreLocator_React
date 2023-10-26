@@ -11,16 +11,17 @@ const Dropdown = (props) => {
   const [filteredData, setFilteredData] = useState(props.dataFromParent)
   const [permanentData, setPermanentData] =useState(props.permanentDataFromParent)
   const [isChecked, setIsChecked] = useState(filteredData);
-  const [isCategoryChecked, setIsCategoryChecked] = useState([true, true]);
-  const uniqueCategories = ["455 waterfront roadf", "10"]
-  const [selectedValues, setSelectedValues] = useState(["455 waterfront roadf", "10"]);
+  const [isCategoryChecked, setIsCategoryChecked] = useState([]);
+  const [uniqueCategories, setUniqueCategories] = useState([])
+  const [selectedValues, setSelectedValues] = useState([]);
   const [selectedCities, setSelectedCities] = useState()
      // I keep tracks of the changes on filtered and permanent data
   useEffect(() => {
+    console.log("props", props.dataFromParent)
     setFilteredData(props.dataFromParent);
     setPermanentData(props.permanentDataFromParent)
   }, [props.permanentDataFromParent, props.dataFromParent ]);
-  
+  console.log(filteredData)
   // I trigger selectStoreWhenClick when isChecked is changed
   useEffect(() => {
     selectStoreWhenClick();
@@ -32,30 +33,64 @@ const Dropdown = (props) => {
   
 
   // I create my array of unique cities and set isChecked Array
-  useEffect(() => {
-    console.log('uniqueCities:', uniqueCities)
-    axios.get(`/allStores`)
-    .then((res) => {
-      const uniqueArray = res.data.reduce((accumulator, store) => {
+  // Create an async function to fetch the data from the `/allStores` endpoint.
+
+// Use the fetchData() function in a useEffect hook.
+useEffect(() => {
+  async function fetchData() {
+    try {
+      const res = await axios.get('/allStores');
+      const data = res.data;
+      console.log(data); // Log the data within the function
+
+      // Continue working with the data inside this function
+      const uniqueCities = data.reduce((accumulator, store) => {
         if (!accumulator.includes(store.city)) {
           accumulator.push(store.city);
         }
         return accumulator;
-      }, [])
-      setUniqueCities(uniqueArray)
-      setIsChecked(new Array(uniqueArray.length).fill(true));
+      }, []);
 
-    })
-  }, [])
+      const uniqueCategories = data.reduce((accumulator, store) => {
+        if (!accumulator.includes(store.address)) {
+          accumulator.push(store.address);
+        }
+        return accumulator;
+      }, []);
+
+      setUniqueCities(uniqueCities);
+      setUniqueCategories(uniqueCategories);
+      setIsChecked(new Array(uniqueCities.length).fill(true));
+      setIsCategoryChecked(new Array(uniqueCategories.length).fill(true));
+    } catch (error) {
+      // Handle errors
+      console.error('Error fetching data:', error);
+    }
+  }
+
+  fetchData(); // Call the function
+}, []);
+
+
+// Log the uniqueCities and uniqueCategories state variables to the console.
+console.log('uniqueCities:', uniqueCities);
+console.log('uniqueCategories:', uniqueCategories);
+console.log("isChecked", isChecked)
+console.log(selectedValues)
+
+  console.log("uniqueCategories", uniqueCategories)
   const selectStoreWhenClick = () => {
     // for each truthy value of my array, i filter the city
     const selectedCities = uniqueCities?.filter((city, index) => isChecked[index]);
+    const selectedValues = uniqueCategories?.filter((address, index) => isCategoryChecked[index])
     console.log(selectedCities)
+    console.log(selectedValues)
     setSelectedCities(selectedCities)
 
       const filteredConditions = permanentData?.map((item) => {
+
         const cityCondition = selectedCities.includes(item.city);
-        const addressCondition = selectedValues?.includes(item.address);
+        const addressCondition = selectedValues.length>0?selectedValues.includes(item.address):permanentData.includes(item.address);
         return [cityCondition, addressCondition];
       });
       console.log(filteredConditions) // outputs [true, false] *6
@@ -64,6 +99,7 @@ const Dropdown = (props) => {
         const [cityCondition, addressCondition] = filteredConditions[index];
         return cityCondition && addressCondition;
       });
+      console.log(filteredData)
       
     props.sendDataFromDropdown(filteredData);
   };
@@ -77,14 +113,19 @@ const Dropdown = (props) => {
       setIsChecked(updatedCityChecked); // outputs [true, false, true, false]
 
     };
+
+    console.log(isCategoryChecked)
+
     const handleCheckboxChangeCategory = (value, index) => {
       console.log(value)
+      console.log(isCategoryChecked)
       // Create a copy of the cityChecked array
       const updatedCategoryChecked = [...isCategoryChecked];
       // Toggle the checked state for the clicked city
       updatedCategoryChecked[index] = !updatedCategoryChecked[index];
       // Update the state of the value in the array
       setIsCategoryChecked(updatedCategoryChecked); // outputs [true, false, true, false]
+      
       const updatedSelectedValues = { ...selectedValues }
       if (updatedCategoryChecked[index]) {
         updatedSelectedValues[index] = value;
@@ -92,27 +133,32 @@ const Dropdown = (props) => {
         // If the checkbox is unchecked, remove the value from the selectedValues object
         updatedSelectedValues[index]=null;
       }
+      console.log(updatedSelectedValues)
       const selectedValuesArray = Object.values(updatedSelectedValues);  
       console.log(selectedValuesArray)
       setSelectedValues(selectedValuesArray)
-      props.sendDataFromDropdown(filteredData.filter((item)=>selectedValues?.includes(item.address)))
-
+      
     }
-
+    console.log(isCategoryChecked)
+    console.log(selectedValues)
     
 
+    useEffect(() => {
 
+    }, [isCategoryChecked])
     
     useEffect(() => {
-      console.log("here for filteredData", filteredData)
+      console.log("here for selectedvalues", selectedValues)
       setFilteredData(filteredData?.filter((item)=>selectedValues?.includes(item.address)))
-    }, [selectedValues])
-    console.log(isCategoryChecked)
-    // console.log(results)
-    console.log(selectedValues)
-    console.log(filteredData)
-    console.log(permanentData)
-    console.log(isCategoryChecked)
+    }, [selectedValues, isCategoryChecked])
+    console.log("isCategoryChecked",isCategoryChecked)
+    // console.log("results",results)
+    console.log("selectedValues",selectedValues)
+    console.log("filteredData",filteredData)
+    console.log("permanentData",permanentData)
+    console.log("isCategoryChecked",isCategoryChecked)
+    console.log("uniqueC",uniqueCategories)
+
 
 
 
