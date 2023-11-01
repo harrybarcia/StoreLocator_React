@@ -3,25 +3,21 @@ import axios from "axios";
 
 const AdminPanel = () => {
   const [fields, setFields] = useState([]);
+  const [newFields, setNewFields] = useState([]);
+  const [allFieldsTogether, setAllFieldsTogether] = useState([])
 
   useEffect(() => {
     const fetchFields = async () => {
       try {
         const response = await axios.get('/fields'); // Use the correct API endpoint URL
-        // Array to store all types
-        const allTypes = [];
-
-        // Loop through the objects and extract the types
-        for (const obj of response.data) {
-            const typeObject = obj.type;
-            const types = Object.keys(typeObject);
-
-            // Add the types to the array
-            allTypes.push(...types);
-        }
-
-        console.log(allTypes);
-        setFields(allTypes)
+        // Array to store the transformed data
+        const transformedData = response.data.map(obj => {
+          const types = Object.entries(obj.type);
+          // Assuming each object has only one type
+          const [key, value] = types[0];
+          return { key, value };
+        });
+        setFields(transformedData)
       } catch (error) {
         console.error('Error fetching fields:', error);
       }
@@ -29,46 +25,38 @@ const AdminPanel = () => {
 
     fetchFields(); // Call the fetchFields function when the component mounts
   }, []); // Empty dependency array to ensure it runs only once when the component mounts
-
+  console.log(fields)
   useEffect(() => {
+    setAllFieldsTogether([...fields, ...newFields]);
+  }, [fields, newFields])
 
-  }, [fields])
-  console.log("[{key: 'test', value: 'Number'} ]")
-  console.log("fields", fields) // Output:[{key: 'test', value: 'Number'} ]
+  
+
   const handleSubmit = async (evt) => {
     evt.preventDefault();
-    const results = await axios.post('/add-field', fields)
+    const results = await axios.post('/add-field', newFields)
     console.log('Data saved:', results.data);
   }
-
-  fields.map((field, index) => {
-    console.log(field.value, index)
-  })
-
   const [newFieldName, setNewFieldName] = useState('');
   const [newFieldType, setNewFieldType] = useState('');
-
   const handleAddInputField = () => {
-    const newField = {
+    const newFields = {
       key: newFieldName,
       value: newFieldType,
     };
-    console.log(newField)
-
-    setFields([...fields, newField]);
+    setNewFields(prevFields => [...prevFields, newFields]);
     setNewFieldName('');
     setNewFieldType('');
   };
-
+  console.log(allFieldsTogether)
   return (
     <>
       <div className="max-w-md w-full flex items-center justify-center  bg-white p-8 rounded shadow-md">
         <form onSubmit={handleSubmit} >
             {
-              fields.map((field, index) => {
+              allFieldsTogether.map((field, index) => {
                 const key = field.key;
                 const fieldName = `${key}-${index}`;
-
                 return (
                   <div className="mb-4" key={index}>
                     <label className="block text-gray-600 font-medium">{key}</label>
