@@ -9,7 +9,7 @@ const ratingSchema=new Schema({
 
 const StoreSchema=new Schema(
   {storeId:{type: Schema.Types.ObjectId},
-    address:{type:String,required:[true, 'Please add an address']},
+    address:{type:String,required:[true, 'Please add an address'], isFiltered: Boolean},
     location: {type: {type: String, // Don't do `{ location: { type: String } }`
           enum: ['Point'], // 'location.type' must be 'Point'
         },
@@ -25,7 +25,7 @@ const StoreSchema=new Schema(
     },
     image:String,
     userId: {type: Schema.Types.ObjectId, ref: 'User'},
-    city:String,
+    city:{String, isFiltered: Boolean},
     price:{type:Number, required:[true, 'Please add a price']},
     rating:{type:Number},
     reviews:[ratingSchema],

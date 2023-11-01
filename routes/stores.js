@@ -34,9 +34,12 @@ app.get('/myStores', authenticateToken, adminController.getMyStores);
 app.delete('/api/:id', authenticateToken, adminController.deleteStore)
 app.get('/search/:city',  adminController.getStoresByCity);
 app.get('/api/:id', adminController.getStore);
+app.get('/filteredFields', adminController.getFilteredFields)
 app.post('/add-store', authenticateToken,  upload, adminController.addStore)
 app.post('/add-store-from-click', authenticateToken,  upload, adminController.addStoreFromClick)
 app.put('/edit-store/:id',authenticateToken, bypassGeocoding, upload, adminController.updateStore)
 app.post('/rate/:id',authenticateToken, adminController.rateStore)
+
+
 
 module.exports = app;

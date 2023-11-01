@@ -15,6 +15,22 @@ const dynamicSchema = new mongoose.Schema(
     }
   );
 
+  dynamicSchema.statics.addDynamicFieldToSchema = function (fieldName, type) {
+  const newField = {};
+  newField[fieldName] = type;
+
+  // Create a new schema with the added field.
+  const newSchema = new mongoose.Schema({
+    ...this.schema.paths,
+    ...newField,
+  });
+
+  // Set the new schema on the model.
+  this.schema = newSchema;
+  dynamicSchema.set(newSchema);
+
+};
+
 const DynamicModel = mongoose.model('Field', dynamicSchema);
 
 module.exports = DynamicModel;
