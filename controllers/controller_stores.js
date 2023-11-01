@@ -2,7 +2,6 @@ const Store=require('../models/model_Store')
 const mongodb=require('mongodb');
 // const { json } = require('body-parser');
 const ObjectId = require('mongodb').ObjectId; 
-
 exports.getStore = async (req, res, next) => {
   const storeId = req.params.id;
   const data = await Store.findById(storeId);
@@ -36,6 +35,21 @@ exports.getStoresByCity = async (req, res, next) => {
   }
 };
   
+
+exports.getFilteredFields = async (req, res) => {
+  try {
+    const filteredFields = await Store.find({ isFiltered: true }).exec();
+    // Extract the field names from the filtered fields
+    const fieldNames = Object.keys(filteredFields[0].toObject());
+
+    res.json(fieldNames);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
 
 
 
@@ -232,4 +246,4 @@ exports.getMyStores = async (req, res, next) => {
     }
     console.log('reviews', store.reviews.length);
 };
-    
+
