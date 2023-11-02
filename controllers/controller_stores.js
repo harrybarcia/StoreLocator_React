@@ -66,25 +66,38 @@ exports.addStore = async (req, res, next)=>{
   const city = req.body.city;
   const price = req.body.price;
   const rating = req.body.rating;
-  
-        const store=await new Store({
-          storeId:storeId,
-          address, image, userId, city, price, rating});
-        store
-        .save()
-        .then(results => {
-          console.log("results in controlle stores")
-          console.log(results);
-          console.log('Created Store');
-          res.status(200).json({ message: 'Success!', data: results });
 
-        })
-          .catch (err=>{
-            console.error(err);
-            if (err.code===11000){
-                return res.status(400).json({error:'this store already exist'})
-            }
-            res.status(500).json({error:"Server error"})
+  const dynamicFields = [
+    { key: "zonage", data: 5, value: "string" },
+    { key: "Foncier", data: 5, value: "string" },
+    // Add more dynamic fields as needed
+  ];
+  const typeObject = {};
+  for (const field of dynamicFields) {
+    const { key, value } = field;
+    typeObject[key] = value;
+  }
+  console.log(typeObject)
+
+  
+  const store=await new Store({
+    storeId:storeId,
+    address, image, userId, city, price, rating, typeObject});
+  store
+  .save()
+  .then(results => {
+    console.log("results in controlle stores")
+    console.log(results);
+    console.log('Created Store');
+    res.status(200).json({ message: 'Success!', data: results });
+
+  })
+    .catch (err=>{
+      console.error(err);
+      if (err.code===11000){
+          return res.status(400).json({error:'this store already exist'})
+      }
+      res.status(500).json({error:"Server error"})
     })
 }
 

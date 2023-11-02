@@ -12,7 +12,6 @@ const mongoose = require('mongoose');
 // const session=require('express-session');
 const csrf=require('csurf');
 
-
 require ('dotenv').config();
 const mongodb=require('mongodb');
 
@@ -31,19 +30,10 @@ console.log(process.env.MONGO_USER);
 console.log(process.env.MONGO_PASSWORD);
 console.log(process.env.MONGO_DATABASE);
 const MONGODB_URI =
-  
   `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.iaepn.mongodb.net/${process.env.MONGO_DATABASE}`;
-  
-
-  
 const app=express();
-
-
-
 app.use(cors());
-
 // Set static folder
-
 app.use(express.static(path.join(__dirname, 'public')));
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, 'access.log'),
@@ -57,15 +47,11 @@ const authRoutes = require('./routes/auth');
 const pollenRoutes = require('./routes/pollen');
 const fieldsRoutes = require('./routes/fields')
 
-
 app.use(authRoutes);
 app.use(storesRoutes);
 app.use(pollenRoutes);
 app.use(fieldsRoutes);
-
-
 app.use(cookieParser());
-
 // if (process.env.NODE_ENV === 'production') {
 //   app.use(express.static('public/build'));
 // } 

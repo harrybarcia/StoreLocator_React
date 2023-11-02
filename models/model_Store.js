@@ -33,7 +33,11 @@ const StoreSchema=new Schema(
       type: Boolean,
       required: false,
       default: false
-  }
+    },
+    typeObject: {
+      type: Object, // Use an object to allow dynamic properties
+      default: {},
+    },    
     });
 
 
