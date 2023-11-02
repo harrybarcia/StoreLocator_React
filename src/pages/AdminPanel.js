@@ -1,31 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
+import { fetchFields } from './Fields';
 
 const AdminPanel = () => {
   const [fields, setFields] = useState([]);
   const [newFields, setNewFields] = useState([]);
   const [allFieldsTogether, setAllFieldsTogether] = useState([])
 
+  
   useEffect(() => {
-    const fetchFields = async () => {
-      try {
-        const response = await axios.get('/fields'); // Use the correct API endpoint URL
-        // Array to store the transformed data
-        const transformedData = response.data.map(obj => {
-          const types = Object.entries(obj.type);
-          // Assuming each object has only one type
-          const [key, value] = types[0];
-          return { key, value };
-        });
-        setFields(transformedData)
-      } catch (error) {
-        console.error('Error fetching fields:', error);
-      }
+    // Fetch data when the component mounts
+    const fetchData = async () => {
+      const data = await fetchFields();
+      setFields(data); // Update the state with the fetched data
     };
 
-    fetchFields(); // Call the fetchFields function when the component mounts
-  }, []); // Empty dependency array to ensure it runs only once when the component mounts
+    fetchData();
+  }, []); // Empty dependency array to run the effect once when the component mounts  
+
   console.log(fields)
+
   useEffect(() => {
     setAllFieldsTogether([...fields, ...newFields]);
   }, [fields, newFields])
