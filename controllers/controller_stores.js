@@ -66,20 +66,7 @@ exports.addStore = async (req, res, next)=>{
   const city = req.body.city;
   const price = req.body.price;
   const rating = req.body.rating;
-
-  const dynamicFields = [
-    { key: "zonage", data: 5, value: "string" },
-    { key: "Foncier", data: 5, value: "string" },
-    // Add more dynamic fields as needed
-  ];
-  const typeObject = {};
-  for (const field of dynamicFields) {
-    const { key, value } = field;
-    typeObject[key] = value;
-  }
-  console.log(typeObject)
-
-  
+  const typeObject = JSON.parse(req.body.typeObject);
   const store=await new Store({
     storeId:storeId,
     address, image, userId, city, price, rating, typeObject});
@@ -106,12 +93,14 @@ exports.addStoreFromClick = async (req, res) => {
   const storeId = new mongodb.ObjectId();
   const userId = req.user.userId;
   const image = req.file.filename;
+  const typeObject = JSON.parse(req.body.typeObject);
   const newPinData = {
     ...pinData, // Include properties from pinData
     storeId: storeId, // Add the storeId property
     userId: userId, // Add the userId property
     skipGeocoding: true, // Set this flag to skip geocoding
-    image:image
+    image:image,
+    typeObject:typeObject
   };
   try {
     const savedPin = await Store.createPinWithoutGeocoding(newPinData);
@@ -130,6 +119,7 @@ exports.updateStore = (req, res, next) => {
   const rating = req.body.rating;
   const userId = req.user.userId?req.user.userId:null;
   const location = req.body.location
+  const typeObject = JSON.parse(req.body.typeObject);
   console.log("jsonparse", JSON.parse(location))
   if (req.bypassGeocode) {
     console.log(req.bypassGeocode)
@@ -143,6 +133,7 @@ exports.updateStore = (req, res, next) => {
       store.price = price;
       store.rating = rating;
       store.location = JSON.parse(location)
+      store.typeObject = typeObject
       return store.save();
     })
     .then(result => {
