@@ -20,7 +20,6 @@ const Dropdown = (props) => {
     setFilteredData(props.dataFromParent);
     setPermanentData(props.permanentDataFromParent)
   }, [props.permanentDataFromParent, props.dataFromParent ]);
-  console.log(filteredData)
   // I trigger selectStoreWhenClick when isChecked is changed
   useEffect(() => {
     selectStoreWhenClick();
@@ -55,10 +54,6 @@ useEffect(() => {
         },
         [[], []]
       );
-      console.log(uniqueData)
-
-      
-      
       // Create the desired result as an array of arrays
       setUniqueData(uniqueData)
 
@@ -82,8 +77,6 @@ useEffect(() => {
   fetchData(); // Call the function
 }, []);
 
-  console.log(uniqueData)
-  console.log("isCheckedType", isCheckedType)
   const selectStoreWhenClick = () => {
     // for each truthy value of my array, i filter the city
     const selectedCities = uniqueData[0]?.filter((city, index) => isCheckedType[0][index]);
@@ -104,14 +97,10 @@ useEffect(() => {
   };
 
     const handleCheckboxChange = (typeIndex, itemIndex, item) => {
-      console.log(typeIndex, itemIndex, item);
       // Create a copy of the isCheckedType array
       const updatedCheckedType = [...isCheckedType];
-      console.log(updatedCheckedType);
-      console.log(updatedCheckedType[itemIndex]);
       // Toggle the checked state for the clicked city
       updatedCheckedType[typeIndex][itemIndex] = !updatedCheckedType[typeIndex][itemIndex];
-      console.log(updatedCheckedType);
       // Update the state with the new value
       setIsCheckedType(updatedCheckedType);
       
@@ -125,8 +114,6 @@ useEffect(() => {
       const selectedValuesArray = Object.values(updatedSelectedValues);  
       setSelectedValues(selectedValuesArray)
     };
-    console.log(isCheckedType)
-    console.log("selectedValues", selectedValues)
 
     useEffect(() => {
     }, [isCheckedType])
@@ -155,9 +142,6 @@ useEffect(() => {
       );
     };
 
-    console.log("isChecked", isChecked)
-    console.log(types[0])
-    console.log(types[1])
     
     return (
     <div className="flex flex-row">

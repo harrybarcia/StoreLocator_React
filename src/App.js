@@ -37,7 +37,7 @@ const App = () => {
 				<Routes>
 					<Route path="/" element={<MapData />} />
 					<Route path="/welcome"  element={<Welcome />} />
-					<Route path="/all-stores" element={<AllStores />} />
+					<Route path="/all-stores" element={<MapData />} />
 					<Route path="/api/:id" element={<Store />} />
 					<Route path="/pollen/:id" element={<Pollen />} />
 					<Route path="/add-store" element={<NewStoreForm />} />

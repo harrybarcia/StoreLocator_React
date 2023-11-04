@@ -7,6 +7,7 @@ import {fetchFields} from "./Fields"
 
 const SimpleInput = (props) => {
   console.log(props)
+  
   const [address, setAddress] = useState(props.data?.address || "");
   const [city, setCity] = useState(props.data?.city || "");
   const [image, setFile] = useState(props.data?.image || "");
@@ -15,19 +16,28 @@ const SimpleInput = (props) => {
   const [latitude, setLatitude] = useState(props.data?.latitude || "");
   const [longitude, setLongitude] = useState(props.data?.latitude || "");
   const isEditMode = props.isEditMode
-  const [dynamicInputs, setDynamicInputs] = useState([]);
+  const [dynamicInputs, setDynamicInputs] = useState([]); //  [{"key": "Zonage","value": "string"}]
+  const [inputData, setInputData] = useState(props.data?.typeObject || dynamicInputs);
 
   useEffect(() => {
     // Fetch data when the component mounts
     const fetchData = async () => {
-      const data = await fetchFields();
-      setDynamicInputs(data); // Update the state with the fetched data
+      const response = await fetchFields();
+      setDynamicInputs(response); // Update the state with the fetched data
     };
     fetchData();
-  }, []); // Empty dependency array to run the effect once when the component mounts  
+  }, []); // Empty dependency array to run the effect once when the component mounts
 
+  useEffect(() => {
+    if (!props.data?.typeObject){
+      const newInputData = dynamicInputs.map(item => ({ ...item, data: "" }));
+      setInputData(newInputData);
+    }
+  }, [dynamicInputs])
+
+  console.log(dynamicInputs)  
+  console.log("inputData", inputData)
   console.log(props.newPlace)
-  console.log(dynamicInputs)
   const navigate = useNavigate();
   const handleAddressChange = (evt) => {
     console.log(evt.target.value);
@@ -48,23 +58,14 @@ const SimpleInput = (props) => {
     setRating(evt.target.value);
   };
 
-  const handleDynamicInputChange = (evt, index) => {
-    console.log(evt.target.value,index)
-    const newArray = [...dynamicInputs]; // Create a copy of the original array
-    const indexToUpdate = newArray.findIndex(item => item.key === newArray[index].key);
-    if (indexToUpdate !== -1) {
-      // If the object with the specified key exists in the array
-      newArray[indexToUpdate] = {
-        key: newArray[index].key,
-        value: newArray[index].value,
-        data:evt.target.value
-      };
-    }
-    // Update the state with the modified array
-    setDynamicInputs(newArray);
+  const handleInputChange = (key, data) => {
+    // Find the index of the object with the specified key
+    const updatedData = inputData.map(item =>
+      item.key === key ? { ...item, data } : item
+    );
+    setInputData(updatedData);
   };
-  console.log(dynamicInputs)
-
+  console.log(inputData)
   const handleSubmit = async (evt) => {
     console.log(props.latitude)
     evt.preventDefault();
@@ -81,6 +82,7 @@ const SimpleInput = (props) => {
       formData.append("rating", rating);
       formData.append("latitude", latitude);
       formData.append("longitude", longitude);
+      formData.append("typeObject",JSON.stringify(inputData) )
       console.log(formData)
       const response = axios.post("/add-store-from-click", formData);
       const data = await response;
@@ -97,6 +99,7 @@ const SimpleInput = (props) => {
       formData.append("image", image);
       formData.append("price", price);
       formData.append("rating", rating);
+      formData.append("typeObject",JSON.stringify(inputData) )
       const location = { coordinates: [longitude, latitude] }
       const jsonString = JSON.stringify(location);
       formData.append("location", jsonString)
@@ -113,11 +116,7 @@ const SimpleInput = (props) => {
       formData.append("image", image);
       formData.append("price", price);
       formData.append("rating", rating);
-      dynamicInputs.forEach((item) => {
-        const { key, value, data } = item;
-        formData.append(key, data || "");
-      });
-      
+      formData.append("typeObject",JSON.stringify(inputData) )
       const response = axios.post("/add-store", formData);
       const data = await response;
       navigate("/");
@@ -125,8 +124,6 @@ const SimpleInput = (props) => {
     }
     console.log(formData)
   }
-
-  
 
   return (
 
@@ -175,14 +172,18 @@ const SimpleInput = (props) => {
             onChange={handleRatingChange}
           />
           <br />
-          {dynamicInputs?.map((input, index) => (
+          {inputData.map((item, index) => (
             <div key={index}>
-            <label className="block text-gray-700 font-bold mb-2">{input.key}</label>
-            <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                type={input.type}
-                name={input.name}
-                onChange={(e) => handleDynamicInputChange(e, index)}
-              />
+              <label
+              className="block text-gray-700 font-bold mb-2"
+              >{item.key}</label>
+                <input
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  type="text"
+                  value={item.data}
+                  onChange={(e) => handleInputChange(item.key, e.target.value)}
+                  />
+              {/* Add more field types as needed */}
             </div>
           ))}
           <div class="my-4 flex flex-row items-center justify-center">

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import { fetchFields } from './Fields';
+import { Navigate, useNavigate } from "react-router-dom";
 
 const AdminPanel = () => {
   const [fields, setFields] = useState([]);
   const [newFields, setNewFields] = useState([]);
   const [allFieldsTogether, setAllFieldsTogether] = useState([])
+  const navigate = useNavigate();
 
   
   useEffect(() => {
@@ -30,6 +32,7 @@ const AdminPanel = () => {
     evt.preventDefault();
     const results = await axios.post('/add-field', newFields)
     console.log('Data saved:', results.data);
+    navigate("/");
   }
   const [newFieldName, setNewFieldName] = useState('');
   const [newFieldType, setNewFieldType] = useState('');
@@ -60,9 +63,9 @@ const AdminPanel = () => {
                       className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-500"
                       defaultValue={field.value}
                     >
-                      <option value="String">String</option>
-                      <option value="Boolean">Boolean</option>
-                      <option value="Number">Number</option>
+                      <option value="string">String</option>
+                      <option value="boolean">Boolean</option>
+                      <option value="number">Number</option>
                     </select>
                   </div>
                 );
