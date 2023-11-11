@@ -174,16 +174,17 @@ const SimpleInput = (props) => {
           <br />
           {inputData.map((item, index) => (
             <div key={index}>
-              <label
-              className="block text-gray-700 font-bold mb-2"
-              >{item.key}</label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  type="text"
-                  value={item.data}
-                  onChange={(e) => handleInputChange(item.key, e.target.value)}
+              {item.visibility && (
+                <div className="mr-8">
+                  <label className="block text-gray-700 font-bold mb-2">{item.key}</label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    type="text"
+                    value={item.data}
+                    onChange={(e) => handleInputChange(item.key, e.target.value)}
                   />
-              {/* Add more field types as needed */}
+                </div>
+              )}
             </div>
           ))}
           <div class="my-4 flex flex-row items-center justify-center">

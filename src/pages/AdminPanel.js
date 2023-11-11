@@ -7,8 +7,11 @@ import { Checkbox } from '@mui/material';
 const AdminPanel = () => {
   const [fields, setFields] = useState([]);
   const [newFields, setNewFields] = useState([]);
-  const [allFieldsTogether, setAllFieldsTogether] = useState([])
+  const [allFieldsTogether, setAllFieldsTogether] = useState([fields])
   const [checkboxValues, setCheckboxValues] = useState(Array(allFieldsTogether.length).fill(false))
+  const mySettings = ["visibility", "isFilter"];
+  const [checkboxStates, setCheckboxStates] = useState(Array(mySettings.length).fill(false));
+  const [checkboxMatrix, setCheckboxMatrix] = useState(Array(allFieldsTogether.length).fill(Array(mySettings.length).fill(false)));
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,23 +33,51 @@ const AdminPanel = () => {
   }, [fields, newFields])
 
   useEffect(() => {
-    setCheckboxValues(Array(allFieldsTogether.length).fill(false))
-  }, [allFieldsTogether])
+    setCheckboxMatrix((prevMatrix) => {
+      const newMatrix = Array.from({ length: allFieldsTogether.length }, () =>
+        Array(mySettings.length).fill(false)
+      );
+  
+      allFieldsTogether.forEach((field, fieldIndex) => {
+        mySettings.forEach((setting, index) => {
+          // Check if the field has the setting property and if its value is truthy
+          const fieldValue = field[setting];
+          newMatrix[fieldIndex][index] = fieldValue ? true : false;
+        });
+      });
+  
+      return newMatrix;
+    });
+  }, [allFieldsTogether]);
+  
 
-  const mySettings = ["visibility", "isfield"];
-  const [checkboxStates, setCheckboxStates] = useState(Array(mySettings.length).fill(false));
-
-  const handleChangeCheckbox = (index) => {
-    const newCheckboxStates = [...checkboxStates];
-    newCheckboxStates[index] = !newCheckboxStates[index];
-    setCheckboxStates(newCheckboxStates);
+  console.log(checkboxMatrix)
+  const handleChangeCheckbox = (rowIndex, colIndex) => {
+    console.log(rowIndex,":", colIndex)
+    console.log(checkboxMatrix[rowIndex][colIndex])
+    setCheckboxMatrix((prevMatrix) => {
+      const newMatrix = [...prevMatrix];
+      newMatrix[rowIndex][colIndex] = !newMatrix[rowIndex][colIndex];
+      return newMatrix;
+    });
   };
-  console.log(checkboxStates)
-
+  console.log(checkboxMatrix)
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
-    const results = await axios.post('/add-field', newFields)
+    const updatedFields = allFieldsTogether.map((field, fieldIndex) => {
+      const updatedProperties = mySettings.reduce((acc, setting, index) => {
+        const checkboxValue = checkboxMatrix[fieldIndex]?.[index] || false;
+        return { ...acc, [setting]: checkboxValue };
+      }, {});
+    
+      return {
+        ...field,
+        ...updatedProperties,
+      };
+    });
+    
+    const results = await axios.post('/add-field', updatedFields)
     console.log('Data saved:', results.data);
     navigate("/");
   }
@@ -91,13 +122,13 @@ const AdminPanel = () => {
                       {
                         mySettings.map((item, index) => {
                           return (
-                            <div key={index}>
+                            <div key={fieldIndex[index]}>
                               <label className="text-gray-600 font-medium">{item}</label>
                               <Checkbox
-                               id={fieldIndex}
+                               id={`${fieldIndex}-${index}`}
                                name={field.key}
-                               checked={checkboxStates[fieldIndex]}
-                               onChange={() => handleChangeCheckbox(fieldIndex)}  
+                               checked={checkboxMatrix[fieldIndex] ? checkboxMatrix[fieldIndex][index] : false}                               
+                               onChange={() => handleChangeCheckbox(fieldIndex, index)}  
                               ></Checkbox>
                             </div>
                           )

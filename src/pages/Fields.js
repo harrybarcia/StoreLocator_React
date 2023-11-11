@@ -11,8 +11,9 @@ export const fetchFields = async () => {
         const types = Object.entries(obj.type);
         // Assuming each object has only one type
         const [key, value] = types[0];
-        const flagVisibility = obj.flagVisibility
-        return { key, value, flagVisibility  };
+        const visibility = obj.visibility
+        const isFilter = obj.isFilter
+        return { key, value, visibility, isFilter  };
       });
       return transformedData
     } catch (error) {
