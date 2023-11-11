@@ -7,7 +7,6 @@ const ObjectId = require('mongodb').ObjectId;
 exports.getFields = async (req, res, next) => {
       console.log("here in fields controller")
       const data = await Field.find();
-      
       return res.status(200).json(data)
   };
 
