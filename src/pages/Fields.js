@@ -11,7 +11,8 @@ export const fetchFields = async () => {
         const types = Object.entries(obj.type);
         // Assuming each object has only one type
         const [key, value] = types[0];
-        return { key, value };
+        const flagVisibility = obj.flagVisibility
+        return { key, value, flagVisibility  };
       });
       return transformedData
     } catch (error) {
