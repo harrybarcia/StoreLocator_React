@@ -22,11 +22,12 @@ exports.addNewField = async (req, res) => {
     // Create an array to store the newly created documents
     const savedDocuments = [];
     for (const field of fields) {
-      const { key, value, flagVisibility } = field;
+      const { key, value, visibility, isFilter } = field;
       // Construct a new document with the field data
       const newDocument = new Field({
         type:{[key]: value}, // Set the dynamic data based on user input
-        flagVisibility
+        visibility,
+        isFilter
       });
       console.log(newDocument)
       // Save the document to the database
