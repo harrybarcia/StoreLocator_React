@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const dynamicSchema = new mongoose.Schema(
+const fieldSchema = new mongoose.Schema(
   {
     type: {
       type: mongoose.Schema.Types.Mixed, // Mixed type can represent various data types
@@ -16,5 +16,4 @@ const dynamicSchema = new mongoose.Schema(
   }
 );
 
-const DynamicModel = mongoose.model('Field', dynamicSchema);
-module.exports = DynamicModel;
+module.exports = mongoose.model('Field', fieldSchema);

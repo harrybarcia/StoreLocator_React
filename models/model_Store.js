@@ -23,7 +23,7 @@ const StoreSchema=new Schema(
         type:Date,
         default:Date.now
     },
-    image:String,
+    image:{type:String, required:false},
     userId: {type: Schema.Types.ObjectId, ref: 'User'},
     city:String,
     price:{type:Number, required:[true, 'Please add a price']},
@@ -34,6 +34,7 @@ const StoreSchema=new Schema(
       required: false,
       default: false
     },
+    fields: [{ type: Schema.Types.ObjectId, ref: 'Field' }],
     typeObject: {
       type: Object, // Use an object to allow dynamic properties
       default: {},
@@ -72,7 +73,6 @@ StoreSchema.statics.createPinWithoutGeocoding = async function (pinData) {
     ...rest, // Include any other fields from pinData
   });
 
-console.log("here", store)
   // Save the document
   await store.save();
   return store;

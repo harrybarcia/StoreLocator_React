@@ -5,8 +5,7 @@ const authenticateToken = require('../utils/JWT');
 const app = express.Router();
 
 app.get('/fields', adminFieldsController.getFields)
-app.post('/add-field', adminFieldsController.addNewField)
-app.put('/fields', adminFieldsController.updateField)
-// app.delete('/fields', authenticateToken, adminController.deleteField)
+app.post('/add-field', adminFieldsController.updateField)
+app.delete('/delete-fields/:id', adminFieldsController.deleteField)
 
 module.exports = app;

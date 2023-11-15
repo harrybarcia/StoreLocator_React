@@ -41,7 +41,6 @@ exports.getFilteredFields = async (req, res) => {
     const filteredFields = await Store.find({ isFiltered: true }).exec();
     // Extract the field names from the filtered fields
     const fieldNames = Object.keys(filteredFields[0].toObject());
-
     res.json(fieldNames);
   } catch (error) {
     console.error(error);
@@ -67,8 +66,11 @@ exports.addStore = async (req, res, next)=>{
   const price = req.body.price;
   const rating = req.body.rating;
   const typeObject = JSON.parse(req.body.typeObject);
+  console.log("typeObjzdfcqect:", typeObject)
+  const fieldId = typeObject.id;
   const store=await new Store({
     storeId:storeId,
+    fields: [fieldId], // Add the Field reference to the fields array
     address, image, userId, city, price, rating, typeObject});
   store
   .save()
@@ -92,15 +94,17 @@ exports.addStoreFromClick = async (req, res) => {
   const pinData = req.body; // Assuming req.body contains the data for the new pin
   const storeId = new mongodb.ObjectId();
   const userId = req.user.userId;
-  const image = req.file.filename;
+  const image = req.file?.filename || "";
   const typeObject = JSON.parse(req.body.typeObject);
+  console.log(typeObject.map((item => item.id)));
   const newPinData = {
     ...pinData, // Include properties from pinData
     storeId: storeId, // Add the storeId property
     userId: userId, // Add the userId property
     skipGeocoding: true, // Set this flag to skip geocoding
     image:image,
-    typeObject:typeObject
+    typeObject:typeObject,
+    fields:typeObject.map((item => item.id))
   };
   try {
     const savedPin = await Store.createPinWithoutGeocoding(newPinData);
@@ -197,7 +201,6 @@ exports.getMyStores = async (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated.' });
   }
-  console.log("here")
   const userId = req.user.userId;
   const data = await Store.find(
     {userId: userId}
