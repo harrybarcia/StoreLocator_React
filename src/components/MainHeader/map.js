@@ -279,6 +279,7 @@ const DisplayMap = (props) => {
                     open={showModal}
                     onClose={() => setShowModal(false)}
                     onDelete={() =>handleDeleteClick(store._id)}
+                    modalContent="deleteStore"
                   />
                 </Popup>
               )}

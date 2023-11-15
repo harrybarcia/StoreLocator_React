@@ -21,7 +21,6 @@ const Navigation = () => {
             setLogout(data);
         }
         fetchLogout();
-        alert("there")
         authCtx.onLogout();
         navigate("/");
     }

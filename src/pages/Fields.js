@@ -13,7 +13,8 @@ export const fetchFields = async () => {
         const [key, value] = types[0];
         const visibility = obj.visibility
         const isFilter = obj.isFilter
-        return { key, value, visibility, isFilter  };
+        const id = obj._id
+        return {id, key, value, visibility, isFilter };
       });
       return transformedData
     } catch (error) {

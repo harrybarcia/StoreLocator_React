@@ -12,7 +12,6 @@ const Logout = () => {
     
     useEffect(() => {
         const fetchLogout = async () => {
-            alert("here")
             // console.log("fetching");
             const response = await fetch("/logout");
             const data = await response.json();

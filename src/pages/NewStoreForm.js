@@ -18,7 +18,7 @@ const SimpleInput = (props) => {
   const isEditMode = props.isEditMode
   const [dynamicInputs, setDynamicInputs] = useState([]); //  [{"key": "Zonage","value": "string"}]
   const [inputData, setInputData] = useState(props.data?.typeObject || dynamicInputs);
-
+  console.log(props.data?.typeObject)
   useEffect(() => {
     // Fetch data when the component mounts
     const fetchData = async () => {
@@ -29,7 +29,7 @@ const SimpleInput = (props) => {
   }, []); // Empty dependency array to run the effect once when the component mounts
 
   useEffect(() => {
-    if (!props.data?.typeObject){
+    if (props.data?.typeObject === undefined){
       const newInputData = dynamicInputs.map(item => ({ ...item, data: "" }));
       setInputData(newInputData);
     }

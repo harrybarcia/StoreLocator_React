@@ -3,6 +3,10 @@ import axios from "axios";
 import { fetchFields } from './Fields';
 import { Navigate, useNavigate } from "react-router-dom";
 import { Checkbox } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SuppressionModal from '../components/SuppressionModal';
+
+ 
 
 const AdminPanel = () => {
   const [fields, setFields] = useState([]);
@@ -12,21 +16,23 @@ const AdminPanel = () => {
   const mySettings = ["visibility", "isFilter"];
   const [checkboxStates, setCheckboxStates] = useState(Array(mySettings.length).fill(false));
   const [checkboxMatrix, setCheckboxMatrix] = useState(Array(allFieldsTogether.length).fill(Array(mySettings.length).fill(false)));
+  const [showModal, setShowModal] = useState(false);
+  const [fieldToDelete, setFieldToDelete] = useState(null);
+  console.log(fieldToDelete)
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Fetch data when the component mounts
-    const fetchData = async () => {
-      const data = await fetchFields();
-      setFields(data); // Update the state with the fetched data
-    };
+  // Fetch data when the component mounts
+  const fetchData = async () => {
+    const data = await fetchFields();
+    setFields(data); // Update the state with the fetched data
+  };
 
+  useEffect(() => {
     fetchData();
   }, []); // Empty dependency array to run the effect once when the component mounts  
 
   console.log(fields)
-
-
 
   useEffect(() => {
     setAllFieldsTogether([...fields, ...newFields]);
@@ -78,6 +84,7 @@ const AdminPanel = () => {
     });
     
     const results = await axios.post('/add-field', updatedFields)
+    console.log(updatedFields)
     console.log('Data saved:', results.data);
     navigate("/");
   }
@@ -93,7 +100,19 @@ const AdminPanel = () => {
     setNewFieldName('');
     setNewFieldType('');
   };
-  console.log(allFieldsTogether)
+  console.log("allFieldsTogether",allFieldsTogether)
+
+  const handleDeleteField = async (fieldToDelete) => {
+    setShowModal(false);
+    try {
+      const response = await axios.delete(`delete-fields/${fieldToDelete}`);
+      console.log(response);
+      fetchData();
+    } catch (error) {
+      // Handle error
+    }
+  };
+  
 
   return (
     <>
@@ -135,6 +154,19 @@ const AdminPanel = () => {
                         })
                       }
                     </div>
+                    <button type="button"
+                      className='ml-4 mt-4'
+                      onClick={() => setFieldToDelete(field.id)}
+                      >
+                      <DeleteIcon onClick={() => setShowModal(true)}></DeleteIcon>
+                    </button>
+                    <SuppressionModal
+                    open={showModal}
+                    onClose={() => setShowModal(false)}
+                    onDelete={() =>handleDeleteField(fieldToDelete)}
+                    modalContent="deleteField"
+
+                  />
                   </div>
                 );
               })
