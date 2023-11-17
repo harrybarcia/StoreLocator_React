@@ -13,7 +13,7 @@ exports.getFields = async (req, res, next) => {
 
 exports.updateField = async (req, res, next) => {
   const fieldsArray = req.body
-  console.log(fieldsArray)
+  console.log("fieldsArray",fieldsArray )
   try {
     for (const field of fieldsArray) {
       console.log(field.id)
@@ -27,12 +27,23 @@ exports.updateField = async (req, res, next) => {
 
 const upsertField = async (field) => {
   try {
-    // I check if it exists
     const existingField = await Field.findById(field.id);
     if (existingField) {
-      await Field.findByIdAndUpdate(field.id, field)
-      console.log(`Field with id ${field.id} updated.`);
-    } else {
+      console.log("in existing")
+      await Field.findByIdAndUpdate(field.id, field);
+      const associatedStores = await Store.find({
+        'typeObject.id': field.id,
+      });
+
+      for (const store of associatedStores) {
+          const updateResult = await Store.updateMany(
+            { 'typeObject.id': field.id },
+            { $set: { 'typeObject.$[].visibility': field.visibility } }
+          );
+        await store.save();
+      }
+    }
+    else {
       console.log("creating!", field)
       try {
           const { key, value, visibility, isFilter } = field;
@@ -40,16 +51,46 @@ const upsertField = async (field) => {
           const newDocument = new Field({
             type:{[key]: value}, // Set the dynamic data based on user input
             visibility,
-            isFilter,
-            fieldId: field.id, // Set the fieldId property
-
+            isFilter
           });
-          console.log(newDocument)
+          
           // Save the document to the database
           const savedDocument = await newDocument.save();
-      } catch (error) {
-        console.error('Error adding field:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+
+          // Retrieve all stores
+          const allStores = await Store.find();
+
+          const newTypeObjectItem = {
+            id: savedDocument._id.toString(),
+            key,
+            value,
+            isFilter,
+            visibility,
+            data: '', // You might need to set the data property based on your requirements
+          };
+
+           for (const store of allStores) {
+            // Check if the field is not already present in the store
+            console.log("1", newTypeObjectItem.id.toString())
+            console.log("2", newTypeObjectItem.id)
+            const hasField = store.typeObject.some(obj => obj.id === newTypeObjectItem.id.toString());
+            if (!hasField) {
+              store.typeObject.push({
+                id:savedDocument._id.toString(), 
+                key, // Use the actual field properties you want to associate
+                value,
+                isFilter, 
+                visibility, 
+                data:''
+              });
+              await store.save();
+              console.log(`Field added to store ${store}`);
+            }
+          }
+        }
+          catch (error) {
+                  console.error('Error adding field:', error);
+                  res.status(500).json({ error: 'Internal Server Error' });
       }
     }
   } catch (error) {
@@ -73,10 +114,8 @@ exports.deleteField = async (req, res) => {
     });
 
     // // Find stores with the field in their fields property
-    console.log("storesToUpdate", storesToUpdate)
     // Update each store's typeObject to remove objects with the specified fieldId
     for (const store of storesToUpdate) {
-      console.log("in the loop", store.id)
       store.typeObject = store.typeObject.filter((obj) => obj.id !== fieldId);
       await store.save();
     }

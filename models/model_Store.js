@@ -36,9 +36,9 @@ const StoreSchema=new Schema(
     },
     fields: [{ type: Schema.Types.ObjectId, ref: 'Field' }],
     typeObject: {
-      type: Object, // Use an object to allow dynamic properties
-      default: {},
-    },    
+      type: [Object], // Use an array of objects to allow dynamic properties
+      default: [],
+    },   
     });
 
 

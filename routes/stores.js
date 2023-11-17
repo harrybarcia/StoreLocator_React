@@ -29,7 +29,7 @@ function bypassGeocoding(req, res, next) {
 const upload=multer({storage:fileStorage}).single('image');
 const Store = require('../models/model_Store');
 const app = express.Router();
-app.get('/allStores', authenticateToken, adminController.getStores);
+app.get('/allStores', adminController.getStores);
 app.get('/myStores', authenticateToken, adminController.getMyStores);
 app.delete('/api/:id', authenticateToken, adminController.deleteStore)
 app.get('/search/:city',  adminController.getStoresByCity);
