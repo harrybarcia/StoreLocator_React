@@ -13,30 +13,28 @@ const SimpleInput = (props) => {
   const [image, setFile] = useState(props.data?.image || "");
   const [price, setPrice] = useState(props.data?.price || "");
   const [rating, setRating] = useState(props.data?.rating || "");
-  const [latitude, setLatitude] = useState(props.data?.latitude || "");
-  const [longitude, setLongitude] = useState(props.data?.latitude || "");
   const isEditMode = props.isEditMode
-  const [dynamicInputs, setDynamicInputs] = useState([]); //  [{"key": "Zonage","value": "string"}]
-  const [inputData, setInputData] = useState(props.data?.typeObject || dynamicInputs);
+  const [inputData, setInputData] = useState(props.data?.typeObject || []);
   console.log(props.data?.typeObject)
+
   useEffect(() => {
     // Fetch data when the component mounts
+
     const fetchData = async () => {
       const response = await fetchFields();
-      setDynamicInputs(response); // Update the state with the fetched data
+      setInputData(response); // Update the state with the fetched data
     };
-    fetchData();
+    if (inputData.length === 0) {
+      fetchData();
+    }
+    
   }, []); // Empty dependency array to run the effect once when the component mounts
 
   useEffect(() => {
-    if (props.data?.typeObject === undefined){
-      const newInputData = dynamicInputs.map(item => ({ ...item, data: "" }));
-      setInputData(newInputData);
-    }
-  }, [dynamicInputs])
+    
+  }, [inputData]); // Empty dependency array to run the effect once when the component mounts
 
-  console.log(dynamicInputs)  
-  console.log("inputData", inputData)
+  console.log("inputData", inputData.length === 0)
   console.log(props.newPlace)
   const navigate = useNavigate();
   const handleAddressChange = (evt) => {

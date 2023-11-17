@@ -313,8 +313,7 @@ const DisplayMap = (props) => {
                         existingData={store}
                         id = {currentPlaceId}
                         handleSaveClick={handleSaveClick}
-                        data={store}
-                        
+                        data={store}                        
                       ></SimpleInput>
                     </div>
                     
