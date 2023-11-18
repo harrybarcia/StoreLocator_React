@@ -30,11 +30,13 @@ const upsertField = async (field) => {
     const existingField = await Field.findById(field.id);
     if (existingField) {
       console.log("in existing")
+      // I retrieve the field, remove the data and update with new data
       await Field.findByIdAndUpdate(field.id, field);
+      // I retrieve the stores that have typeObject.id with field.id
       const associatedStores = await Store.find({
         'typeObject.id': field.id,
       });
-
+      // for all the stores, i update with the new visibility
       for (const store of associatedStores) {
           const updateResult = await Store.updateMany(
             { 'typeObject.id': field.id },
