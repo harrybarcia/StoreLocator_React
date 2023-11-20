@@ -7,7 +7,7 @@ const ObjectId = require('mongodb').ObjectId;
 
 exports.getFields = async (req, res, next) => {
       // console.log("here in fields controller")
-      const data = await Field.find();
+      const data = await Field.find().sort('order');
       return res.status(200).json(data)
   };
 
@@ -36,24 +36,42 @@ const upsertField = async (field) => {
       const associatedStores = await Store.find({
         'typeObject.id': field.id,
       });
-      // for all the stores, i update with the new visibility
+      console.log("length of associated stores", associatedStores.length)
+      // Loop through all the associated stores
       for (const store of associatedStores) {
-          const updateResult = await Store.updateMany(
-            { 'typeObject.id': field.id },
-            { $set: { 'typeObject.$[].visibility': field.visibility } }
+        // Find the index of the object with the specified id in the typeObject array
+        const typeObjectIndex = store.typeObject.findIndex((item) => item.id === field.id);
+        console.log("typeObjectIndex", typeObjectIndex)
+        console.log("field.visibility", field.visibility)
+        
+        // Update the visibility property of the specific object in the typeObject array
+        if (typeObjectIndex !== -1) {
+          await Store.updateOne(
+            { _id: store._id, 'typeObject.id': field.id },
+            { 
+              $set: { 
+                'typeObject.$.visibility': field.visibility,
+                'typeObject.$.order': field.order
+              }
+            }
           );
-        await store.save();
+          
+        }
+      
+        // Save the updated store
+        console.log(store.typeObject)
       }
     }
     else {
       console.log("creating!", field)
       try {
-          const { key, value, visibility, isFilter } = field;
+          const { key, value, visibility, isFilter, order } = field;
           // Construct a new document with the field data
           const newDocument = new Field({
             type:{[key]: value}, // Set the dynamic data based on user input
             visibility,
-            isFilter
+            isFilter,
+            order
           });
           
           // Save the document to the database
@@ -68,6 +86,7 @@ const upsertField = async (field) => {
             value,
             isFilter,
             visibility,
+            order,
             data: '', // You might need to set the data property based on your requirements
           };
 
@@ -83,6 +102,7 @@ const upsertField = async (field) => {
                 value,
                 isFilter, 
                 visibility, 
+                order,
                 data:''
               });
               await store.save();
