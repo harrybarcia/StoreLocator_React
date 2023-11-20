@@ -63,7 +63,6 @@ const SimpleInput = (props) => {
     );
     setInputData(updatedData);
   };
-  console.log(inputData)
   const handleSubmit = async (evt) => {
     console.log(props.latitude)
     evt.preventDefault();
@@ -123,9 +122,20 @@ const SimpleInput = (props) => {
     console.log(formData)
   }
 
+  const handleDragEnd = () => {
+    console.log("in handleDragEnd function")
+    // if (!result.destination) return;
+
+    // const updatedOrder = [...newOrder];
+    // const [movedItem] = updatedOrder.splice(result.source.index, 1);
+    // updatedOrder.splice(result.destination.index, 0, movedItem);
+
+    // setNewOrder(updatedOrder);
+  };
+
   return (
 
-    <div className="flex justify-center">
+    <div className="flex justify-center h-[400px] overflow-auto">
       <form onSubmit={handleSubmit} >
         <h4>Add your new store</h4>
         <div className="p-3">
@@ -170,8 +180,8 @@ const SimpleInput = (props) => {
             onChange={handleRatingChange}
           />
           <br />
-          {inputData.map((item, index) => (
-            <div key={index}>
+          {inputData.sort((a, b) => a.order - b.order).map((item, index) => (
+            <div key={index} draggable onDragEnd={handleDragEnd} data-rbd-draggable-id={item.id} data-rbd-drag-handle-draggable-id={item.id} index={index}>
               {item.visibility && (
                 <div className="mr-8">
                   <label className="block text-gray-700 font-bold mb-2">{item.key}</label>

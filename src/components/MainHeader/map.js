@@ -5,7 +5,7 @@ import React, {
 } from "react";
 import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
-import {AirOutlined, CheckBox, Room,Star } from "@mui/icons-material";
+import {Room,Star } from "@mui/icons-material";
 import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
 import "./map.css";
@@ -15,7 +15,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SuppressionModal from '../SuppressionModal';
 import Dropdown from "../UI/Dropwdown"
 import SearchBar from "../SearchBar";
-import CheckboxList from "../UI/CheckboxList"
 
 
 mapboxgl.workerClass =
@@ -39,16 +38,12 @@ const DisplayMap = (props) => {
   const [price, setPrice] = useState("")
   const [image, setImage] = useState("")
   const [showModal, setShowModal] = useState(false);
+  const [order, setNewOrder] = useState(null)
   const store = {
-    address, rating, city, price, image
+    address, rating, city, price, image, order
   }
-  const [isOpen, setIsOpen] = useState(false);
   const [dataFetched, setDataFetched] = useState(true);
   const  [filteredData, setFilteredData] = useState([])
-  const [filter, setFilter] = useState(false)
-  const [filterCheckbox, setFilterCheckbox] = useState(null)
-
-
 
   useEffect(() => {
     const dataFetched = false
@@ -185,22 +180,15 @@ const DisplayMap = (props) => {
   return (
     <>
     <div className="flex flex-row">
-      {/* <CheckboxList
-      permanentDataFromParent={permanentData}
-      // sendFilteredItemsFromCheckboxList={receiveFilteredItemsFromCheckboxList}
-      ></CheckboxList> */}
       <Dropdown
           sendDataFromDropdown = {dataFromDropdown}
           dataFromParent = {mapData}
           permanentDataFromParent={permanentData}
-          // sendCheckFromDropdown = {checkFromDropdown}
-
         ></Dropdown>
         <SearchBar
         func = {pullData}
         ></SearchBar>
     </div>
-      
       <div style={{ height: "80vh", width: "100%" }}>
         <ReactMapGL
           {...viewport}

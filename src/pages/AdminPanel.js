@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from "axios";
 import { fetchFields } from './Fields';
 import { Navigate, useNavigate } from "react-router-dom";
 import { Checkbox } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SuppressionModal from '../components/SuppressionModal';
+import DensityMediumIcon from '@mui/icons-material/DensityMedium';
 
- 
+
 
 const AdminPanel = () => {
   const [fields, setFields] = useState([]);
@@ -18,13 +19,17 @@ const AdminPanel = () => {
   const [checkboxMatrix, setCheckboxMatrix] = useState(Array(allFieldsTogether.length).fill(Array(mySettings.length).fill(false)));
   const [showModal, setShowModal] = useState(false);
   const [fieldToDelete, setFieldToDelete] = useState(null);
-  console.log(fieldToDelete)
+  const [nextOrder, setNextOrder] = useState(1); // Initial order
 
+  console.log(fieldToDelete)
+  
   const navigate = useNavigate();
 
   // Fetch data when the component mounts
   const fetchData = async () => {
     const data = await fetchFields();
+    const maxOrder = Math.max(...data.map((field) => field.order), 0);
+    setNextOrder(maxOrder + 1);
     setFields(data); // Update the state with the fetched data
   };
 
@@ -32,18 +37,20 @@ const AdminPanel = () => {
     fetchData();
   }, []); // Empty dependency array to run the effect once when the component mounts  
 
-  console.log(fields)
-
   useEffect(() => {
     setAllFieldsTogether([...fields, ...newFields]);
   }, [fields, newFields])
+
+  useEffect(() => {
+    
+  }, [allFieldsTogether])
 
   useEffect(() => {
     setCheckboxMatrix((prevMatrix) => {
       const newMatrix = Array.from({ length: allFieldsTogether.length }, () =>
         Array(mySettings.length).fill(false)
       );
-  
+
       allFieldsTogether.forEach((field, fieldIndex) => {
         mySettings.forEach((setting, index) => {
           // Check if the field has the setting property and if its value is truthy
@@ -51,24 +58,19 @@ const AdminPanel = () => {
           newMatrix[fieldIndex][index] = fieldValue ? true : false;
         });
       });
-  
+
       return newMatrix;
     });
   }, [allFieldsTogether]);
-  
 
-  console.log(checkboxMatrix)
+
   const handleChangeCheckbox = (rowIndex, colIndex) => {
-    console.log(rowIndex,":", colIndex)
-    console.log(checkboxMatrix[rowIndex][colIndex])
     setCheckboxMatrix((prevMatrix) => {
       const newMatrix = [...prevMatrix];
       newMatrix[rowIndex][colIndex] = !newMatrix[rowIndex][colIndex];
       return newMatrix;
     });
   };
-  console.log(checkboxMatrix)
-
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     const updatedFields = allFieldsTogether.map((field, fieldIndex) => {
@@ -76,16 +78,14 @@ const AdminPanel = () => {
         const checkboxValue = checkboxMatrix[fieldIndex]?.[index] || false;
         return { ...acc, [setting]: checkboxValue };
       }, {});
-    
+
       return {
         ...field,
         ...updatedProperties,
       };
     });
-    
+
     const results = await axios.post('/add-field', updatedFields)
-    console.log(updatedFields)
-    console.log('Data saved:', results.data);
     navigate("/");
   }
   const [newFieldName, setNewFieldName] = useState('');
@@ -94,13 +94,15 @@ const AdminPanel = () => {
     const newFields = {
       key: newFieldName,
       value: newFieldType,
-      visibility:"false"
+      visibility: "false",
+      order: nextOrder, // Use the current order
     };
     setNewFields(prevFields => [...prevFields, newFields]);
+    setNextOrder((prevOrder) => prevOrder + 1);
     setNewFieldName('');
     setNewFieldType('');
   };
-  console.log("allFieldsTogether",allFieldsTogether)
+  console.log("allFieldsTogether", allFieldsTogether)
 
   const handleDeleteField = async (fieldToDelete) => {
     setShowModal(false);
@@ -112,19 +114,63 @@ const AdminPanel = () => {
       // Handle error
     }
   };
-  
 
+  const dragItem = useRef(null)
+  const dragOverItem = useRef(null)
+  
+  const handleSort = () => {
+    // duplicate items
+    let _allFieldsTogether = [...allFieldsTogether]
+    // remove and save the dragegd item content
+    console.log(dragItem.current)
+    // remove 1 element starting from index dragItem.current
+    const draggedItemContent = _allFieldsTogether.splice(dragItem.current, 1)[0]
+    // if i drag the item at index 2, [item1, item2, item3] becomes [item1, item2]
+    // swith the position
+    // Remove 0 element at index dragOverItem.current, and insert draggedItemContent
+    _allFieldsTogether.splice(dragOverItem.current, 0, draggedItemContent)
+
+    // Update the order property for each item
+    _allFieldsTogether = _allFieldsTogether.map((item, index) => ({
+      ...item,
+      order: index, // Assuming order starts from 1
+    }));
+    // reset the position ref
+    dragItem.current = null
+    dragOverItem.current = null
+
+    // update the actual Array
+    setAllFieldsTogether(_allFieldsTogether)
+  }
+  console.log("allFieldsTogether", allFieldsTogether)
   return (
     <>
       <div className="flex flex-col items-center justify-center  bg-white p-8 rounded shadow-md">
-        <form onSubmit={handleSubmit} >
+        <form onSubmit={handleSubmit}
+          className='w-auto '
+        >
+          <div
+            className='list-container'
+          >
             {
               allFieldsTogether.map((field, fieldIndex) => {
                 const key = field.key;
                 const fieldName = `${key}-${fieldIndex}`;
                 const visibility = field.flagVisibility
                 return (
-                  <div className="mb-4 flex flex-row " key={fieldIndex}>
+                  <div className="mb-4 flex flex-row border-2 p-2 bg-slate-50 rounded cursor-move	"
+                    key={fieldIndex}
+                    draggable
+                    onDragStart={(e) => dragItem.current=fieldIndex}
+                    onDragEnter={(e) => dragOverItem.current=fieldIndex}
+                    onDragEnd = {handleSort}
+                    onDragOver={(e) => e.preventDefault()}
+
+                  >
+                    <DensityMediumIcon
+                      className='mt-7 mr-2'
+
+                    ></DensityMediumIcon>
                     <div className='mr-8'>
                       <label className="block text-gray-600 font-medium">{key}</label>
                       <select
@@ -142,12 +188,13 @@ const AdminPanel = () => {
                         mySettings.map((item, index) => {
                           return (
                             <div key={fieldIndex[index]}>
-                              <label className="text-gray-600 font-medium">{item}</label>
+                              <i className='fa-solid fa-bars'></i>
+                              <label className="text-gray-600 font-medium flex flex-col mr-1">{item}</label>
                               <Checkbox
-                               id={`${fieldIndex}-${index}`}
-                               name={field.key}
-                               checked={checkboxMatrix[fieldIndex] ? checkboxMatrix[fieldIndex][index] : false}                               
-                               onChange={() => handleChangeCheckbox(fieldIndex, index)}  
+                                id={`${fieldIndex}-${index}`}
+                                name={field.key}
+                                checked={checkboxMatrix[fieldIndex] ? checkboxMatrix[fieldIndex][index] : false}
+                                onChange={() => handleChangeCheckbox(fieldIndex, index)}
                               ></Checkbox>
                             </div>
                           )
@@ -155,25 +202,26 @@ const AdminPanel = () => {
                       }
                     </div>
                     <button type="button"
-                      className='ml-4 mt-4'
+                      className='ml-4 mt-6'
                       onClick={() => setFieldToDelete(field.id)}
-                      >
+                    >
                       <DeleteIcon onClick={() => setShowModal(true)}></DeleteIcon>
                     </button>
                     <SuppressionModal
-                    open={showModal}
-                    onClose={() => setShowModal(false)}
-                    onDelete={() =>handleDeleteField(fieldToDelete)}
-                    modalContent="deleteField"
+                      open={showModal}
+                      onClose={() => setShowModal(false)}
+                      onDelete={() => handleDeleteField(fieldToDelete)}
+                      modalContent="deleteField"
 
-                  />
+                    />
                   </div>
                 );
               })
             }
+          </div>
           <button type="submit">Submit</button>
         </form>
-        <div className="max-w-md flex flex-col items-center justify-center  bg-white p-8 rounded shadow-md flex flex-col">
+        <div className="max-w-md flex items-center justify-center  bg-white p-8 rounded shadow-md flex flex-row mr-1">
           <input
             type="text"
             placeholder="Enter new field name"

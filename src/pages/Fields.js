@@ -14,7 +14,8 @@ export const fetchFields = async () => {
         const visibility = obj.visibility
         const isFilter = obj.isFilter
         const id = obj._id
-        return {id, key, value, visibility, isFilter };
+        const order = obj.order
+        return {id, key, value, visibility, isFilter, order };
       });
       return transformedData
     } catch (error) {
