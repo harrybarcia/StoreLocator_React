@@ -93,7 +93,7 @@ exports.addStore = async (req, res, next)=>{
 exports.addStoreFromClick = async (req, res) => {
   const pinData = req.body; // Assuming req.body contains the data for the new pin
   const storeId = new mongodb.ObjectId();
-  const userId = req.user.userId;
+  const userId = "64fa71d29df5a1f4b8cf582f";
   const image = req.file?.filename || "";
   const typeObject = JSON.parse(req.body.typeObject);
   console.log(typeObject.map((item => item.id)));

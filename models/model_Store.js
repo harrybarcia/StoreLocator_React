@@ -38,6 +38,7 @@ const StoreSchema=new Schema(
     typeObject: {
       type: [Object], // Use an array of objects to allow dynamic properties
       default: [],
+      required:false
     },   
     });
 
