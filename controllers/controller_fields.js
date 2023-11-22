@@ -29,7 +29,6 @@ const upsertField = async (field) => {
   try {
     const existingField = await Field.findById(field.id);
     if (existingField) {
-      console.log("in existing")
       // I retrieve the field, remove the data and update with new data
       await Field.findByIdAndUpdate(field.id, field);
       // I retrieve the stores that have typeObject.id with field.id
@@ -41,9 +40,6 @@ const upsertField = async (field) => {
       for (const store of associatedStores) {
         // Find the index of the object with the specified id in the typeObject array
         const typeObjectIndex = store.typeObject.findIndex((item) => item.id === field.id);
-        console.log("typeObjectIndex", typeObjectIndex)
-        console.log("field.visibility", field.visibility)
-        
         // Update the visibility property of the specific object in the typeObject array
         if (typeObjectIndex !== -1) {
           await Store.updateOne(
