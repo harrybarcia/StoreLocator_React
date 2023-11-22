@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { memo } from "react"
 import "./NewStoreForm.css";
 import axios from "axios";
-import {fetchFields} from "./Fields"
+import {fetchFields} from "./fetchFields"
 
 const SimpleInput = (props) => {
   console.log(props)

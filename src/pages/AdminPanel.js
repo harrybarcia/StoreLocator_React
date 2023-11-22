@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from "axios";
-import { fetchFields } from './Fields';
+import { fetchFields } from './fetchFields';
 import { Navigate, useNavigate } from "react-router-dom";
 import { Checkbox } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SuppressionModal from '../components/SuppressionModal';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
 import BasicModal from '../components/AddFieldModal';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 
 const AdminPanel = () => {
@@ -105,6 +104,13 @@ const AdminPanel = () => {
     setNewFieldName('');
     setNewFieldType('');
   };
+
+  const handleAddInputDataField = () => {
+    const newInputsData = {
+
+    };
+
+  };
   console.log("allFieldsTogether", allFieldsTogether)
 
   const handleDeleteField = async (fieldToDelete) => {
@@ -192,6 +198,8 @@ const AdminPanel = () => {
                       onChangeFieldName={setNewFieldName}
                       onChangeFieldType={setNewFieldType}
                       onAddInputField={handleAddInputField}
+                      onAddInputDataField={handleAddInputDataField}
+
                       newFieldName={newFieldName}
                       newFieldType={newFieldType}
                       openParent={open}
@@ -239,6 +247,7 @@ const AdminPanel = () => {
           onChangeFieldName={setNewFieldName}
           onChangeFieldType={setNewFieldType}
           onAddInputField={handleAddInputField}
+          onAddInputDataField={handleAddInputDataField}
           newFieldName={newFieldName}
           newFieldType={newFieldType}
           openParent={open}
