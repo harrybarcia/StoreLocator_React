@@ -6,7 +6,8 @@ import { Checkbox } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SuppressionModal from '../components/SuppressionModal';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
-
+import BasicModal from '../components/AddFieldModal';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 
 const AdminPanel = () => {
@@ -20,6 +21,7 @@ const AdminPanel = () => {
   const [showModal, setShowModal] = useState(false);
   const [fieldToDelete, setFieldToDelete] = useState(null);
   const [nextOrder, setNextOrder] = useState(1); // Initial order
+  const [open, setOpen] = useState(null);
 
   console.log(fieldToDelete)
   
@@ -41,6 +43,7 @@ const AdminPanel = () => {
     setAllFieldsTogether([...fields, ...newFields]);
   }, [fields, newFields])
 
+  
   useEffect(() => {
     
   }, [allFieldsTogether])
@@ -101,6 +104,8 @@ const AdminPanel = () => {
     setNextOrder((prevOrder) => prevOrder + 1);
     setNewFieldName('');
     setNewFieldType('');
+    setOpen(false);
+
   };
   console.log("allFieldsTogether", allFieldsTogether)
 
@@ -142,7 +147,9 @@ const AdminPanel = () => {
     // update the actual Array
     setAllFieldsTogether(_allFieldsTogether)
   }
-  console.log("allFieldsTogether", allFieldsTogether)
+  console.log("newFieldName", newFieldName)
+  console.log(open)
+
   return (
     <>
       <div className="flex flex-col items-center justify-center  bg-white p-8 rounded shadow-md">
@@ -221,25 +228,15 @@ const AdminPanel = () => {
           </div>
           <button type="submit">Submit</button>
         </form>
-        <div className="max-w-md flex items-center justify-center  bg-white p-8 rounded shadow-md flex flex-row mr-1">
-          <input
-            type="text"
-            placeholder="Enter new field name"
-            value={newFieldName}
-            onChange={(e) => setNewFieldName(e.target.value)}
-          />
-          <select
-            className="border border-gray-300 p-2 rounded focus:outline-none focus:border-blue-500"
-            value={newFieldType}
-            onChange={(e) => setNewFieldType(e.target.value)}
-          >
-            <option value="String">string</option>
-            <option value="Number">number</option>
-            <option value="Boolean">boolean</option>
-          </select>
-
-          <button onClick={handleAddInputField}>Add new field</button>
-        </div>
+            
+            <BasicModal
+              onChangeFieldName={setNewFieldName}
+              onChangeFieldType={setNewFieldType}
+              onAddInputField={handleAddInputField}
+              newFieldName = {newFieldName} 
+              newFieldType = {newFieldType} 
+              openParent = {open}
+            ></BasicModal>
       </div>
     </>
   );

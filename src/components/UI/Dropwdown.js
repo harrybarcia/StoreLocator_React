@@ -37,6 +37,7 @@ const Dropdown = (props) => {
       try {
         const res = await axios.get('/allStores');
         const data = res.data;
+        console.log(data)
         const uniqueData = data.reduce(
           (accumulator, store) => {
             const city = store.city;
@@ -56,6 +57,91 @@ const Dropdown = (props) => {
         );
         // Create the desired result as an array of arrays
         setUniqueData(uniqueData)
+
+        const testObject = [{
+          "location": {
+              "type": "Point",
+              "coordinates": [
+                  -122.31191159972963,
+                  49.7269237638487
+              ],
+              "formattedAddress": "455 waterfront roadf"
+          },
+          "_id": "655bed8232099aebff684e17",
+          "storeId": "655bed8232099aebff684e16",
+          "address": "455 waterfront roadf",
+          "image": "6192.jpg",
+          "userId": "64fa71d29df5a1f4b8cf582f",
+          "city": "north",
+          "price": 5,
+          "rating": 5,
+          "skipGeocoding": true,
+          "fields": [
+              "655bed0132099aebff684dbf"
+          ],
+          "typeObject": [
+              {
+                  "id": "655bed0132099aebff684dbf",
+                  "key": "Zonage",
+                  "value": "String",
+                  "visibility": true,
+                  "isFilter": false,
+                  "order": 0
+              },
+              {
+                  "id": "655c4bac332baa10cfc2d67e",
+                  "key": "Field 3",
+                  "value": "String",
+                  "isFilter": false,
+                  "visibility": true,
+                  "order": 1,
+                  "data": ""
+              },
+              {
+                  "id": "655c4dc8332baa10cfc2d759",
+                  "key": "dlfkjzldkfj",
+                  "value": "String",
+                  "isFilter": false,
+                  "visibility": true,
+                  "order": 2,
+                  "data": ""
+              },
+              {
+                  "id": "655c4dc8332baa10cfc2d760",
+                  "key": "fggb;,n",
+                  "value": "Number",
+                  "isFilter": false,
+                  "visibility": true,
+                  "order": 3,
+                  "data": ""
+              }
+          ],
+          "createdAt": "2023-11-20T23:36:34.015Z",
+          "reviews": [],
+          "__v": 10
+      }];
+
+        const uniqueDataForEachType = store => {
+          return store.typeObject.reduce(
+            (accumulator, typeItem) => {
+              const key = typeItem.key;
+              console.log(key)
+              const value = store[key];
+              console.log(value)
+        
+              if (!accumulator[key].includes(value)) {
+                accumulator[key].push(value);
+              }
+        
+              return accumulator;
+            },
+            Object.fromEntries(store.typeObject.map(item => [item.key, []]))
+          );
+        };
+        
+        const uniqueDataT = testObject.map(store => uniqueDataForEachType(store));
+        
+        console.log(uniqueDataT);
 
         // Dynamic function to fill each inner array with 'true' values
         function fillArraysWithTrue(data) {
@@ -141,10 +227,6 @@ const Dropdown = (props) => {
       prevIsOpen.map((value, i) => (i === index ? !value : false))
     );
   };
-  
-  
-  console.log(isOpen)
-
 
   return (
     <div className="flex flex-row">
