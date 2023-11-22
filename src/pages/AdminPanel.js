@@ -24,7 +24,7 @@ const AdminPanel = () => {
   const [open, setOpen] = useState(null);
 
   console.log(fieldToDelete)
-  
+
   const navigate = useNavigate();
 
   // Fetch data when the component mounts
@@ -43,9 +43,9 @@ const AdminPanel = () => {
     setAllFieldsTogether([...fields, ...newFields]);
   }, [fields, newFields])
 
-  
+
   useEffect(() => {
-    
+
   }, [allFieldsTogether])
 
   useEffect(() => {
@@ -104,8 +104,6 @@ const AdminPanel = () => {
     setNextOrder((prevOrder) => prevOrder + 1);
     setNewFieldName('');
     setNewFieldType('');
-    setOpen(false);
-
   };
   console.log("allFieldsTogether", allFieldsTogether)
 
@@ -122,7 +120,7 @@ const AdminPanel = () => {
 
   const dragItem = useRef(null)
   const dragOverItem = useRef(null)
-  
+
   const handleSort = () => {
     // duplicate items
     let _allFieldsTogether = [...allFieldsTogether]
@@ -168,9 +166,9 @@ const AdminPanel = () => {
                   <div className="mb-4 flex flex-row border-2 p-2 bg-slate-50 rounded cursor-move	"
                     key={fieldIndex}
                     draggable
-                    onDragStart={(e) => dragItem.current=fieldIndex}
-                    onDragEnter={(e) => dragOverItem.current=fieldIndex}
-                    onDragEnd = {handleSort}
+                    onDragStart={(e) => dragItem.current = fieldIndex}
+                    onDragEnter={(e) => dragOverItem.current = fieldIndex}
+                    onDragEnd={handleSort}
                     onDragOver={(e) => e.preventDefault()}
 
                   >
@@ -190,6 +188,16 @@ const AdminPanel = () => {
                         <option value="number">Number</option>
                       </select>
                     </div>
+                    <BasicModal
+                      onChangeFieldName={setNewFieldName}
+                      onChangeFieldType={setNewFieldType}
+                      onAddInputField={handleAddInputField}
+                      newFieldName={newFieldName}
+                      newFieldType={newFieldType}
+                      openParent={open}
+                      modal={"dataModal"}
+
+                    ></BasicModal>
                     <div className='flex flex-row'>
                       {
                         mySettings.map((item, index) => {
@@ -226,17 +234,17 @@ const AdminPanel = () => {
               })
             }
           </div>
-          <button type="submit">Submit</button>
         </form>
-            
-            <BasicModal
-              onChangeFieldName={setNewFieldName}
-              onChangeFieldType={setNewFieldType}
-              onAddInputField={handleAddInputField}
-              newFieldName = {newFieldName} 
-              newFieldType = {newFieldType} 
-              openParent = {open}
-            ></BasicModal>
+        <BasicModal
+          onChangeFieldName={setNewFieldName}
+          onChangeFieldType={setNewFieldType}
+          onAddInputField={handleAddInputField}
+          newFieldName={newFieldName}
+          newFieldType={newFieldType}
+          openParent={open}
+          modal={"fieldModal"}
+        ></BasicModal>
+        <button type="submit">Submit</button>
       </div>
     </>
   );
