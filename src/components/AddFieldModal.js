@@ -45,7 +45,7 @@ export default function BasicModal({ modal, newFieldName, newFieldType, onChange
 
     useEffect(() => {
 
-    }, [isEditIcon, isDoneIcon])
+    }, [isEditIcon, isDoneIcon, inputDataField])
 
     const handleAddInputField = () => {
         // Send data to the parent component
@@ -68,24 +68,28 @@ export default function BasicModal({ modal, newFieldName, newFieldType, onChange
         setInputDataField(inputRemoved)
 
     };
-    
+    console.log(inputDataField)
 
     const onChangeInputDataFieldName = (item) => {
         setInputDataFieldName(item)
     }
     console.log(newInputDataFieldName)
 
-    const handleEditIcon = (index) => {
-        alert("here")
-        console.log(index)
-    }
-    const handleDoneIcon = () => {
-       
-    }
+    const handleClickIcon = (index) => {
+        setIsEditIcon((prevIsEditIcon) => {
+            const updatedIsEditIcon = [...prevIsEditIcon];
+            updatedIsEditIcon[index] = !updatedIsEditIcon[index];
+            return updatedIsEditIcon;
+        });
+    };
+    inputDataField.map((item, index) => {
+        console.log(item)
+    })
+
     return (
         <div>
             <button type="button"
-            className=' mt-8'
+                className=' mt-8'
             >
                 <AddCircleOutlineIcon onClick={() => setOpen(true)}></AddCircleOutlineIcon>
             </button>
@@ -124,19 +128,12 @@ export default function BasicModal({ modal, newFieldName, newFieldType, onChange
                                     <div className='flex justify-between'>
                                         <div key={index}>{item}</div>
                                         <div className='flex justify-between' >
-                                            {!isEditIcon[index] && (
-                                                <button onClick={handleDoneIcon(index)}><DoneIcon
-                                                
-                                                ></DoneIcon></button>
-                                            )}
-                                            {isEditIcon[index] && (
-                                                <button onClick={handleEditIcon(index)}><EditIcon
-                                                ></EditIcon>
-                                                </button>
-                                            )}
-                                            <button><RemoveCircleOutlineIcon
-                                                onClick={(e) => handleRemoveInputDataField(item, index)}
-                                            ></RemoveCircleOutlineIcon></button>
+                                            <button onClick={() => handleClickIcon(index)}>
+                                                {item ? <EditIcon /> : <DoneIcon />}
+                                            </button>
+                                            <button onClick={(e) => handleRemoveInputDataField(item, index)}>
+                                                <RemoveCircleOutlineIcon />
+                                            </button>
                                         </div>
                                     </div>
 
