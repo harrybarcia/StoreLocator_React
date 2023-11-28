@@ -12,6 +12,7 @@ import BasicModal from '../components/AddFieldModal';
 const AdminPanel = () => {
   const [fields, setFields] = useState([]);
   const [newFields, setNewFields] = useState([]);
+  const [newDataFields, setNewDataFields] = useState([]);
   const [allFieldsTogether, setAllFieldsTogether] = useState([fields])
   const [checkboxValues, setCheckboxValues] = useState(Array(allFieldsTogether.length).fill(false))
   const mySettings = ["visibility", "isFilter"];
@@ -39,10 +40,16 @@ const AdminPanel = () => {
   }, []); // Empty dependency array to run the effect once when the component mounts  
 
   useEffect(() => {
+    setNewDataFields(fields.map((item) => item.data))
+  }, [fields])
+
+  console.log(newDataFields)
+
+  useEffect(() => {
     setAllFieldsTogether([...fields, ...newFields]);
   }, [fields, newFields])
 
-
+  console.log(fields)
   useEffect(() => {
 
   }, [allFieldsTogether])
@@ -93,11 +100,13 @@ const AdminPanel = () => {
   const [newFieldName, setNewFieldName] = useState('');
   const [newFieldType, setNewFieldType] = useState('');
   const handleAddInputField = () => {
+    console.log('here')
     const newFields = {
       key: newFieldName,
       value: newFieldType,
       visibility: "false",
       order: nextOrder, // Use the current order
+      data:[]
     };
     setNewFields(prevFields => [...prevFields, newFields]);
     setNextOrder((prevOrder) => prevOrder + 1);
@@ -105,12 +114,19 @@ const AdminPanel = () => {
     setNewFieldType('');
   };
 
-  const handleAddInputDataField = () => {
-    const newInputsData = {
-
-    };
-
+  const handleAddInputDataField = (inputDataField, id) => {
+    setAllFieldsTogether((prevDataFields) => {
+      // Use map to iterate through allFieldsTogether and update the item with the matching id
+      const updatedAllFieldsTogether = prevDataFields.map((field) =>
+        field.id === id ? { ...field, data: inputDataField } : field
+      );
+  
+      return updatedAllFieldsTogether;
+    });
   };
+  console.log(allFieldsTogether)
+  
+  console.log("newDataFields", newDataFields )
   console.log("allFieldsTogether", allFieldsTogether)
 
   const handleDeleteField = async (fieldToDelete) => {
@@ -126,7 +142,6 @@ const AdminPanel = () => {
 
   const dragItem = useRef(null)
   const dragOverItem = useRef(null)
-
   const handleSort = () => {
     // duplicate items
     let _allFieldsTogether = [...allFieldsTogether]
@@ -138,7 +153,6 @@ const AdminPanel = () => {
     // swith the position
     // Remove 0 element at index dragOverItem.current, and insert draggedItemContent
     _allFieldsTogether.splice(dragOverItem.current, 0, draggedItemContent)
-
     // Update the order property for each item
     _allFieldsTogether = _allFieldsTogether.map((item, index) => ({
       ...item,
@@ -147,13 +161,11 @@ const AdminPanel = () => {
     // reset the position ref
     dragItem.current = null
     dragOverItem.current = null
-
     // update the actual Array
     setAllFieldsTogether(_allFieldsTogether)
   }
   console.log("newFieldName", newFieldName)
   console.log(open)
-
   return (
     <>
       <div className="flex flex-col items-center justify-center  bg-white p-8 rounded shadow-md">
@@ -176,11 +188,9 @@ const AdminPanel = () => {
                     onDragEnter={(e) => dragOverItem.current = fieldIndex}
                     onDragEnd={handleSort}
                     onDragOver={(e) => e.preventDefault()}
-
                   >
                     <DensityMediumIcon
                       className='mt-7 mr-2'
-
                     ></DensityMediumIcon>
                     <div className='mr-8'>
                       <label className="block text-gray-600 font-medium">{key}</label>
@@ -194,17 +204,27 @@ const AdminPanel = () => {
                         <option value="number">Number</option>
                       </select>
                     </div>
+                    <div>
+                      <div className='overflow-auto max-h-16 mr-2'>
+                    {field?.data?.map((item, index) => {
+                      return (
+                        <div key={`${fieldIndex}-${index}`} className='mx-4'>
+                        {item}
+                      </div>
+                      )
+                      })}
+                      </div>
+                    </div>
                     <BasicModal
+                      myField = {field.id}
                       onChangeFieldName={setNewFieldName}
                       onChangeFieldType={setNewFieldType}
                       onAddInputField={handleAddInputField}
                       onAddInputDataField={handleAddInputDataField}
-
                       newFieldName={newFieldName}
                       newFieldType={newFieldType}
                       openParent={open}
                       modal={"dataModal"}
-
                     ></BasicModal>
                     <div className='flex flex-row'>
                       {
@@ -235,14 +255,12 @@ const AdminPanel = () => {
                       onClose={() => setShowModal(false)}
                       onDelete={() => handleDeleteField(fieldToDelete)}
                       modalContent="deleteField"
-
                     />
                   </div>
                 );
               })
             }
           </div>
-        </form>
         <BasicModal
           onChangeFieldName={setNewFieldName}
           onChangeFieldType={setNewFieldType}
@@ -254,6 +272,7 @@ const AdminPanel = () => {
           modal={"fieldModal"}
         ></BasicModal>
         <button type="submit">Submit</button>
+        </form>
       </div>
     </>
   );

@@ -21,14 +21,13 @@ const style = {
     p: 4,
 };
 
-export default function BasicModal({ modal, newFieldName, newFieldType, onChangeFieldName, onChangeFieldType, onAddInputField, onAddInputDataField }) {
+export default function BasicModal({ myField, modal, newFieldName, newFieldType,newFieldDataName, onChangeFieldName, onChangeFieldType, onAddInputField, onAddInputDataField }) {
     const [open, setOpen] = useState(false);
     const [openData, setOpenData] = useState(false);
     const [inputDataField, setInputDataField] = useState([]);
     const [newInputDataFieldName, setInputDataFieldName] = useState('');
     const [isEditIcon, setIsEditIcon] = useState([])
     const [isDoneIcon, setIsDoneIcon] = useState([])
-
     const handleClose = () => {
         setOpen(false);
     };
@@ -44,15 +43,27 @@ export default function BasicModal({ modal, newFieldName, newFieldType, onChange
 
 
     useEffect(() => {
-
     }, [isEditIcon, isDoneIcon, inputDataField])
 
     const handleAddInputField = () => {
+        console.log(inputDataField)
+
         // Send data to the parent component
         onAddInputField();
         // Update open state to close the modal
         setOpen(false);
     };
+    const handleAddInputsDataField = () => {
+        console.log(inputDataField)
+        // Send data to the parent component
+
+        onAddInputDataField(inputDataField, myField);
+        // Update open state to close the modal
+        setOpenData(false);
+    };
+
+
+    
     const handleAddInputDataField = () => {
         const newInputDataField = [...inputDataField, newInputDataFieldName]
         setInputDataField(newInputDataField)
@@ -61,7 +72,6 @@ export default function BasicModal({ modal, newFieldName, newFieldType, onChange
 
     };
     const handleRemoveInputDataField = (item) => {
-
         const newInputDataField = [...inputDataField]
         const inputRemoved = newInputDataField.filter((itemInArray) => itemInArray != item)
         console.log(inputRemoved)
@@ -145,7 +155,8 @@ export default function BasicModal({ modal, newFieldName, newFieldType, onChange
                                         value={newInputDataFieldName}
                                         onChange={(e) => onChangeInputDataFieldName(e.target.value)}
                                     />
-                                    <button ><AddCircleOutlineIcon onClick={(e) => handleAddInputDataField(e)}></AddCircleOutlineIcon> </button>
+                                    <button><AddCircleOutlineIcon onClick={(e) => handleAddInputDataField(e)}></AddCircleOutlineIcon> </button>
+                                    <button onClick={() => handleAddInputsDataField()}>Add filter Data to the field</button>
                                 </div>
                             </div>
                         )}
