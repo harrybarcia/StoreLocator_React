@@ -4,6 +4,8 @@ import axios from 'axios';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Checkbox from '@mui/material/Checkbox';
+import { fetchFields } from '../fetchFields'
+
 
 const Dropdown = (props) => {
   const [isOpen, setIsOpen] = React.useState([false, false]);
@@ -16,6 +18,10 @@ const Dropdown = (props) => {
   const [selectedValues, setSelectedValues] = useState([]);
   const [selectedCities, setSelectedCities] = useState()
   const buttonsRef = useRef([]);
+  const [fields, setFields] = useState([]);
+  const [allFieldsTogether, setAllFieldsTogether] = useState([fields])
+  const [nextOrder, setNextOrder] = useState(1); // Initial order
+
 
   // I keep tracks of the changes on filtered and permanent data
   useEffect(() => {
@@ -30,7 +36,23 @@ const Dropdown = (props) => {
   useEffect(() => {
   }, [isCheckedType]);
 
+  // Fetch data when the component mounts
+  const fetchData = async () => {
+    const data = await fetchFields();
+    const maxOrder = Math.max(...data.map((field) => field.order), 0);
+    setNextOrder(maxOrder + 1);
+    setFields(data); // Update the state with the fetched data
+  };
+  useEffect(() => {
+    fetchData();
+  }, []); // Empty dependency array to run the effect once when the component mounts  
 
+  useEffect(() => {
+    setAllFieldsTogether([...fields]);
+  }, [fields])
+  
+  console.log("fields", fields)
+  console.log("allFieldsTogether", allFieldsTogether)
   // Use the fetchData() function in a useEffect hook.
   useEffect(() => {
     async function fetchData() {
@@ -58,68 +80,25 @@ const Dropdown = (props) => {
         // Create the desired result as an array of arrays
         setUniqueData(uniqueData)
 
-        const testObject = [{
-          "location": {
-              "type": "Point",
-              "coordinates": [
-                  -122.31191159972963,
-                  49.7269237638487
-              ],
-              "formattedAddress": "455 waterfront roadf"
-          },
-          "_id": "655bed8232099aebff684e17",
-          "storeId": "655bed8232099aebff684e16",
-          "address": "455 waterfront roadf",
-          "image": "6192.jpg",
-          "userId": "64fa71d29df5a1f4b8cf582f",
-          "city": "north",
-          "price": 5,
-          "rating": 5,
-          "skipGeocoding": true,
-          "fields": [
-              "655bed0132099aebff684dbf"
-          ],
-          "typeObject": [
-              {
-                  "id": "655bed0132099aebff684dbf",
-                  "key": "Zonage",
-                  "value": "String",
-                  "visibility": true,
-                  "isFilter": false,
-                  "order": 0
-              },
-              {
-                  "id": "655c4bac332baa10cfc2d67e",
-                  "key": "Field 3",
-                  "value": "String",
-                  "isFilter": false,
-                  "visibility": true,
-                  "order": 1,
-                  "data": ""
-              },
-              {
-                  "id": "655c4dc8332baa10cfc2d759",
-                  "key": "dlfkjzldkfj",
-                  "value": "String",
-                  "isFilter": false,
-                  "visibility": true,
-                  "order": 2,
-                  "data": ""
-              },
-              {
-                  "id": "655c4dc8332baa10cfc2d760",
-                  "key": "fggb;,n",
-                  "value": "Number",
-                  "isFilter": false,
-                  "visibility": true,
-                  "order": 3,
-                  "data": ""
+        const uniqueDataTest = data.reduce(
+          (accumulator, store) => {
+            const arrayOfFields = [store.city, store.address, store.price]; // Add other fields as needed
+        
+            // Ensure that accumulator has enough sub-arrays
+            while (accumulator.length < arrayOfFields.length) {
+              accumulator.push([]);
+            }
+        
+            arrayOfFields.forEach((field, i) => {
+              if (!accumulator[i].includes(field)) {
+                accumulator[i].push(field);
               }
-          ],
-          "createdAt": "2023-11-20T23:36:34.015Z",
-          "reviews": [],
-          "__v": 10
-      }];
+            });
+        
+            return accumulator;
+          },
+          []
+        );
 
         const uniqueDataForEachType = store => {
           return store.typeObject.reduce(
@@ -138,11 +117,7 @@ const Dropdown = (props) => {
             Object.fromEntries(store.typeObject.map(item => [item.key, []]))
           );
         };
-        
-        const uniqueDataT = testObject.map(store => uniqueDataForEachType(store));
-        
-        console.log(uniqueDataT);
-
+                
         // Dynamic function to fill each inner array with 'true' values
         function fillArraysWithTrue(data) {
           return data.map(innerArray => {
@@ -208,7 +183,29 @@ const Dropdown = (props) => {
     setFilteredData(filteredData?.filter((item) => selectedValues?.includes(item.address)))
   }, [selectedValues, isCheckedType])
 
-  const types = [
+    // console.log(isCheckedType)
+    // output:[
+    //     [
+    //       true,
+    //       true
+    //   ],
+    //   [
+    //       true
+    //   ]
+    // ]
+    
+    // uniqueData 
+    // output:
+    // [
+    //   [
+    //       "north",
+    //       "Hallein"
+    //   ],
+    //   [
+    //       "455 waterfront roadf"
+    //   ]
+    // ]
+  const oldtypes = [
     {
       label: 'Cities',
       data: uniqueData[0],
@@ -221,6 +218,19 @@ const Dropdown = (props) => {
     },
     // Add more types as needed
   ];
+
+
+
+  const types = allFieldsTogether?.map(obj => ({
+    label: obj.key,
+    data: obj.data,
+    isCheckedType: false
+  }));
+
+  console.log(types)
+  
+  
+
 
   const toggleIsOpen = (index) => {
     setIsOpen((prevIsOpen) =>

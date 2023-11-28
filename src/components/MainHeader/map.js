@@ -13,7 +13,7 @@ import React, {
   import EditIcon from '@mui/icons-material/Edit';
   import DeleteIcon from '@mui/icons-material/Delete';
   import SuppressionModal from '../SuppressionModal';
-  import Dropdown from "../UI/Dropwdown"
+  import Dropdown from "../UI/Dropdown"
   import SearchBar from "../SearchBar";
   
   
