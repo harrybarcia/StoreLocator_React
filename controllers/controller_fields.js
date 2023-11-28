@@ -61,13 +61,14 @@ const upsertField = async (field) => {
     else {
       console.log("creating!", field)
       try {
-          const { key, value, visibility, isFilter, order } = field;
+          const { key, value, visibility, isFilter, order, data } = field;
           // Construct a new document with the field data
           const newDocument = new Field({
             type:{[key]: value}, // Set the dynamic data based on user input
             visibility,
             isFilter,
-            order
+            order, 
+            data
           });
           
           // Save the document to the database
@@ -83,7 +84,7 @@ const upsertField = async (field) => {
             isFilter,
             visibility,
             order,
-            data: '', // You might need to set the data property based on your requirements
+            data, // You might need to set the data property based on your requirements
           };
 
            for (const store of allStores) {
