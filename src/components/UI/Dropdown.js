@@ -16,13 +16,10 @@ const Dropdown = (props) => {
   const [isCheckedType, setIsCheckedType] = useState([]);
   const [uniqueData, setUniqueData] = useState([])
   const [selectedValues, setSelectedValues] = useState([]);
-  const [selectedCities, setSelectedCities] = useState()
   const buttonsRef = useRef([]);
   const [fields, setFields] = useState([]);
-  const [allFieldsTogether, setAllFieldsTogether] = useState([fields])
   const [nextOrder, setNextOrder] = useState(1); // Initial order
-
-
+  console.log(props)
   // I keep tracks of the changes on filtered and permanent data
   useEffect(() => {
     setFilteredData(props.dataFromParent);
@@ -30,11 +27,11 @@ const Dropdown = (props) => {
   }, [props.permanentDataFromParent, props.dataFromParent]);
   // I trigger selectStoreWhenClick when isChecked is changed
   useEffect(() => {
-    selectStoreWhenClick();
-  }, [isCheckedType, selectedValues]);
-
-  useEffect(() => {
+    selectStoreWhenClick(types, isCheckedType);
   }, [isCheckedType]);
+  console.log(permanentData)
+  useEffect(() => {
+  }, [isCheckedType, selectedValues]);
 
   // Fetch data when the component mounts
   const fetchData = async () => {
@@ -46,125 +43,90 @@ const Dropdown = (props) => {
   useEffect(() => {
     fetchData();
   }, []); // Empty dependency array to run the effect once when the component mounts  
-
-  useEffect(() => {
-    setAllFieldsTogether([...fields]);
-  }, [fields])
   
   console.log("fields", fields)
-  console.log("allFieldsTogether", allFieldsTogether)
   // Use the fetchData() function in a useEffect hook.
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await axios.get('/allStores');
-        const data = res.data;
-        console.log(data)
-        const uniqueData = data.reduce(
-          (accumulator, store) => {
-            const city = store.city;
-            const address = store.address;
-
-            if (!accumulator[0].includes(city)) {
-              accumulator[0].push(city);
-            }
-
-            if (!accumulator[1].includes(address)) {
-              accumulator[1].push(address);
-            }
-
-            return accumulator;
-          },
-          [[], []]
-        );
-        // Create the desired result as an array of arrays
-        setUniqueData(uniqueData)
-
-        const uniqueDataTest = data.reduce(
-          (accumulator, store) => {
-            const arrayOfFields = [store.city, store.address, store.price]; // Add other fields as needed
-        
-            // Ensure that accumulator has enough sub-arrays
-            while (accumulator.length < arrayOfFields.length) {
-              accumulator.push([]);
-            }
-        
-            arrayOfFields.forEach((field, i) => {
-              if (!accumulator[i].includes(field)) {
-                accumulator[i].push(field);
-              }
-            });
-        
-            return accumulator;
-          },
-          []
-        );
-
-        const uniqueDataForEachType = store => {
-          return store.typeObject.reduce(
-            (accumulator, typeItem) => {
-              const key = typeItem.key;
-              console.log(key)
-              const value = store[key];
-              console.log(value)
-        
-              if (!accumulator[key].includes(value)) {
-                accumulator[key].push(value);
-              }
-        
-              return accumulator;
-            },
-            Object.fromEntries(store.typeObject.map(item => [item.key, []]))
-          );
-        };
-                
         // Dynamic function to fill each inner array with 'true' values
-        function fillArraysWithTrue(data) {
-          return data.map(innerArray => {
-            return Array.from({ length: innerArray.length }, () => true);
+        function fillArraysWithTrue(fields) {
+          return fields.map(obj => {
+            return Array.from({ length: obj.data.length }, () => true);
           });
         }
-        if (uniqueData) {
-          const filledUniqueData = fillArraysWithTrue(uniqueData);
-          setIsCheckedType(filledUniqueData)
-        }
-        // Call the function to fill uniqueData
+        const filledUniqueData = fillArraysWithTrue(fields);
+        setIsCheckedType(filledUniqueData);        
       } catch (error) {
         // Handle errors
         console.error('Error fetching data:', error);
       }
     }
-
     fetchData(); // Call the function
-  }, []);
+  }, [fields]);
 
-  const selectStoreWhenClick = () => {
-    // for each truthy value of my array, i filter the city
-    const selectedCities = uniqueData[0]?.filter((city, index) => isCheckedType[0][index]);
-    const selectedValues = uniqueData[1]?.filter((address, index) => isCheckedType[1][index])
-    setSelectedCities(selectedCities)
+  console.log("isCheckedType", isCheckedType)
+  
+  const types = fields?.map((obj, index) => ({
+    label: obj.key,
+    data: obj.data,
+    isCheckedType: isCheckedType[index]
+  }));
+  const selectStoreWhenClick = (types, isCheckedType) => {
+    console.log("types", types)
+    if (isCheckedType.length > 0) {
+      console.log(isCheckedType[0][0])
+      console.log(isCheckedType[0][1])
+      console.log(isCheckedType[1][0])
+      console.log(isCheckedType[1][1])
+    }
+    // Inside your component or function
+    
+        // Inside your component or function
+    let tempSelectedValuesArrays = [];
+
+    types?.forEach((item, index) => {
+      if (isCheckedType.length>0){
+        const selectedValuesForEachItem = item?.data.filter((_item, dataIndex) => isCheckedType[index][dataIndex]);
+        console.log(selectedValuesForEachItem);
+        // Accumulate changes in the temporary variable
+        tempSelectedValuesArrays.push(selectedValuesForEachItem);
+      }
+    });
+
+    // Update the state variable once after the loop
+    setSelectedValues(tempSelectedValuesArrays);
+
+
+
+    // Now selectedValuesArray contains arrays of selected values for each item in types
     // setSelectedValues(selectedValues)
-    const filteredConditions = permanentData?.map((item) => {
-      const cityCondition = selectedCities?.includes(item.city);
-      const addressCondition = selectedValues?.length > 0 ? selectedValues.includes(item.address) : permanentData.includes(item.address);
-      return [cityCondition, addressCondition];
-    });
-    const filteredData = permanentData?.filter((_, index) => {
-      const [cityCondition, addressCondition] = filteredConditions[index];
-      return cityCondition && addressCondition;
-    });
+    //for each truthy value of my array, i filter the city
+    // const filteredConditions = permanentData?.map((item) => {
+    //   const cityCondition = selectedCities?.includes(item.city);
+    //   const addressCondition = selectedValues?.length > 0 ? selectedValues.includes(item.address) : permanentData.includes(item.address);
+    //   return [cityCondition, addressCondition];
+    // });
+    // const filteredData = permanentData?.filter((_, index) => {
+    //   const [cityCondition, addressCondition] = filteredConditions[index];
+    //   return cityCondition && addressCondition;
+    // });
 
-    props.sendDataFromDropdown(filteredData);
+    // props.sendDataFromDropdown(filteredData);
   };
+  console.log(selectedValues)
 
   const handleCheckboxChange = (typeIndex, itemIndex, item) => {
+
+    console.log("typeIndex", typeIndex)
+    console.log("itemIndex", itemIndex)
+    console.log("item", item)
     // Create a copy of the isCheckedType array
     const updatedCheckedType = [...isCheckedType];
     // Toggle the checked state for the clicked city
     updatedCheckedType[typeIndex][itemIndex] = !updatedCheckedType[typeIndex][itemIndex];
     // Update the state with the new value
     setIsCheckedType(updatedCheckedType);
-
     const updatedSelectedValues = { ...selectedValues }
     if (updatedCheckedType[typeIndex]) {
       updatedSelectedValues[typeIndex] = item;
@@ -175,14 +137,19 @@ const Dropdown = (props) => {
     const selectedValuesArray = Object.values(updatedSelectedValues);
     setSelectedValues(selectedValuesArray)
   };
+  console.log(selectedValues)
 
   useEffect(() => {
   }, [isCheckedType])
 
+  console.log("isCheckedType", isCheckedType)
+  console.log(filteredData)
   useEffect(() => {
-    setFilteredData(filteredData?.filter((item) => selectedValues?.includes(item.address)))
-  }, [selectedValues, isCheckedType])
-
+      setFilteredData(filteredData?.filter((item) => {
+        return types.map((type, typeIndex) => selectedValues[typeIndex].includes(item[typeIndex])).every(Boolean);
+      }));
+  }, [selectedValues, isCheckedType, types]);
+  console.log(filteredData)
     // console.log(isCheckedType)
     // output:[
     //     [
@@ -205,33 +172,11 @@ const Dropdown = (props) => {
     //       "455 waterfront roadf"
     //   ]
     // ]
-  const oldtypes = [
-    {
-      label: 'Cities',
-      data: uniqueData[0],
-      isCheckedType: isCheckedType[0]
-    },
-    {
-      label: 'Categories',
-      data: uniqueData[1],
-      isCheckedType: isCheckedType[1]
-    },
-    // Add more types as needed
-  ];
 
 
 
-  const types = allFieldsTogether?.map(obj => ({
-    label: obj.key,
-    data: obj.data,
-    isCheckedType: false
-  }));
-
-  console.log(types)
+  console.log("types", types)
   
-  
-
-
   const toggleIsOpen = (index) => {
     setIsOpen((prevIsOpen) =>
       prevIsOpen.map((value, i) => (i === index ? !value : false))

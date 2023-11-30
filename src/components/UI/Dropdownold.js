@@ -30,7 +30,7 @@ const Dropdown = (props) => {
   useEffect(() => {
   }, [isCheckedType]);
 
-  console.log("isCheckedType", isCheckedType)
+  console.log("isCheckedType", isCheckedType) // Output : [true, false, true...], [true, true...]
 
   // Use the fetchData() function in a useEffect hook.
   useEffect(() => {
@@ -202,7 +202,7 @@ const Dropdown = (props) => {
     const selectedValuesArray = Object.values(updatedSelectedValues);
     setSelectedValues(selectedValuesArray)
   };
-
+  console.log(selectedValues)
   useEffect(() => {
   }, [isCheckedType])
 
