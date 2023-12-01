@@ -8,7 +8,7 @@ import { fetchFields } from '../fetchFields'
 
 
 const Dropdown = (props) => {
-  const [isOpen, setIsOpen] = React.useState([false, false]);
+  const [isOpen, setIsOpen] = React.useState([false, false, false]);
   const [uniqueCities, setUniqueCities] = useState([]);
   const [filteredData, setFilteredData] = useState(props.dataFromParent)
   const [permanentData, setPermanentData] = useState(props.permanentDataFromParent)
@@ -19,7 +19,6 @@ const Dropdown = (props) => {
   const buttonsRef = useRef([]);
   const [fields, setFields] = useState([]);
   const [nextOrder, setNextOrder] = useState(1); // Initial order
-  console.log(props)
   // I keep tracks of the changes on filtered and permanent data
   useEffect(() => {
     setFilteredData(props.dataFromParent);
@@ -29,7 +28,6 @@ const Dropdown = (props) => {
   useEffect(() => {
     selectStoreWhenClick(types, isCheckedType);
   }, [isCheckedType]);
-  console.log(permanentData)
   useEffect(() => {
   }, [isCheckedType, selectedValues]);
 
@@ -44,7 +42,6 @@ const Dropdown = (props) => {
     fetchData();
   }, []); // Empty dependency array to run the effect once when the component mounts  
   
-  console.log("fields", fields)
   // Use the fetchData() function in a useEffect hook.
   useEffect(() => {
     async function fetchData() {
@@ -65,7 +62,6 @@ const Dropdown = (props) => {
     fetchData(); // Call the function
   }, [fields]);
 
-  console.log("isCheckedType", isCheckedType)
   
   const types = fields?.map((obj, index) => ({
     label: obj.key,
@@ -73,54 +69,35 @@ const Dropdown = (props) => {
     isCheckedType: isCheckedType[index]
   }));
   const selectStoreWhenClick = (types, isCheckedType) => {
-    console.log("types", types)
-    if (isCheckedType.length > 0) {
-      console.log(isCheckedType[0][0])
-      console.log(isCheckedType[0][1])
-      console.log(isCheckedType[1][0])
-      console.log(isCheckedType[1][1])
-    }
     // Inside your component or function
     
         // Inside your component or function
     let tempSelectedValuesArrays = [];
-
     types?.forEach((item, index) => {
       if (isCheckedType.length>0){
         const selectedValuesForEachItem = item?.data.filter((_item, dataIndex) => isCheckedType[index][dataIndex]);
-        console.log(selectedValuesForEachItem);
         // Accumulate changes in the temporary variable
         tempSelectedValuesArrays.push(selectedValuesForEachItem);
       }
     });
 
     // Update the state variable once after the loop
-    setSelectedValues(tempSelectedValuesArrays);
-
-
-
-    // Now selectedValuesArray contains arrays of selected values for each item in types
-    // setSelectedValues(selectedValues)
-    //for each truthy value of my array, i filter the city
-    // const filteredConditions = permanentData?.map((item) => {
-    //   const cityCondition = selectedCities?.includes(item.city);
-    //   const addressCondition = selectedValues?.length > 0 ? selectedValues.includes(item.address) : permanentData.includes(item.address);
-    //   return [cityCondition, addressCondition];
-    // });
-    // const filteredData = permanentData?.filter((_, index) => {
-    //   const [cityCondition, addressCondition] = filteredConditions[index];
-    //   return cityCondition && addressCondition;
-    // });
-
-    // props.sendDataFromDropdown(filteredData);
+    const filteredConditions = permanentData?.map((item) => {
+      const conditions = types.map((type, index) => {
+        const label = type.label;
+        const data = type.data;
+        const result = data.some(item => tempSelectedValuesArrays[index].includes(item));
+        console.log(result)
+        console.log("mon types de base a", type.data)
+        console.log("ma selection", tempSelectedValuesArrays[index])
+        console.log("does my store has this value?:", tempSelectedValuesArrays[index],"?  ", result)
+      })
+    });    
+    props.sendDataFromDropdown(filteredData);
   };
-  console.log(selectedValues)
 
   const handleCheckboxChange = (typeIndex, itemIndex, item) => {
 
-    console.log("typeIndex", typeIndex)
-    console.log("itemIndex", itemIndex)
-    console.log("item", item)
     // Create a copy of the isCheckedType array
     const updatedCheckedType = [...isCheckedType];
     // Toggle the checked state for the clicked city
@@ -137,19 +114,15 @@ const Dropdown = (props) => {
     const selectedValuesArray = Object.values(updatedSelectedValues);
     setSelectedValues(selectedValuesArray)
   };
-  console.log(selectedValues)
 
   useEffect(() => {
   }, [isCheckedType])
 
-  console.log("isCheckedType", isCheckedType)
-  console.log(filteredData)
-  useEffect(() => {
-      setFilteredData(filteredData?.filter((item) => {
-        return types.map((type, typeIndex) => selectedValues[typeIndex].includes(item[typeIndex])).every(Boolean);
-      }));
-  }, [selectedValues, isCheckedType, types]);
-  console.log(filteredData)
+  // useEffect(() => {
+  //     setFilteredData(filteredData?.filter((item) => {
+  //       return types.map((type, typeIndex) => selectedValues[typeIndex]?.includes(item[typeIndex])).every(Boolean);
+  //     }));
+  // }, [selectedValues, isCheckedType, types]);
     // console.log(isCheckedType)
     // output:[
     //     [
@@ -172,10 +145,6 @@ const Dropdown = (props) => {
     //       "455 waterfront roadf"
     //   ]
     // ]
-
-
-
-  console.log("types", types)
   
   const toggleIsOpen = (index) => {
     setIsOpen((prevIsOpen) =>
