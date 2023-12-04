@@ -161,22 +161,16 @@ import React, {
     };
   
     const dataFromDropdown = (data) =>{
-      console.log("data", data)
       setFilteredData(data)
     }
     const pullData = (data) => {
-      console.log(data)
       setFilteredData(data)
-  
       if (!data){
         setFilteredData(null)
       }
   
     }
-    console.log(filteredData)
     const mapData = filteredData?.length>=0&&filteredData?.length<permanentData?.length?filteredData:permanentData
-    console.log(mapData)
-    console.log(permanentData)
     return (
       <>
       <div className="flex flex-row">

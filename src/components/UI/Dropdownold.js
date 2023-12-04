@@ -172,10 +172,11 @@ const Dropdown = (props) => {
     setSelectedCities(selectedCities)
     // setSelectedValues(selectedValues)
     const filteredConditions = permanentData?.map((item) => {
-      const cityCondition = selectedCities?.includes(item.city);
+      const cityCondition = selectedCities?.includes(item.city); // 
       const addressCondition = selectedValues?.length > 0 ? selectedValues.includes(item.address) : permanentData.includes(item.address);
       return [cityCondition, addressCondition];
     });
+    // outputs [[true, true], [true, true]] et vérifie si pour chaque store 
     const filteredData = permanentData?.filter((_, index) => {
       const [cityCondition, addressCondition] = filteredConditions[index];
       return cityCondition && addressCondition;
