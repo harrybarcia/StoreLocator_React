@@ -26,7 +26,8 @@ const Dropdown = (props) => {
     selectStoreWhenClick(types, isCheckedType);
   }, [isCheckedType]);
   useEffect(() => {
-  }, [isCheckedType, selectedValues]);
+  }, [isCheckedType, filteredData]);
+  console.log(filteredData)
   
   // Fetch data when the component mounts
   const fetchData = async () => {
@@ -63,9 +64,10 @@ const Dropdown = (props) => {
   const types = fields?.map((obj, index) => ({
     label: obj.key,
     data: obj.data,
-    isCheckedType: isCheckedType[index]
+    isCheckedType: isCheckedType[index],
+    order:obj.order
   }));
-  
+  types.slice().sort((a, b) => a.order - b.order);
   const selectStoreWhenClick = (types, isCheckedType) => {
     let selectedValuesArrays = [];
     types?.forEach((item, index) => {
@@ -76,44 +78,39 @@ const Dropdown = (props) => {
         selectedValuesArrays.push({ label: label, values: selectedValuesForEachItem });
       }
     });
-    console.log("selectedValuesArrays", selectedValuesArrays)
+    const sortedArray = selectedValuesArrays?.sort((a, b) => b.order - a.order);
+    // const permanentData = [
+      //   { city: 'New York', address: '123 Main St', zonage: 'Commercial' },
+      //   { city: 'Los Angeles', address: '456 Oak St', zonage: 'Residential' },
+      //   { city: 'Chicago', address: '789 Elm St', zonage: 'Industrial' },
+      //   // Add more elements as needed
+      // ];
     const myConditionArrays = []
-    console.log(types)
-    const permanentData = [
-      { city: 'New York', address: '123 Main St', zonage: 'Commercial' },
-      { city: 'Los Angeles', address: '456 Oak St', zonage: 'Residential' },
-      { city: 'Chicago', address: '789 Elm St', zonage: 'Industrial' },
-      // Add more elements as needed
-    ];
+    const testForConditions = permanentData?.map((item, index) => {
+      const myConditionArray = []
+      item.typeObject
+      .slice()
+      .sort((a, b) => a.order - b.order)
+      .map((tItem, tIndex) => {
+        myConditionArray.push(sortedArray[tIndex]['values'].includes(tItem.data))
+      })
+      myConditionArrays.push(myConditionArray)
+    })
+    console.log(myConditionArrays)
     
     // Hardcoded conditions array
-    const conditionsArray = [
-      { Condition: true, AddressCondition: true, ZonageCondition: true },
-      { Condition: false, AddressCondition: true, ZonageCondition: true },
-      { Condition: true, AddressCondition: false, ZonageCondition: false },
-      // Add more conditions as needed
-    ];
+    // const conditionsArray = [
+    //   { Condition: true, AddressCondition: true, ZonageCondition: true },
+    //   { Condition: false, AddressCondition: true, ZonageCondition: true },
+    //   { Condition: true, AddressCondition: false, ZonageCondition: false },
+    //   // Add more conditions as needed
+    // ];
     
     // Hardcoded condition names
-    const conditionNames = ['Condition', 'AddressCondition', 'ZonageCondition'];
-    const filteredData = permanentData?.filter((_, index) => {
-      // Initialize an array to store the conditions for the current element
-      const currentConditions = [];
-    
-      // Loop through each condition name
-      for (const conditionName of conditionNames) {
-        // Access the condition for the current element using the dynamic conditionName
-        const currentCondition = conditionsArray[index][conditionName];
-        
-        // Push the condition to the array
-        currentConditions.push(currentCondition);
-      }
-    
-      // Check if all conditions are true for the current element
-      return currentConditions.every(condition => condition);
-    });
-    
-    console.log(filteredData)
+    const filteredDataSorted = permanentData?.filter((_, index) =>
+    myConditionArrays[index].every(condition => condition)
+    );
+    props.sendDataFromDropdown(filteredDataSorted);
   };
   
   const handleCheckboxChange = (typeIndex, itemIndex, item) => {
@@ -128,10 +125,10 @@ const Dropdown = (props) => {
   }, [isCheckedType])
 
   useEffect(() => {
-    setFilteredData(filteredData?.filter((item) => selectedValues?.includes(item.address)))
-  }, [selectedValues, isCheckedType])
+  }, [isCheckedType])
+  useEffect(() => {
+  }, [filteredData])
 
-  
   const toggleIsOpen = (index) => {
     setIsOpen((prevIsOpen) =>
       prevIsOpen.map((value, i) => (i === index ? !value : false))

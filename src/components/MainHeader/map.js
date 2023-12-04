@@ -171,6 +171,7 @@ import React, {
   
     }
     const mapData = filteredData?.length>=0&&filteredData?.length<permanentData?.length?filteredData:permanentData
+    console.log(mapData)
     return (
       <>
       <div className="flex flex-row">
