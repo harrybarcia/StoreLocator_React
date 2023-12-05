@@ -15,6 +15,8 @@ import React, {
   import SuppressionModal from '../SuppressionModal';
   import Dropdown from "../UI/Dropdown"
   import SearchBar from "../SearchBar";
+  import CircleIcon from '@mui/icons-material/Circle';
+
   
   
   mapboxgl.workerClass =
@@ -201,11 +203,14 @@ import React, {
                   latitude={store.location.coordinates[1]}
                   longitude={store.location.coordinates[0]}
                 >
-                  <Room
+                  <CircleIcon
                     style={{
-                      fontSize: 5 * viewport.zoom,
-                      color: "red",
+                      fontSize: 3 * viewport.zoom,
+                      fill: store.typeObject[0].color,
+                      stroke:"white",
                       cursor: "pointer",
+                      strokeWidth: 2
+
                     }}
                     onClick={() => {
                       handleMarkerClick(
