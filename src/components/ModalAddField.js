@@ -8,13 +8,14 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import DoneIcon from '@mui/icons-material/Done';
+import ModalColorPicker from "../components/ModalColorPicker"
 
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 500,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -28,6 +29,7 @@ export default function BasicModal({ myField, modal, newFieldName, newFieldType,
     const [newInputDataFieldName, setInputDataFieldName] = useState('');
     const [isEditIcon, setIsEditIcon] = useState([])
     const [isDoneIcon, setIsDoneIcon] = useState([])
+    const [newColor, setNewColor] = useState()
     const handleClose = () => {
         setOpen(false);
     };
@@ -65,11 +67,10 @@ export default function BasicModal({ myField, modal, newFieldName, newFieldType,
 
     
     const handleAddInputDataField = () => {
-        const newInputDataField = [...inputDataField, newInputDataFieldName]
+        const newInputDataField = [...inputDataField, newInputDataFieldName, newColor]
         setInputDataField(newInputDataField)
         setOpenData(false)
         setInputDataFieldName('')
-
     };
     const handleRemoveInputDataField = (item) => {
         const newInputDataField = [...inputDataField]
@@ -95,6 +96,9 @@ export default function BasicModal({ myField, modal, newFieldName, newFieldType,
     inputDataField.map((item, index) => {
         console.log(item)
     })
+    const handleChangeColor = (color) => {
+        setNewColor(color)
+    }
 
     return (
         <div>
@@ -110,7 +114,6 @@ export default function BasicModal({ myField, modal, newFieldName, newFieldType,
                 aria-describedby="modal-modal-description"
             >
                 <div>
-                    <div>Here</div>
                     <Box sx={style}>
                         {modal === "fieldModal" && (
                             <div className="max-w-md flex items-center justify-center  bg-white p-8 rounded shadow-md flex flex-row mr-1">
@@ -155,6 +158,9 @@ export default function BasicModal({ myField, modal, newFieldName, newFieldType,
                                         value={newInputDataFieldName}
                                         onChange={(e) => onChangeInputDataFieldName(e.target.value)}
                                     />
+                                    <ModalColorPicker
+                                    sendColorFromModal={handleChangeColor}
+                                    ></ModalColorPicker>
                                     <button><AddCircleOutlineIcon onClick={(e) => handleAddInputDataField(e)}></AddCircleOutlineIcon> </button>
                                     <button onClick={() => handleAddInputsDataField()}>Add filter Data to the field</button>
                                 </div>

@@ -6,7 +6,7 @@ import { Checkbox } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SuppressionModal from '../components/SuppressionModal';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
-import BasicModal from '../components/AddFieldModal';
+import BasicModal from '../components/ModalAddField';
 
 
 const AdminPanel = () => {
