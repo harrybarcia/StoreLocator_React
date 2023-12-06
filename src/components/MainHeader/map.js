@@ -16,6 +16,8 @@ import React, {
   import Dropdown from "../UI/Dropdown"
   import SearchBar from "../SearchBar";
   import CircleIcon from '@mui/icons-material/Circle';
+  import ModalContent from "../UI/ModalContent";
+  import CustomPopup from "../UI/Popup";
 
   
   
@@ -46,6 +48,7 @@ import React, {
     }
     const [dataFetched, setDataFetched] = useState(true);
     const  [filteredData, setFilteredData] = useState([])
+    const [isOpen, setIsOpen] = useState(false)
   
     useEffect(() => {
       const dataFetched = false
@@ -118,11 +121,13 @@ import React, {
   
       // localStorage.setItem('cachedData', JSON.stringify(data));
     };
+    console.log("open", isOpen)
     const closePopup = () => {
+      setIsOpen(false)
       setCurrentPlaceId(null)
       setIsEditMode(false);
-  
     }
+    console.log("open", isOpen)
   
     const handleEditClick = () => {
       setIsEditMode(true);
@@ -165,6 +170,9 @@ import React, {
     const dataFromDropdown = (data) =>{
       setFilteredData(data)
     }
+    const receiveDataFromModal = (data) =>{
+      setIsOpen(data)
+    }
     const pullData = (data) => {
       setFilteredData(data)
       if (!data){
@@ -172,6 +180,7 @@ import React, {
       }
   
     }
+
     const mapData = filteredData?.length>=0&&filteredData?.length<permanentData?.length?filteredData:permanentData
     console.log(mapData)
     return (
@@ -202,6 +211,7 @@ import React, {
                 <Marker
                   latitude={store.location.coordinates[1]}
                   longitude={store.location.coordinates[0]}
+                  onClick={() => setIsOpen(true)}
                 >
                   <CircleIcon
                     style={{
@@ -222,54 +232,66 @@ import React, {
                   />
                 </Marker>
                 {store._id === currentPlaceId && isEditMode === false && (
-                  <Popup
-                    key={store._id}
+                  // <Popup
+                  //   key={store._id}
+                  //   closeButton={true}
+                  //   closeOnClick={false}
+                  //   onClose={() => closePopup()}
+                  //   anchor="none"
+                  //   latitude={store.location.coordinates[1]}
+                  //   longitude={store.location.coordinates[0]}
+                  // >
+                  //   <button className="mimic-popup-close-button">
+                  //     <CloseIcon
+                  //       style={{
+                  //         fontSize: 30,
+                  //         color: "tomato",
+                  //         cursor: "pointer",
+                  //       }}
+                  //     />
+                  //   </button>
+                  //   <div className="card">
+                  //     <label>Place</label>
+                  //     <h4 className="place">{store.city}</h4>
+                  //     <label>Address</label>
+                  //     <h4 className="place">{store.address}</h4>
+                  //     <label>Price</label>
+                  //     <p className="desc">{store.price}</p>
+                  //     <img src={"/images/" + store.image} />
+                  //     <label>Rating</label>
+                  //     <p className="rating">
+                  //       <div className="rating">
+                  //         {Array(store.rating).fill(<Star className="star" />)}
+                  //       </div>
+                  //     </p>
+                  //     <label>Information</label>
+                  //     <span className="username"></span>
+                  //   </div>
+                  //   <button>
+                  //   <EditIcon onClick={handleEditClick}></EditIcon>
+                  //   </button>
+                  //   <button>
+                  //   <DeleteIcon onClick={() => setShowModal(true)}></DeleteIcon>
+                  //   </button>
+                  //   <SuppressionModal
+                  //     open={showModal}
+                  //     onClose={() => setShowModal(false)}
+                  //     onDelete={() =>handleDeleteClick(store._id)}
+                  //     modalContent="deleteStore"
+                  //   />
+                  // </Popup>
+                  <CustomPopup
+                     key={store._id}
                     closeButton={true}
                     closeOnClick={false}
                     onClose={() => closePopup()}
-                    anchor="left"
+                    anchor="none"
                     latitude={store.location.coordinates[1]}
                     longitude={store.location.coordinates[0]}
-                  >
-                    <button className="mimic-popup-close-button">
-                      <CloseIcon
-                        style={{
-                          fontSize: 30,
-                          color: "tomato",
-                          cursor: "pointer",
-                        }}
-                      />
-                    </button>
-                    <div className="card">
-                      <label>Place</label>
-                      <h4 className="place">{store.city}</h4>
-                      <label>Address</label>
-                      <h4 className="place">{store.address}</h4>
-                      <label>Price</label>
-                      <p className="desc">{store.price}</p>
-                      <img src={"/images/" + store.image} />
-                      <label>Rating</label>
-                      <p className="rating">
-                        <div className="rating">
-                          {Array(store.rating).fill(<Star className="star" />)}
-                        </div>
-                      </p>
-                      <label>Information</label>
-                      <span className="username"></span>
-                    </div>
-                    <button>
-                    <EditIcon onClick={handleEditClick}></EditIcon>
-                    </button>
-                    <button>
-                    <DeleteIcon onClick={() => setShowModal(true)}></DeleteIcon>
-                    </button>
-                    <SuppressionModal
-                      open={showModal}
-                      onClose={() => setShowModal(false)}
-                      onDelete={() =>handleDeleteClick(store._id)}
-                      modalContent="deleteStore"
-                    />
-                  </Popup>
+                    isOpen={isOpen}
+                    sendDataFromModal = {receiveDataFromModal}
+                    dataFromParent = {store}
+                  ></CustomPopup>
                 )}
                 {store._id === currentPlaceId && isEditMode === true && (
                   <Popup
@@ -279,7 +301,7 @@ import React, {
                     closeButton={true}
                     closeOnClick={false}
                     onClose={() => closePopup()}
-                    anchor="left"
+                    anchor="none"
                   >
                     <div>
                       <button className="mimic-popup-close-button">
@@ -334,7 +356,7 @@ import React, {
                   closeOnClick={false}
                   onClose={() => setNewPlace(null)}
   
-                  anchor="left"
+                  anchor="none"
                 >
                   <button className="mimic-popup-close-button">
                     <CloseIcon
