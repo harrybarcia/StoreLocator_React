@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { get } from 'mongoose';
 import React, { useEffect, useState } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
 
 const SearchBar = (props) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -30,14 +31,18 @@ const SearchBar = (props) => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className='flex flex-row items-center'>
         <input
           type="text"
           placeholder="Search..."
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
         />
-        <button type="submit">Search</button>
+        <button type="submit">
+          <SearchIcon
+          style={{ fontSize: '48px' }}
+          ></SearchIcon>
+        </button>
       </form>
     </div>
   );

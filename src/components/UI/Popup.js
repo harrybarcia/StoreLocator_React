@@ -5,17 +5,22 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useEffect } from 'react';
+import CloseIcon from '@mui/icons-material/Close';
 
 const style = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: "50%",
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 0,
+  minWidth: '90%',
+  height: '90vh',
+  backgroundColor: '#fff',
+  boxShadow: '0px 0px 24px rgba(0, 0, 0, 0.24)',
+  padding: '0px',
+  overflow: 'auto', // Change 'hidden' to 'auto' to allow scrolling  
 };
+
+
 
 export default function CustomPopup(props) {
   const [open, setOpen] = React.useState();
@@ -57,24 +62,82 @@ export default function CustomPopup(props) {
         aria-describedby="modal-modal-description"
         sx={{ overflow: 'auto' }}
       >
-        <Box sx={style}>
+        <Box sx={style}
+        className="flex flex-col justify-between"
+        >
           {loading && (
-            <CircularProgress color="primary" />
-          )}
-          {!loading && (
-            <div>
-              <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 20 }}>
-              <img src={`images/${store.image}`} alt="Mountain Landscape" className="w-full" />
-              </Typography>
+            <div
+              className="flex items-center justify-center h-screen"
+            >
+              <CircularProgress
+                color="primary"
+                size={64}  // Adjust the size as needed
+              />
+
             </div>
           )}
           {!loading && (
-         <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 20 }}>
-          {store.city}
-         </Typography>
+            <div
+              style={{
+                backgroundImage: `url('images/${store.image}')`,  // Assuming `store.image` contains the image filename or path
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                height: '50%',  // Set the desired height
+                width: '100%',
+                minHeight:"30%"
+              }}
+            >
+              {/* Your other content */}
+            </div>
+
           )}
+          {!loading && (
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+
+              <br></br>
+              {store.typeObject ? (
+
+                // JSX code to render when store.typeObject.About is truthy
+                <div className="p-4">About:<br></br>
+                  {store.typeObject[1].data}</div>
+              ) : (
+                // JSX code to render when store.typeObject.About is falsy
+                <div>{store.city}</div>
+              )}
+            </Typography>
+          )}
+          <div
+            style={{
+              height: '20%',  // Set the desired height
+              width: '100%',
+              backgroundColor: "#10367A",
+              marginBottom: 0,
+              minHeight:"15%"
+            }}
+          >
+            {/* Your other content */}
+          </div>
+          <a style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            color: '#fff',
+            display: 'block',
+            fontSize: '36px',
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '72px',
+            height: '72px',
+            textAlign: 'center',
+            transition: 'background-color 0.6s',
+          }}>
+            <CloseIcon 
+            style={{ fontSize: '48px' }} 
+            onClick={handleClose}
+            />
+          </a>
+
         </Box>
       </Modal>
-    </div>
+    </div >
   );
 }

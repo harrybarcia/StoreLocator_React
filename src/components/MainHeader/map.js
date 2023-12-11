@@ -185,7 +185,7 @@ import React, {
     console.log(mapData)
     return (
       <>
-      <div className="flex flex-row">
+      <div className="flex flex-row flex-wrap">
         <Dropdown
             sendDataFromDropdown = {dataFromDropdown}
             dataFromParent = {mapData}
