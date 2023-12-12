@@ -13,7 +13,7 @@ exports.getFields = async (req, res, next) => {
 
 exports.updateField = async (req, res, next) => {
   const fieldsArray = req.body
-  console.log("fieldsArray",fieldsArray )
+  console.log("fieldsArray",fieldsArray)
   try {
     for (const field of fieldsArray) {
       console.log(field.id)
@@ -47,7 +47,9 @@ const upsertField = async (field) => {
             { 
               $set: { 
                 'typeObject.$.visibility': field.visibility,
-                'typeObject.$.order': field.order
+                'typeObject.$.order': field.order,
+                'typeObject.$.isFilter': field.isFilter,
+
               }
             }
           );
