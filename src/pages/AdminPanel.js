@@ -22,9 +22,6 @@ const AdminPanel = () => {
   const [fieldToDelete, setFieldToDelete] = useState(null);
   const [nextOrder, setNextOrder] = useState(1); // Initial order
   const [open, setOpen] = useState(null);
-
-  console.log(fieldToDelete)
-
   const navigate = useNavigate();
 
   // Fetch data when the component mounts
@@ -43,15 +40,11 @@ const AdminPanel = () => {
     setNewDataFields(fields.map((item) => item.data))
   }, [fields])
 
-  console.log(newDataFields)
-
   useEffect(() => {
     setAllFieldsTogether([...fields, ...newFields]);
   }, [fields, newFields])
 
-  console.log(fields)
   useEffect(() => {
-
   }, [allFieldsTogether])
 
   useEffect(() => {
@@ -72,7 +65,6 @@ const AdminPanel = () => {
     });
   }, [allFieldsTogether]);
 
-
   const handleChangeCheckbox = (rowIndex, colIndex) => {
     setCheckboxMatrix((prevMatrix) => {
       const newMatrix = [...prevMatrix];
@@ -87,20 +79,18 @@ const AdminPanel = () => {
         const checkboxValue = checkboxMatrix[fieldIndex]?.[index] || false;
         return { ...acc, [setting]: checkboxValue };
       }, {});
-
       return {
         ...field,
         ...updatedProperties,
       };
     });
-
     const results = await axios.post('/add-field', updatedFields)
     navigate("/");
   }
   const [newFieldName, setNewFieldName] = useState('');
   const [newFieldType, setNewFieldType] = useState('');
   const handleAddInputField = () => {
-    console.log('here')
+
     const newFields = {
       key: newFieldName,
       value: newFieldType,
@@ -120,20 +110,15 @@ const AdminPanel = () => {
       const updatedAllFieldsTogether = prevDataFields.map((field) =>
         field.id === id ? { ...field, data: inputDataField } : field
       );
-  
       return updatedAllFieldsTogether;
     });
   };
-  console.log(allFieldsTogether)
-  
-  console.log("newDataFields", newDataFields )
-  console.log("allFieldsTogether", allFieldsTogether)
 
   const handleDeleteField = async (fieldToDelete) => {
     setShowModal(false);
     try {
       const response = await axios.delete(`delete-fields/${fieldToDelete}`);
-      console.log(response);
+  
       fetchData();
     } catch (error) {
       // Handle error
@@ -146,7 +131,6 @@ const AdminPanel = () => {
     // duplicate items
     let _allFieldsTogether = [...allFieldsTogether]
     // remove and save the dragegd item content
-    console.log(dragItem.current)
     // remove 1 element starting from index dragItem.current
     const draggedItemContent = _allFieldsTogether.splice(dragItem.current, 1)[0]
     // if i drag the item at index 2, [item1, item2, item3] becomes [item1, item2]
@@ -164,8 +148,6 @@ const AdminPanel = () => {
     // update the actual Array
     setAllFieldsTogether(_allFieldsTogether)
   }
-  console.log("newFieldName", newFieldName)
-  console.log(open)
   return (
     <>
       <div className="flex flex-col items-center justify-center  bg-white p-8 rounded shadow-md">

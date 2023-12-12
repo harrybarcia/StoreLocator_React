@@ -48,7 +48,8 @@ import React, {
     }
     const [dataFetched, setDataFetched] = useState(true);
     const  [filteredData, setFilteredData] = useState([])
-    const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(false);
+    const [loading, setLoading] = React.useState(false);
   
     useEffect(() => {
       const dataFetched = false
@@ -63,7 +64,6 @@ import React, {
             setPermanentData(response.data);
             localStorage.setItem('cachedData', JSON.stringify(response.data));
             setDataFetched(true);
-  
           });
         };
         fetchData();
@@ -97,7 +97,7 @@ import React, {
         setIsEditMode(false);
       }
     };
-  
+    console.log(currentPlaceId)
     const handleCloseForm = (updatedStoreData) => {
       setNewPlace(null)
       setIsEditMode(false);
@@ -121,13 +121,11 @@ import React, {
   
       // localStorage.setItem('cachedData', JSON.stringify(data));
     };
-    console.log("open", isOpen)
     const closePopup = () => {
       setIsOpen(false)
       setCurrentPlaceId(null)
       setIsEditMode(false);
     }
-    console.log("open", isOpen)
   
     const handleEditClick = () => {
       setIsEditMode(true);
@@ -170,8 +168,9 @@ import React, {
     const dataFromDropdown = (data) =>{
       setFilteredData(data)
     }
-    const receiveDataFromModal = (data) =>{
-      setIsOpen(data)
+    const receiveDataFromModal = (open) =>{
+      setIsOpen(open)
+      setCurrentPlaceId(null)
     }
     const pullData = (data) => {
       setFilteredData(data)
@@ -181,8 +180,8 @@ import React, {
   
     }
 
+
     const mapData = filteredData?.length>=0&&filteredData?.length<permanentData?.length?filteredData:permanentData
-    console.log(mapData)
     return (
       <>
       <div className="flex flex-row flex-wrap">
@@ -288,9 +287,12 @@ import React, {
                     anchor="none"
                     latitude={store.location.coordinates[1]}
                     longitude={store.location.coordinates[0]}
+                    onClick ={() => {setIsOpen(true)}}
                     isOpen={isOpen}
                     sendDataFromModal = {receiveDataFromModal}
                     dataFromParent = {store}
+                    loading={loading}
+                    handleEditClick = {handleEditClick}
                   ></CustomPopup>
                 )}
                 {store._id === currentPlaceId && isEditMode === true && (

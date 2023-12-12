@@ -6,14 +6,16 @@ import Modal from '@mui/material/Modal';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useEffect } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
 
 const style = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  minWidth: '90%',
-  height: '90vh',
+  minWidth: '80%',
+  maxWidth: '1440px',
+  height: '100%',
   backgroundColor: '#fff',
   boxShadow: '0px 0px 24px rgba(0, 0, 0, 0.24)',
   padding: '0px',
@@ -22,36 +24,28 @@ const style = {
 
 
 
+
 export default function CustomPopup(props) {
-  const [open, setOpen] = React.useState();
+  console.log(props)
+  const [open, setOpen] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
+  const [isImageLoaded, setIsImageLoaded] = React.useState(false);
 
-  console.log(props.dataFromParent);
+
+  const handleClose = () => {
+    setOpen(false)
+    props.sendDataFromModal(false)
+  }
   const store = props.dataFromParent
-
   useEffect(() => {
-    setOpen(props.isOpen);
-  }, []);
+    setOpen(props.isOpen)
+  }, [props.isOpen])
 
-  const handleClose = () => setOpen(false);
+  const handleImageLoad = () => {
+    setIsImageLoaded(true);
+    setLoading(false); // Set loading to false once the image is loaded
+  }
 
-  useEffect(() => {
-    const retrieveData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts/1');
-        const data = await response.json();
-        props.sendDataFromModal(open, data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error retrieving data:', error);
-      }
-    };
-
-    if (open) {
-      retrieveData();
-    }
-  }, [open]);
 
   return (
     <div>
@@ -63,9 +57,9 @@ export default function CustomPopup(props) {
         sx={{ overflow: 'auto' }}
       >
         <Box sx={style}
-        className="flex flex-col justify-between"
+          className="flex flex-col justify-between"
         >
-          {loading && (
+          {!isImageLoaded && (
             <div
               className="flex items-center justify-center h-screen"
             >
@@ -77,64 +71,85 @@ export default function CustomPopup(props) {
             </div>
           )}
           {!loading && (
-            <div
+            <img
+              src={`images/${store.image}`}
+              alt="Image"
               style={{
-                backgroundImage: `url('images/${store.image}')`,  // Assuming `store.image` contains the image filename or path
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                height: '50%',  // Set the desired height
                 width: '100%',
-                minHeight:"30%"
+                maxHeight: "40%",
+                objectFit: 'cover',  // Choose 'contain' or 'cover' based on your preference
               }}
-            >
-              {/* Your other content */}
-            </div>
+              onLoad={handleImageLoad}
 
-          )}
-          {!loading && (
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-
-              <br></br>
-              {store.typeObject ? (
-
-                // JSX code to render when store.typeObject.About is truthy
-                <div className="p-4">About:<br></br>
-                  {store.typeObject[1].data}</div>
-              ) : (
-                // JSX code to render when store.typeObject.About is falsy
-                <div>{store.city}</div>
-              )}
-            </Typography>
-          )}
-          <div
-            style={{
-              height: '20%',  // Set the desired height
-              width: '100%',
-              backgroundColor: "#10367A",
-              marginBottom: 0,
-              minHeight:"15%"
-            }}
-          >
-            {/* Your other content */}
-          </div>
-          <a style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
-            color: '#fff',
-            display: 'block',
-            fontSize: '36px',
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            width: '72px',
-            height: '72px',
-            textAlign: 'center',
-            transition: 'background-color 0.6s',
-          }}>
-            <CloseIcon 
-            style={{ fontSize: '48px' }} 
-            onClick={handleClose}
             />
-          </a>
+          )}
+          {isImageLoaded && (
+            <div>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                <br></br>
+                {store.typeObject ? (
+                  // JSX code to render when store.typeObject.About is truthy
+                  <div className="p-4">About:<br></br>
+                    {store.typeObject[1].data}</div>
+                ) : (
+                  // JSX code to render when store.typeObject.About is falsy
+                  <div>{store.city}</div>
+                )}
+              </Typography>
+              <div>
+                <div
+                  style={{
+                    height: '20%',  // Set the desired height
+                    width: '100%',
+                    backgroundColor: "#10367A",
+                    marginBottom: 0,
+                    minHeight: "100px"
+                  }}
+                >
+                </div>
+                <div >
+                  
+                <a
+                style={{
+                  color: '#fff',
+                  display: 'block',
+                  fontSize: '36px',
+                  position: 'absolute',
+                  top: 0,
+                  right: "72px",
+                  width: '72px',
+                  height: '72px',
+                  textAlign: 'center',
+                  transition: 'background-color 0.6s',
+                }}>
+                  <EditIcon 
+                  style={{ fontSize: '34px' }}
+                  onClick={props.handleEditClick}>
+                  </EditIcon>
+                </a>
+                <a
+                style={{
+                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                  color: '#fff',
+                  display: 'block',
+                  fontSize: '36px',
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  width: '72px',
+                  height: '72px',
+                  textAlign: 'center',
+                  transition: 'background-color 0.6s',
+                }}>
+                  <CloseIcon
+                    style={{ fontSize: '48px' }}
+                    onClick={handleClose}
+                  />
+                </a>
+                  </div>
+              </div>
+            </div>
+          )}
 
         </Box>
       </Modal>

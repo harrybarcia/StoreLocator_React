@@ -27,7 +27,6 @@ const Dropdown = (props) => {
   }, [isCheckedType]);
   useEffect(() => {
   }, [isCheckedType, filteredData]);
-  console.log(filteredData)
   
   // Fetch data when the component mounts
   const fetchData = async () => {
@@ -60,17 +59,18 @@ const Dropdown = (props) => {
     fetchData(); // Call the function
   }, [fields]);
 
-  
   const types = fields?.map((obj, index) => ({
     label: obj.key,
     data: obj.data,
     isCheckedType: isCheckedType[index],
-    order:obj.order
+    order:obj.order,
+    isFilter:obj.isFilter
   }));
-  types.slice().sort((a, b) => a.order - b.order);
-  const selectStoreWhenClick = (types, isCheckedType) => {
+  const filteredAndSortedTypes = types.slice().filter((item) => item.isFilter).sort((a, b) => a.order - b.order);
+  filteredAndSortedTypes.slice().filter((item) => item.isFilter).sort((a, b) => a.order - b.order);
+  const selectStoreWhenClick = (filteredAndSortedTypes, isCheckedType) => {
     let selectedValuesArrays = [];
-    types?.forEach((item, index) => {
+    filteredAndSortedTypes?.forEach((item, index) => {
       if (isCheckedType.length > 0) {
         const selectedValuesForEachItem = item?.data.filter((_item, dataIndex) => isCheckedType[index][dataIndex]);
         const label = item.label;
@@ -88,9 +88,10 @@ const Dropdown = (props) => {
     const myConditionArrays = []
     const testForConditions = permanentData?.map((item, index) => {
       const myConditionArray = []
-      item.typeObject
+      item?.typeObject
       .slice()
       .sort((a, b) => a.order - b.order)
+      .filter((item) => item.isFilter)
       .map((tItem, tIndex) => {
         myConditionArray.push(sortedArray[tIndex]['values'].includes(tItem.data))
       })
@@ -125,8 +126,6 @@ const Dropdown = (props) => {
   }, [isCheckedType])
 
   useEffect(() => {
-  }, [isCheckedType])
-  useEffect(() => {
   }, [filteredData])
 
   const toggleIsOpen = (index) => {
@@ -137,7 +136,7 @@ const Dropdown = (props) => {
 
   return (
     <div className="flex flex-row">
-      {types.map((type, typeIndex) => (
+      {types.filter((item) => item.isFilter).map((type, typeIndex) => (
         <div key={typeIndex}>
           <button
             ref={buttonsRef}
