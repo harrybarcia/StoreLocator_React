@@ -13,10 +13,8 @@ exports.getFields = async (req, res, next) => {
 
 exports.updateField = async (req, res, next) => {
   const fieldsArray = req.body
-  console.log("fieldsArray",fieldsArray)
   try {
     for (const field of fieldsArray) {
-      console.log(field.id)
       await upsertField(field)
     }
     res.status(200).json({message:"Fields updated successfully"})
@@ -35,7 +33,7 @@ const upsertField = async (field) => {
       const associatedStores = await Store.find({
         'typeObject.id': field.id,
       });
-      console.log("length of associated stores", associatedStores.length)
+      // console.log("length of associated stores", associatedStores.length)
       // Loop through all the associated stores
       for (const store of associatedStores) {
         // Find the index of the object with the specified id in the typeObject array
@@ -57,7 +55,7 @@ const upsertField = async (field) => {
         }
       
         // Save the updated store
-        console.log(store.typeObject)
+        // console.log(store.typeObject)
       }
     }
     else {
@@ -91,8 +89,6 @@ const upsertField = async (field) => {
 
            for (const store of allStores) {
             // Check if the field is not already present in the store
-            console.log("1", newTypeObjectItem.id.toString())
-            console.log("2", newTypeObjectItem.id)
             const hasField = store.typeObject.some(obj => obj.id === newTypeObjectItem.id.toString());
             if (!hasField) {
               store.typeObject.push({
