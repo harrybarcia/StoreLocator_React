@@ -90,7 +90,7 @@ export default function CustomPopup(props) {
                 {store.typeObject ? (
                   // JSX code to render when store.typeObject.About is truthy
                   <div className="p-4">About:<br></br>
-                    {store.typeObject[1].data}</div>
+                    {store.typeObject[0]?.data}</div>
                 ) : (
                   // JSX code to render when store.typeObject.About is falsy
                   <div>{store.city}</div>

@@ -30,7 +30,8 @@ const Dropdown = (props) => {
   
   // Fetch data when the component mounts
   const fetchData = async () => {
-    const data = await fetchFields();
+    const dataRaw = await fetchFields();
+    const data = dataRaw.filter((item)=>item.isFilter)
     const maxOrder = Math.max(...data.map((field) => field.order), 0);
     setNextOrder(maxOrder + 1);
     setFields(data); // Update the state with the fetched data
@@ -38,7 +39,7 @@ const Dropdown = (props) => {
   useEffect(() => {
     fetchData();
   }, []); // Empty dependency array to run the effect once when the component mounts  
-  
+  console.log('fields', fields);
   // Use the fetchData() function in a useEffect hook.
   useEffect(() => {
     async function fetchData() {
@@ -66,8 +67,8 @@ const Dropdown = (props) => {
     order:obj.order,
     isFilter:obj.isFilter
   }));
-  const filteredAndSortedTypes = types.slice().filter((item) => item.isFilter).sort((a, b) => a.order - b.order);
-  filteredAndSortedTypes.slice().filter((item) => item.isFilter).sort((a, b) => a.order - b.order);
+  const filteredAndSortedTypes = types.slice().sort((a, b) => a.order - b.order);
+  filteredAndSortedTypes.slice().sort((a, b) => a.order - b.order);
   const selectStoreWhenClick = (filteredAndSortedTypes, isCheckedType) => {
     let selectedValuesArrays = [];
     filteredAndSortedTypes?.forEach((item, index) => {
@@ -79,6 +80,8 @@ const Dropdown = (props) => {
       }
     });
     const sortedArray = selectedValuesArrays?.sort((a, b) => b.order - a.order);
+    console.log(sortedArray)
+    console.log(permanentData)
     // const permanentData = [
       //   { city: 'New York', address: '123 Main St', zonage: 'Commercial' },
       //   { city: 'Los Angeles', address: '456 Oak St', zonage: 'Residential' },
@@ -86,19 +89,18 @@ const Dropdown = (props) => {
       //   // Add more elements as needed
       // ];
     const myConditionArrays = []
+
     const testForConditions = permanentData?.map((item, index) => {
       const myConditionArray = []
       item?.typeObject
       .slice()
       .sort((a, b) => a.order - b.order)
-      .filter((item) => item.isFilter)
+      .filter((item)=>item.isFilter ===true)
       .map((tItem, tIndex) => {
         myConditionArray.push(sortedArray[tIndex]['values'].includes(tItem.data))
       })
       myConditionArrays.push(myConditionArray)
-    })
-    console.log(myConditionArrays)
-    
+    })    
     // Hardcoded conditions array
     // const conditionsArray = [
     //   { Condition: true, AddressCondition: true, ZonageCondition: true },
@@ -136,7 +138,7 @@ const Dropdown = (props) => {
 
   return (
     <div className="flex flex-row">
-      {types.filter((item) => item.isFilter).map((type, typeIndex) => (
+      {types.map((type, typeIndex) => (
         <div key={typeIndex}>
           <button
             ref={buttonsRef}

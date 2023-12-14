@@ -40,9 +40,6 @@ export default function BasicModal({ myField, modal, newFieldName, newFieldType,
         setIsDoneIcon(newIsDoneIcon);
         setIsEditIcon(newIsEditIcon);
     }, [inputDataField]);
-    console.log(isEditIcon)
-    console.log(isDoneIcon)
-
 
     useEffect(() => {
     }, [isEditIcon, isDoneIcon, inputDataField])
@@ -58,7 +55,7 @@ export default function BasicModal({ myField, modal, newFieldName, newFieldType,
     const handleAddInputsDataField = () => {
         console.log(inputDataField)
         // Send data to the parent component
-
+        console.log('myField', myField);
         onAddInputDataField(inputDataField, myField);
         // Update open state to close the modal
         setOpenData(false);
@@ -67,17 +64,28 @@ export default function BasicModal({ myField, modal, newFieldName, newFieldType,
 
     
     const handleAddInputDataField = () => {
-        const newInputDataField = [...inputDataField, newInputDataFieldName, newColor]
-        setInputDataField(newInputDataField)
-        setOpenData(false)
-        setInputDataFieldName('')
-    };
+        // Create a new object with the provided data
+        const newInputDataFieldObject = {
+          name: newInputDataFieldName, // Assuming newInputDataFieldName is the name property
+          color: newColor,
+        };
+      
+        // Update the state by spreading the existing array and adding the new object
+        const newInputDataField = [...inputDataField, newInputDataFieldObject];
+      
+        // Update the state with the new array
+        setInputDataField(newInputDataField);
+      
+        // Additional logic if needed
+        setOpenData(false);
+        setInputDataFieldName('');
+      };
+      
     const handleRemoveInputDataField = (item) => {
         const newInputDataField = [...inputDataField]
         const inputRemoved = newInputDataField.filter((itemInArray) => itemInArray != item)
         console.log(inputRemoved)
         setInputDataField(inputRemoved)
-
     };
     console.log(inputDataField)
 
@@ -139,7 +147,8 @@ export default function BasicModal({ myField, modal, newFieldName, newFieldType,
                             <div>
                                 {inputDataField.map((item, index) => (
                                     <div className='flex justify-between'>
-                                        <div key={index}>{item}</div>
+                                        <div key={index}>{item.name}</div>
+                                        <p>{item.color}</p>
                                         <div className='flex justify-between' >
                                             <button onClick={() => handleClickIcon(index)}>
                                                 {item ? <EditIcon /> : <DoneIcon />}

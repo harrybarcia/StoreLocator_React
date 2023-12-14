@@ -96,7 +96,7 @@ const AdminPanel = () => {
       value: newFieldType,
       visibility: "false",
       order: nextOrder, // Use the current order
-      data:[]
+      data: []
     };
     setNewFields(prevFields => [...prevFields, newFields]);
     setNextOrder((prevOrder) => prevOrder + 1);
@@ -113,12 +113,12 @@ const AdminPanel = () => {
       return updatedAllFieldsTogether;
     });
   };
-
+  console.log('allFieldsTogether', allFieldsTogether);
   const handleDeleteField = async (fieldToDelete) => {
     setShowModal(false);
     try {
       const response = await axios.delete(`delete-fields/${fieldToDelete}`);
-  
+
       fetchData();
     } catch (error) {
       // Handle error
@@ -186,19 +186,20 @@ const AdminPanel = () => {
                         <option value="number">Number</option>
                       </select>
                     </div>
-                    <div>
+                    <div style={{ minWidth: "120px" }}>
                       <div className='overflow-auto max-h-16 mr-2'>
-                    {field?.data?.map((item, index) => {
-                      return (
-                        <div key={`${fieldIndex}-${index}`} className='mx-4'>
-                        {item}
-                      </div>
-                      )
-                      })}
+                        {field?.data?.map((item, index) => {
+                          return (
+                            <div key={`${fieldIndex}-${index}`} className='flex flex-row justify-between items-center'>
+                              {item.name} : <div style={{ backgroundColor: item.color, width: '15px', height: '15px' }} className="rounded-full inline-block"></div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
+
                     <BasicModal
-                      myField = {field.id}
+                      myField={field.id}
                       onChangeFieldName={setNewFieldName}
                       onChangeFieldType={setNewFieldType}
                       onAddInputField={handleAddInputField}
@@ -243,17 +244,17 @@ const AdminPanel = () => {
               })
             }
           </div>
-        <BasicModal
-          onChangeFieldName={setNewFieldName}
-          onChangeFieldType={setNewFieldType}
-          onAddInputField={handleAddInputField}
-          onAddInputDataField={handleAddInputDataField}
-          newFieldName={newFieldName}
-          newFieldType={newFieldType}
-          openParent={open}
-          modal={"fieldModal"}
-        ></BasicModal>
-        <button type="submit">Submit</button>
+          <BasicModal
+            onChangeFieldName={setNewFieldName}
+            onChangeFieldType={setNewFieldType}
+            onAddInputField={handleAddInputField}
+            onAddInputDataField={handleAddInputDataField}
+            newFieldName={newFieldName}
+            newFieldType={newFieldType}
+            openParent={open}
+            modal={"fieldModal"}
+          ></BasicModal>
+          <button type="submit">Submit</button>
         </form>
       </div>
     </>
