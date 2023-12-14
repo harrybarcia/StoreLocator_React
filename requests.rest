@@ -1,20 +1,13 @@
-{
-  "method": "GET",
-  "header": [
-    {
-      "key": "Content-Type",
-      "value": "application/json"
-    }
-  ],
-  "url": {
-    "raw": "http://localhost:3001/colors",
-    "protocol": "http",
-    "host": [
-      "localhost"
-    ],
-    "port": "3001",
-    "path": [
-      "colors"
-    ]
+POST http://localhost:3001/add-colors
+Content-Type: application/json
+
+  {
+    "type": "value1",
+    "color": "value2"
   }
-}
+
+
+
+---
+
+GET http://localhost:3001/colors

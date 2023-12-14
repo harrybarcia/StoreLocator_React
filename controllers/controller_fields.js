@@ -1,5 +1,6 @@
 const Field=require('../models/model_Field')
 const Store = require('../models/model_Store')
+const FieldColor = require('../models/model_FieldColor')
 const mongodb=require('mongodb');
 // const { json } = require('body-parser');
 const ObjectId = require('mongodb').ObjectId; 
@@ -26,27 +27,57 @@ exports.updateField = async (req, res, next) => {
 const upsertField = async (field) => {
   try {
     const existingField = await Field.findById(field.id);
+    
+    console.log('existingField', existingField.data);
+
+    const newObject = Object.assign({}, field, {
+      type: {
+        [field.key]: field.value
+      }
+    });
+    delete newObject.key;
+    delete newObject.value;
+
+    // console.log('newObject', newObject.data);
+    // console.log('newObject.data=existingField.data', newObject.data===existingField.data);
+
+    const updatedField = {};
+    for (const key in newObject) {
+      if (key !== 'id') {
+        if (existingField[key] !== newObject[key]) {
+          updatedField[key] = newObject[key];
+        }
+      }
+    }
+
+    if (Object.keys(updatedField).length) {
+      console.log('Properties have changed:', Object.keys(updatedField));
+    } else {
+      console.log('Properties are identical.');
+    }
+
+
     if (existingField) {
       // I retrieve the field, remove the data and update with new data
-      await Field.findByIdAndUpdate(field.id, field);
+      await Field.findByIdAndUpdate(newObject.id, newObject);
       // I retrieve the stores that have typeObject.id with field.id
       const associatedStores = await Store.find({
-        'typeObject.id': field.id,
+        'typeObject.id': newObject.id,
       });
       // console.log("length of associated stores", associatedStores.length)
       // Loop through all the associated stores
       for (const store of associatedStores) {
         // Find the index of the object with the specified id in the typeObject array
-        const typeObjectIndex = store.typeObject.findIndex((item) => item.id === field.id);
+        const typeObjectIndex = store.typeObject.findIndex((item) => item.id === newObject.id);
         // Update the visibility property of the specific object in the typeObject array
         if (typeObjectIndex !== -1) {
           await Store.updateOne(
-            { _id: store._id, 'typeObject.id': field.id },
+            { _id: store._id, 'typeObject.id': newObject.id },
             { 
               $set: { 
-                'typeObject.$.visibility': field.visibility,
-                'typeObject.$.order': field.order,
-                'typeObject.$.isFilter': field.isFilter,
+                'typeObject.$.visibility': newObject.visibility,
+                'typeObject.$.order': newObject.order,
+                'typeObject.$.isFilter': newObject.isFilter,
 
               }
             }
@@ -59,9 +90,9 @@ const upsertField = async (field) => {
       }
     }
     else {
-      console.log("creating!", field)
+      console.log("creating!", newObject)
       try {
-          const { key, value, visibility, isFilter, order, data } = field;
+          const { key, value, visibility, isFilter, order, data } = newObject;
           // Construct a new document with the field data
           const newDocument = new Field({
             type:{[key]: value}, // Set the dynamic data based on user input
