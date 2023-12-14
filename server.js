@@ -46,11 +46,14 @@ const storesRoutes = require('./routes/stores');
 const authRoutes = require('./routes/auth');
 const pollenRoutes = require('./routes/pollen');
 const fieldsRoutes = require('./routes/fields')
+const colorsRoutes = require('./routes/color')
+
 
 app.use(authRoutes);
 app.use(storesRoutes);
 app.use(pollenRoutes);
 app.use(fieldsRoutes);
+app.use(colorsRoutes);
 app.use(cookieParser());
 // if (process.env.NODE_ENV === 'production') {
 //   app.use(express.static('public/build'));

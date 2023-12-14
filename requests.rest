@@ -1,0 +1,20 @@
+{
+  "method": "GET",
+  "header": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    }
+  ],
+  "url": {
+    "raw": "http://localhost:3001/colors",
+    "protocol": "http",
+    "host": [
+      "localhost"
+    ],
+    "port": "3001",
+    "path": [
+      "colors"
+    ]
+  }
+}
