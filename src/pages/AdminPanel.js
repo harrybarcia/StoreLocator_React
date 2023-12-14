@@ -64,6 +64,8 @@ const AdminPanel = () => {
       return newMatrix;
     });
   }, [allFieldsTogether]);
+  console.log('allFieldsTogether', allFieldsTogether);
+  console.log('mySettings', mySettings);
 
   const handleChangeCheckbox = (rowIndex, colIndex) => {
     setCheckboxMatrix((prevMatrix) => {
@@ -187,7 +189,7 @@ const AdminPanel = () => {
                       </select>
                     </div>
                     <div style={{ minWidth: "120px" }}>
-                      <div className='overflow-auto max-h-16 mr-2'>
+                      <div className='max-h-16 mr-2'>
                         {field?.data?.map((item, index) => {
                           return (
                             <div key={`${fieldIndex}-${index}`} className='flex flex-row justify-between items-center'>

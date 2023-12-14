@@ -60,6 +60,8 @@ const Dropdown = (props) => {
     fetchData(); // Call the function
   }, [fields]);
 
+  console.log('permanentData', permanentData);
+
   const types = fields?.map((obj, index) => ({
     label: obj.key,
     data: obj.data,
@@ -67,20 +69,38 @@ const Dropdown = (props) => {
     order:obj.order,
     isFilter:obj.isFilter
   }));
+  console.log('types', types);
   const filteredAndSortedTypes = types.slice().sort((a, b) => a.order - b.order);
+  console.log('filteredAndSortedTypes', filteredAndSortedTypes);
   filteredAndSortedTypes.slice().sort((a, b) => a.order - b.order);
   const selectStoreWhenClick = (filteredAndSortedTypes, isCheckedType) => {
     let selectedValuesArrays = [];
     filteredAndSortedTypes?.forEach((item, index) => {
       if (isCheckedType.length > 0) {
-        const selectedValuesForEachItem = item?.data.filter((_item, dataIndex) => isCheckedType[index][dataIndex]);
+        console.log('selectedValuesForEachItem', item?.data?.filter((_item, dataIndex) => isCheckedType[index][dataIndex]));
+        const selectedValuesForEachItem = item?.data?.filter((_item, dataIndex) => isCheckedType[index][dataIndex]);
         const label = item.label;
         // Accumulate changes in the temporary variable
         selectedValuesArrays.push({ label: label, values: selectedValuesForEachItem });
       }
     });
     const sortedArray = selectedValuesArrays?.sort((a, b) => b.order - a.order);
-    console.log(sortedArray)
+    console.log(sortedArray) // 
+                            //   [
+                            //     {
+                            //         "label": "Zonage",
+                            //         "values": [
+                            //             {
+                            //                 "name": "Housing",
+                            //                 "color": "#158a66"
+                            //             },
+                            //             {
+                            //                 "name": "test",
+                            //                 "color": "#66981b"
+                            //             }
+                            //         ]
+                            //     }
+                            // ]
     console.log(permanentData)
     // const permanentData = [
       //   { city: 'New York', address: '123 Main St', zonage: 'Commercial' },
@@ -97,7 +117,8 @@ const Dropdown = (props) => {
       .sort((a, b) => a.order - b.order)
       .filter((item)=>item.isFilter ===true)
       .map((tItem, tIndex) => {
-        myConditionArray.push(sortedArray[tIndex]['values'].includes(tItem.data))
+        const isFieldDataIncluded = sortedArray[tIndex]['values'].some(item => item.name === tItem.data );
+        myConditionArray.push(isFieldDataIncluded)
       })
       myConditionArrays.push(myConditionArray)
     })    
@@ -113,10 +134,13 @@ const Dropdown = (props) => {
     const filteredDataSorted = permanentData?.filter((_, index) =>
     myConditionArrays[index].every(condition => condition)
     );
+    console.log('filteredDataSorted', filteredDataSorted);
     props.sendDataFromDropdown(filteredDataSorted);
   };
   
   const handleCheckboxChange = (typeIndex, itemIndex, item) => {
+    console.log('item', item);
+
     // Create a copy of the isCheckedType array
     const updatedCheckedType = [...isCheckedType];
     // Toggle the checked state for the clicked city
@@ -157,15 +181,15 @@ const Dropdown = (props) => {
             <div className="absolute text-black font-bold flex flex-col p-2 w-fit z-10 bg-white rounded">
               <ul className="flex flex-col text-black">
                 {type?.data?.map((item, itemIndex) => (
-                  <li key={itemIndex}>
+                  <li key={item.name}>
                     <Checkbox
-                      id={itemIndex}
-                      name={item}
+                      id={item.name}
+                      name={item.name}
                       checked={type.isCheckedType[itemIndex]}
                       onChange={() => handleCheckboxChange(typeIndex, itemIndex, item)}
                     />
                     <label className="ml-2" htmlFor={itemIndex}>
-                      {item}
+                      {item.name}
                     </label>
                   </li>
                 ))}
