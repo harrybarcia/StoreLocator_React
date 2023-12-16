@@ -20,10 +20,10 @@ const fieldSchema = new mongoose.Schema(
       type:Number
     },
 
-    colors: [{
-      type: [Object],
+    colors: {
+      type: Object,
       ref: 'colors',
-    }],
+    },
   },
 );
 

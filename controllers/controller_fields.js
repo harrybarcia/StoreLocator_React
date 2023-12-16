@@ -15,6 +15,7 @@ exports.updateField = async (req, res, next) => {
     for (const field of fieldsArray) {
       await upsertField(field, res)
     }
+    res.status(200).json({message:"Fields updated successfully"})
   } catch (error) {
     console.error('Error upserting field:', error.message);
   }
@@ -69,7 +70,7 @@ const upsertField = async (field, res) => {
       try {
         const colorsArray = fieldFormatted.colors;
         console.log('colorsArray', colorsArray);
-        const colors = [await addFieldsColors(colorsArray, res)];  // <-- Ensure you await the function call
+        const colors = await addFieldsColors(colorsArray, res);  // <-- Ensure you await the function call
         console.log('colors', colors);
         const { type, visibility, isFilter, order } = fieldFormatted;
           // Construct a new document with the field data

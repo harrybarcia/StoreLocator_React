@@ -117,7 +117,7 @@ exports.addStoreFromClick = async (req, res) => {
   try {
     const savedPin = await Store.createPinWithoutGeocoding(newPinData);
     const field = await Store.findById(savedPin._id).populate('typeObject.colors');
-    res.status(200).json(savedPin, field);
+    res.status(200).json([savedPin, field]);
   } catch (err) {
     res.status(500).json(err);
   }
