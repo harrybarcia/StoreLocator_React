@@ -27,17 +27,18 @@ const AdminPanel = () => {
   // Fetch data when the component mounts
   const fetchData = async () => {
     const data = await fetchFields();
+    console.log('data', data);
     const maxOrder = Math.max(...data.map((field) => field.order), 0);
     setNextOrder(maxOrder + 1);
     setFields(data); // Update the state with the fetched data
   };
-
+  console.log('fields', fields);
   useEffect(() => {
     fetchData();
   }, []); // Empty dependency array to run the effect once when the component mounts  
 
   useEffect(() => {
-    setNewDataFields(fields.map((item) => item.data))
+    setNewDataFields(fields.map((item) => item.colors))
   }, [fields])
 
   useEffect(() => {
@@ -98,7 +99,7 @@ const AdminPanel = () => {
       value: newFieldType,
       visibility: "false",
       order: nextOrder, // Use the current order
-      data: []
+      colors: []
     };
     setNewFields(prevFields => [...prevFields, newFields]);
     setNextOrder((prevOrder) => prevOrder + 1);
@@ -110,7 +111,7 @@ const AdminPanel = () => {
     setAllFieldsTogether((prevDataFields) => {
       // Use map to iterate through allFieldsTogether and update the item with the matching id
       const updatedAllFieldsTogether = prevDataFields.map((field) =>
-        field.id === id ? { ...field, data: inputDataField } : field
+        field.id === id ? { ...field, colors: inputDataField } : field
       );
       return updatedAllFieldsTogether;
     });
@@ -190,7 +191,7 @@ const AdminPanel = () => {
                     </div>
                     <div style={{ minWidth: "120px" }}>
                       <div className='max-h-16 mr-2'>
-                        {field?.data?.map((item, index) => {
+                        {field?.colors?.map((item, index) => {
                           return (
                             <div key={`${fieldIndex}-${index}`} className='flex flex-row justify-between items-center'>
                               {item.name} : <div style={{ backgroundColor: item.color, width: '15px', height: '15px' }} className="rounded-full inline-block"></div>

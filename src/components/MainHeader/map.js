@@ -18,8 +18,6 @@ import React, {
   import CircleIcon from '@mui/icons-material/Circle';
   import ModalContent from "../UI/ModalContent";
   import CustomPopup from "../UI/Popup";
-
-  
   
   mapboxgl.workerClass =
     require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default; // eslint-disable-line
@@ -182,6 +180,7 @@ import React, {
 
 
     const mapData = filteredData?.length>=0&&filteredData?.length<permanentData?.length?filteredData:permanentData
+    console.log('mapData', mapData);
     return (
       <>
       <div className="flex flex-row flex-wrap">
@@ -215,7 +214,7 @@ import React, {
                   <CircleIcon
                     style={{
                       fontSize: 3 * viewport.zoom,
-                      fill: store.typeObject[0].color,
+                      fill: "green",
                       stroke:"white",
                       cursor: "pointer",
                       strokeWidth: 2

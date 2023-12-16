@@ -24,17 +24,23 @@ const SimpleInput = (props) => {
       const response = await fetchFields();
       setInputData(response); // Update the state with the fetched data
     };
+
+    console.log('inputData', inputData);
+
+    const fetchColors = async () => {
+      const response = await axios.get("/all-colors");
+      console.log('response', response);
+    }
     if (inputData.length === 0) {
       fetchData();
     }
-    
+    fetchColors();
   }, []); // Empty dependency array to run the effect once when the component mounts
 
   useEffect(() => {
     
   }, [inputData]); // Empty dependency array to run the effect once when the component mounts
 
-  console.log("inputData", inputData.length === 0)
   console.log(props.newPlace)
   const navigate = useNavigate();
   const handleAddressChange = (evt) => {
@@ -132,6 +138,7 @@ const SimpleInput = (props) => {
 
     // setNewOrder(updatedOrder);
   };
+  console.log('inputData', inputData);
 
   return (
 
@@ -180,18 +187,32 @@ const SimpleInput = (props) => {
             onChange={handleRatingChange}
           />
           <br />
-          {inputData.sort((a, b) => a.order - b.order).map((item, index) => (
+          {inputData?.sort((a, b) => a.order - b.order).map((item, index) => (
             <div key={index} draggable onDragEnd={handleDragEnd} data-rbd-draggable-id={item.id} data-rbd-drag-handle-draggable-id={item.id} index={index}>
               {item.visibility && (
-                <div className="mr-8">
-                  <label className="block text-gray-700 font-bold mb-2">{item.key}</label>
-                  <input
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    type="text"
-                    value={item.data}
-                    onChange={(e) => handleInputChange(item.key, e.target.value)}
-                  />
-                </div>
+                 <div className="mr-8">
+                 <label className="block text-gray-700 font-bold mb-2">{item.key}</label>
+                 {item.colors? (
+                   <select
+                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                     value={item.data}
+                     onChange={(e) => handleInputChange(item.key, e.target.value)}
+                   >
+                     {item.colors.map((color, colorIndex) => (
+                       <option key={colorIndex} value={color}>
+                         {color}
+                       </option>
+                     ))}
+                   </select>
+                 ) : (
+                   <input
+                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                     type="text"
+                     value={item.data}
+                     onChange={(e) => handleInputChange(item.key, e.target.value)}
+                   />
+                 )}
+               </div>
               )}
             </div>
           ))}
