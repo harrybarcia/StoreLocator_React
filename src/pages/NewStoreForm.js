@@ -140,6 +140,17 @@ const SimpleInput = (props) => {
   };
   console.log('inputData', inputData);
 
+  const [selectedColor, setSelectedColor] = useState('');
+
+  const handleColorChange = (event) => {
+    // Access the selected value here
+    const selectedValue = event.target.value;
+    setSelectedColor(selectedValue);
+
+    // You can perform further actions with the selected value if needed
+    console.log('Selected Color:', selectedValue);
+  };
+
   return (
 
     <div className="flex justify-center h-[400px] overflow-auto">
@@ -196,11 +207,13 @@ const SimpleInput = (props) => {
                    <select
                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                      value={item.data}
-                     onChange={(e) => handleInputChange(item.key, e.target.value)}
-                   >
+                     onChange={(e) => {
+                      const selectedColor = e.target.value;
+                      handleInputChange(item.key, selectedColor);
+                    }}                     >
                      {item.colors.map((color, colorIndex) => (
-                       <option key={colorIndex} value={color}>
-                         {color}
+                       <option key={colorIndex} value={color.color} style={{ backgroundColor: color.color }}>
+                         {color.name}
                        </option>
                      ))}
                    </select>

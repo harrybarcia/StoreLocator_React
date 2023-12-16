@@ -47,7 +47,7 @@ const Dropdown = (props) => {
         // Dynamic function to fill each inner array with 'true' values
         function fillArraysWithTrue(fields) {
           return fields.map(obj => {
-            return Array.from({ length: obj.data.length }, () => true);
+            return Array.from({ length: obj.colors.length }, () => true);
           });
         }
         const filledUniqueData = fillArraysWithTrue(fields);
@@ -64,7 +64,7 @@ const Dropdown = (props) => {
 
   const types = fields?.map((obj, index) => ({
     label: obj.key,
-    data: obj.data,
+    data: obj.colors.name,
     isCheckedType: isCheckedType[index],
     order:obj.order,
     isFilter:obj.isFilter
@@ -117,7 +117,7 @@ const Dropdown = (props) => {
       .sort((a, b) => a.order - b.order)
       .filter((item)=>item.isFilter ===true)
       .map((tItem, tIndex) => {
-        const isFieldDataIncluded = sortedArray[tIndex]['values'].some(item => item.name === tItem.data );
+        const isFieldDataIncluded = sortedArray[tIndex]['values'].some(item => item.color.name === tItem.data );
         myConditionArray.push(isFieldDataIncluded)
       })
       myConditionArrays.push(myConditionArray)

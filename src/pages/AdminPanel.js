@@ -82,14 +82,11 @@ const AdminPanel = () => {
         const checkboxValue = checkboxMatrix[fieldIndex]?.[index] || false;
         return { ...acc, [setting]: checkboxValue };
       }, {});
-      return {
-        ...field,
-        ...updatedProperties,
-      };
+      return { ...field, ...updatedProperties };
     });
-    const results = await axios.post('/add-field', updatedFields)
-    navigate("/");
-  }
+    const results = await axios.post('/add-field', updatedFields);
+    navigate('/'); // Call navigate after the async request completes
+  };
   const [newFieldName, setNewFieldName] = useState('');
   const [newFieldType, setNewFieldType] = useState('');
   const handleAddInputField = () => {

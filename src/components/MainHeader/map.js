@@ -217,7 +217,7 @@ import React, {
                       fill: "green",
                       stroke:"white",
                       cursor: "pointer",
-                      strokeWidth: 2
+                      strokeWidth: 3
 
                     }}
                     onClick={() => {
