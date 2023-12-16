@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const fieldfilterSchema = new mongoose.Schema(
     {
-        type: {
+        name: {
             type: String, // Mixed type can represent various data types
             required:true
         },

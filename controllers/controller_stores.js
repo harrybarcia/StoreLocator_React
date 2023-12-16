@@ -95,8 +95,16 @@ exports.addStoreFromClick = async (req, res) => {
   const storeId = new mongodb.ObjectId();
   const userId = "64fa71d29df5a1f4b8cf582f";
   const image = req.file?.filename || "";
-  const typeObject = JSON.parse(req.body.typeObject);
-  console.log(typeObject.map((item => item.id)));
+
+  let typeObject = req.body.typeObject ||[];
+  console.log('typeObject', typeObject);
+  console.log('typeObject', typeof(typeObject));
+
+  if (typeof typeObject != "string"){
+    typeObject = JSON.parse(req.body.typeObject);
+  } else {
+    typeObject = []
+  }
   const newPinData = {
     ...pinData, // Include properties from pinData
     storeId: storeId, // Add the storeId property
@@ -104,11 +112,12 @@ exports.addStoreFromClick = async (req, res) => {
     skipGeocoding: true, // Set this flag to skip geocoding
     image:image,
     typeObject:typeObject,
-    fields:typeObject.map((item => item.id))
+    fields:typeObject?.map((item => item.id))
   };
   try {
     const savedPin = await Store.createPinWithoutGeocoding(newPinData);
-    res.status(200).json(savedPin);
+    const field = await Store.findById(savedPin._id).populate('typeObject.colors');
+    res.status(200).json(savedPin, field);
   } catch (err) {
     res.status(500).json(err);
   }

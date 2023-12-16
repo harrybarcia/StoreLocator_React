@@ -1,13 +1,52 @@
 POST http://localhost:3001/add-colors
 Content-Type: application/json
 
+[
   {
-    "type": "value1",
-    "color": "value2"
+    "type": "value999",
+    "color": "value1900"
+  }, 
+  {
+    "type": "value1901",
+    "color": "value1902"
   }
+]
+###
+POST http://localhost:3001/add-field
+Content-Type: application/json
+
+[
+  {
+      "key": "Zonage",
+      "value": "String",
+      "visibility": "false",
+      "order": 4,
+      "colors": [
+          {
+              "name": "UAe",
+              "color": "#8a3333"
+          },
+          {
+              "name": "UBe",
+              "color": "#28862e"
+          }
+      ]
+  }
+]
+###
+GET http://localhost:3001/fields
+
+###
 
 
+GET http://localhost:3001/all-colors
+###
 
----
 
-GET http://localhost:3001/colors
+GET http://localhost:3001/color/657b9f50651cf9a50d70ae2e
+
+###
+GET http://localhost:3001/allstores
+
+###
+
