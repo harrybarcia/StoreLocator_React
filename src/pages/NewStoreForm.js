@@ -3,11 +3,11 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { memo } from "react"
 import "./NewStoreForm.css";
 import axios from "axios";
-import {fetchFields} from "../components/fetchFields"
+import { fetchFields } from "../components/fetchFields"
 
 const SimpleInput = (props) => {
-  console.log(props)
-  
+  console.log('props.data', props.data);
+
   const [address, setAddress] = useState(props.data?.address || "");
   const [city, setCity] = useState(props.data?.city || "");
   const [image, setFile] = useState(props.data?.image || "");
@@ -15,21 +15,15 @@ const SimpleInput = (props) => {
   const [rating, setRating] = useState(props.data?.rating || "");
   const isEditMode = props.isEditMode
   const [inputData, setInputData] = useState(props.data?.typeObject || []);
-  console.log(props.data?.typeObject)
 
   useEffect(() => {
     // Fetch data when the component mounts
-
     const fetchData = async () => {
       const response = await fetchFields();
       setInputData(response); // Update the state with the fetched data
     };
-
-    console.log('inputData', inputData);
-
     const fetchColors = async () => {
       const response = await axios.get("/all-colors");
-      console.log('response', response);
     }
     if (inputData.length === 0) {
       fetchData();
@@ -38,13 +32,10 @@ const SimpleInput = (props) => {
   }, []); // Empty dependency array to run the effect once when the component mounts
 
   useEffect(() => {
-    
   }, [inputData]); // Empty dependency array to run the effect once when the component mounts
 
-  console.log(props.newPlace)
   const navigate = useNavigate();
   const handleAddressChange = (evt) => {
-    console.log(evt.target.value);
     setAddress(evt.target.value);
   };
   const handleCityChange = (evt) => {
@@ -62,15 +53,24 @@ const SimpleInput = (props) => {
     setRating(evt.target.value);
   };
 
-  const handleInputChange = (key, data) => {
+  const handleInputChange = (key, data, color) => {
+    console.log('key', key); // outputs "Foncier"
+    console.log('data', data); // outputs "#FF0000"
+    console.log('inputData', inputData[0]);
+    console.log('color', color);
+    // const data = {
+    //   name:data, color:
+    // }
     // Find the index of the object with the specified key
-    const updatedData = inputData.map(item =>
-      item.key === key ? { ...item, data } : item
+    const updatedData = inputData.map((item, index) =>
+      index === key ? { ...item, data } : item
     );
+    console.log('updatedData', updatedData);
     setInputData(updatedData);
   };
+  console.log("inputData.map((item) => item)", inputData.map((item) => item));
+
   const handleSubmit = async (evt) => {
-    console.log(props.latitude)
     evt.preventDefault();
     const latitude = props.latitude;
     const longitude = props.longitude;
@@ -85,8 +85,7 @@ const SimpleInput = (props) => {
       formData.append("rating", rating);
       formData.append("latitude", latitude);
       formData.append("longitude", longitude);
-      formData.append("typeObject",JSON.stringify(inputData) )
-      console.log(formData)
+      formData.append("typeObject", JSON.stringify(inputData))
       const response = axios.post("/add-store-from-click", formData);
       const data = await response;
       axios("/allStores").then((response) => {
@@ -102,16 +101,16 @@ const SimpleInput = (props) => {
       formData.append("image", image);
       formData.append("price", price);
       formData.append("rating", rating);
-      formData.append("typeObject",JSON.stringify(inputData) )
+      formData.append("typeObject", JSON.stringify(inputData))
+      console.log('typeObject', JSON.stringify(inputData));
       const location = { coordinates: [longitude, latitude] }
       const jsonString = JSON.stringify(location);
       formData.append("location", jsonString)
       const id = props.id
-      console.log(id)
       const response = axios.put(`/edit-store/${id}?bypassGeocode=true`, formData);
       const data = await response;
+      console.log('data', data);
       props.onClose(data)
-      console.log(data);
     }
     if (!isEditMode && !props.newPlace) {
       formData.append("address", address);
@@ -119,13 +118,11 @@ const SimpleInput = (props) => {
       formData.append("image", image);
       formData.append("price", price);
       formData.append("rating", rating);
-      formData.append("typeObject",JSON.stringify(inputData) )
+      formData.append("typeObject", JSON.stringify(inputData))
       const response = axios.post("/add-store", formData);
       const data = await response;
       navigate("/");
-      console.log(data);
     }
-    console.log(formData)
   }
 
   const handleDragEnd = () => {
@@ -138,8 +135,6 @@ const SimpleInput = (props) => {
 
     // setNewOrder(updatedOrder);
   };
-  console.log('inputData', inputData);
-
   const [selectedColor, setSelectedColor] = useState('');
 
   const handleColorChange = (event) => {
@@ -149,10 +144,10 @@ const SimpleInput = (props) => {
 
     // You can perform further actions with the selected value if needed
     console.log('Selected Color:', selectedValue);
+    console.log('inputData', inputData);
   };
 
   return (
-
     <div className="flex justify-center h-[400px] overflow-auto">
       <form onSubmit={handleSubmit} >
         <h4>Add your new store</h4>
@@ -164,7 +159,6 @@ const SimpleInput = (props) => {
             value={address}
             onChange={handleAddressChange}
           />
-
           <label className="block text-gray-700 font-bold mb-2">Image</label>
           <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             name="image"
@@ -201,34 +195,39 @@ const SimpleInput = (props) => {
           {inputData?.sort((a, b) => a.order - b.order).map((item, index) => (
             <div key={index} draggable onDragEnd={handleDragEnd} data-rbd-draggable-id={item.id} data-rbd-drag-handle-draggable-id={item.id} index={index}>
               {item.visibility && (
-                 <div className="mr-8">
-                 <label className="block text-gray-700 font-bold mb-2">{item.key}</label>
-                 {item.colors? (
-                   <select
-                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                     value={item.data}
-                     onChange={(e) => {
-                      const selectedColor = e.target.value;
-                      handleInputChange(item.key, selectedColor);
-                    }}                     >
-                     {item.colors.map((color, colorIndex) => (
-                       <option key={colorIndex} value={color.color} style={{ backgroundColor: color.color }}>
-                         {color.name}
-                       </option>
-                     ))}
-                   </select>
-                 ) : (
-                   <input
-                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                     type="text"
-                     value={item.data}
-                     onChange={(e) => handleInputChange(item.key, e.target.value)}
-                   />
-                 )}
-               </div>
+                <div className="mr-8">
+                  <label className="block text-gray-700 font-bold mb-2">{item?.key}</label>
+                  {item.colors.length > 0 ? (
+                    <select
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      onChange={(e) => {
+                        handleInputChange(index, item.colors.find(color => color.name === e.target.value));
+                      }}
+                      defaultValue={item.data?.name} // Set the default value here
+                    >
+                      {item.colors.map((color, colorIndex) => (
+                        <option
+                          key={colorIndex}
+                          value={color.name}
+                          style={{ backgroundColor: color.color }}
+                        >
+                          {color.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      type="text"
+                      value={item.data}
+                      onChange={(e) => handleInputChange(index, e.target.value)}
+                    />
+                  )}
+                </div>
               )}
             </div>
           ))}
+
           <div class="my-4 flex flex-row items-center justify-center">
             {isEditMode ? (
               <button

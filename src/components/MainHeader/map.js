@@ -48,6 +48,7 @@ import React, {
     const  [filteredData, setFilteredData] = useState([])
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = React.useState(false);
+    const [colorMainFilter, setColorMainFilter] = useState(null)
   
     useEffect(() => {
       const dataFetched = false
@@ -95,15 +96,17 @@ import React, {
         setIsEditMode(false);
       }
     };
-    console.log(currentPlaceId)
     const handleCloseForm = (updatedStoreData) => {
+      console.log('updatedStoreData', updatedStoreData);
       setNewPlace(null)
       setIsEditMode(false);
       // CHECK THE CASE OF NEWFORM
       // Check when the user deletes when on selection, it doesn't disapear from the page
           // Create a copy of the filteredData to avoid mutating state directly
+      console.log('filteredData', filteredData);
       const updatedFilteredData = filteredData.map((store) => {
-  
+        console.log('store', store);
+        
         // Check if the store matches the updatedStoreData
         if (store._id === updatedStoreData.data.data._id) {
           // Replace the matching store with the updated data
@@ -181,6 +184,13 @@ import React, {
 
     const mapData = filteredData?.length>=0&&filteredData?.length<permanentData?.length?filteredData:permanentData
     console.log('mapData', mapData);
+
+    // // I retrieve the data of mapData, if the data is equal to the colors.name then, retrieve the color.color of that item
+    // for (const mItem of mapData){
+    //   for (const tItem of typeObject){
+    //     if (mItem.data ===)
+    //   }
+    // }
     return (
       <>
       <div className="flex flex-row flex-wrap">
@@ -213,8 +223,8 @@ import React, {
                 >
                   <CircleIcon
                     style={{
-                      fontSize: 3 * viewport.zoom,
-                      fill: "green",
+                      fontSize: 4 * viewport.zoom,
+                      fill: store?.typeObject[0]?.data?.color,
                       stroke:"white",
                       cursor: "pointer",
                       strokeWidth: 3
@@ -230,54 +240,6 @@ import React, {
                   />
                 </Marker>
                 {store._id === currentPlaceId && isEditMode === false && (
-                  // <Popup
-                  //   key={store._id}
-                  //   closeButton={true}
-                  //   closeOnClick={false}
-                  //   onClose={() => closePopup()}
-                  //   anchor="none"
-                  //   latitude={store.location.coordinates[1]}
-                  //   longitude={store.location.coordinates[0]}
-                  // >
-                  //   <button className="mimic-popup-close-button">
-                  //     <CloseIcon
-                  //       style={{
-                  //         fontSize: 30,
-                  //         color: "tomato",
-                  //         cursor: "pointer",
-                  //       }}
-                  //     />
-                  //   </button>
-                  //   <div className="card">
-                  //     <label>Place</label>
-                  //     <h4 className="place">{store.city}</h4>
-                  //     <label>Address</label>
-                  //     <h4 className="place">{store.address}</h4>
-                  //     <label>Price</label>
-                  //     <p className="desc">{store.price}</p>
-                  //     <img src={"/images/" + store.image} />
-                  //     <label>Rating</label>
-                  //     <p className="rating">
-                  //       <div className="rating">
-                  //         {Array(store.rating).fill(<Star className="star" />)}
-                  //       </div>
-                  //     </p>
-                  //     <label>Information</label>
-                  //     <span className="username"></span>
-                  //   </div>
-                  //   <button>
-                  //   <EditIcon onClick={handleEditClick}></EditIcon>
-                  //   </button>
-                  //   <button>
-                  //   <DeleteIcon onClick={() => setShowModal(true)}></DeleteIcon>
-                  //   </button>
-                  //   <SuppressionModal
-                  //     open={showModal}
-                  //     onClose={() => setShowModal(false)}
-                  //     onDelete={() =>handleDeleteClick(store._id)}
-                  //     modalContent="deleteStore"
-                  //   />
-                  // </Popup>
                   <CustomPopup
                      key={store._id}
                     closeButton={true}

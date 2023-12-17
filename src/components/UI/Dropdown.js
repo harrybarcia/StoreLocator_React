@@ -39,7 +39,6 @@ const Dropdown = (props) => {
   useEffect(() => {
     fetchData();
   }, []); // Empty dependency array to run the effect once when the component mounts  
-  console.log('fields', fields);
   // Use the fetchData() function in a useEffect hook.
   useEffect(() => {
     async function fetchData() {
@@ -59,33 +58,30 @@ const Dropdown = (props) => {
     }
     fetchData(); // Call the function
   }, [fields]);
-
-  console.log('permanentData', permanentData);
-
+  console.log('fields', fields);
   const types = fields?.map((obj, index) => ({
     label: obj.key,
-    data: obj.colors.name,
+    data: obj.colors,
     isCheckedType: isCheckedType[index],
     order:obj.order,
     isFilter:obj.isFilter
   }));
   console.log('types', types);
   const filteredAndSortedTypes = types.slice().sort((a, b) => a.order - b.order);
-  console.log('filteredAndSortedTypes', filteredAndSortedTypes);
   filteredAndSortedTypes.slice().sort((a, b) => a.order - b.order);
   const selectStoreWhenClick = (filteredAndSortedTypes, isCheckedType) => {
     let selectedValuesArrays = [];
     filteredAndSortedTypes?.forEach((item, index) => {
       if (isCheckedType.length > 0) {
-        console.log('selectedValuesForEachItem', item?.data?.filter((_item, dataIndex) => isCheckedType[index][dataIndex]));
         const selectedValuesForEachItem = item?.data?.filter((_item, dataIndex) => isCheckedType[index][dataIndex]);
         const label = item.label;
         // Accumulate changes in the temporary variable
         selectedValuesArrays.push({ label: label, values: selectedValuesForEachItem });
       }
     });
-    const sortedArray = selectedValuesArrays?.sort((a, b) => b.order - a.order);
-    console.log(sortedArray) // 
+    console.log('filteredAndSortedTypes', filteredAndSortedTypes);
+    const filteredArray = selectedValuesArrays?.sort((a, b) => b.order - a.order);
+    console.log("filteredArray", filteredArray) // 
                             //   [
                             //     {
                             //         "label": "Zonage",
@@ -101,7 +97,6 @@ const Dropdown = (props) => {
                             //         ]
                             //     }
                             // ]
-    console.log(permanentData)
     // const permanentData = [
       //   { city: 'New York', address: '123 Main St', zonage: 'Commercial' },
       //   { city: 'Los Angeles', address: '456 Oak St', zonage: 'Residential' },
@@ -111,17 +106,23 @@ const Dropdown = (props) => {
     const myConditionArrays = []
 
     const testForConditions = permanentData?.map((item, index) => {
+      console.log('filteredArray', filteredArray);
+      console.log('item', item);
+      console.log('item.typeObject', item.typeObject);
+      console.log('item.typeObject[index]', item.typeObject[index]);
+      console.log('item.typeObject[0].name', item.typeObject[0].data);
       const myConditionArray = []
       item?.typeObject
       .slice()
       .sort((a, b) => a.order - b.order)
       .filter((item)=>item.isFilter ===true)
       .map((tItem, tIndex) => {
-        const isFieldDataIncluded = sortedArray[tIndex]['values'].some(item => item.color.name === tItem.data );
+        const isFieldDataIncluded = filteredArray[tIndex]['values'].some(item => tItem.data && item.name === tItem.data.name );
         myConditionArray.push(isFieldDataIncluded)
       })
       myConditionArrays.push(myConditionArray)
     })    
+    console.log('myConditionArrays', myConditionArrays);
     // Hardcoded conditions array
     // const conditionsArray = [
     //   { Condition: true, AddressCondition: true, ZonageCondition: true },
@@ -134,12 +135,10 @@ const Dropdown = (props) => {
     const filteredDataSorted = permanentData?.filter((_, index) =>
     myConditionArrays[index].every(condition => condition)
     );
-    console.log('filteredDataSorted', filteredDataSorted);
     props.sendDataFromDropdown(filteredDataSorted);
   };
   
   const handleCheckboxChange = (typeIndex, itemIndex, item) => {
-    console.log('item', item);
 
     // Create a copy of the isCheckedType array
     const updatedCheckedType = [...isCheckedType];
@@ -159,7 +158,7 @@ const Dropdown = (props) => {
       prevIsOpen.map((value, i) => (i === index ? !value : false))
     );
   };
-
+  console.log('types', types);
   return (
     <div className="flex flex-row">
       {types.map((type, typeIndex) => (
