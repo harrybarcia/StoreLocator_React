@@ -35,6 +35,8 @@ Content-Type: application/json
 ]
 ###
 GET http://localhost:3001/fields
+###
+GET http://localhost:3001/allstores  
 
 ###
 
