@@ -95,23 +95,15 @@ exports.addStoreFromClick = async (req, res) => {
   const storeId = new mongodb.ObjectId();
   const userId = "64fa71d29df5a1f4b8cf582f";
   const image = req.file?.filename || "";
-
-  let typeObject = req.body.typeObject ||[];
-  console.log('typeObject', typeObject);
-  console.log('typeObject', typeof(typeObject));
-
-  if (typeof typeObject != "string"){
-    typeObject = JSON.parse(req.body.typeObject);
-  } else {
-    typeObject = []
-  }
+  const typeObject = JSON.parse(req.body.typeObject)
+  console.log('pinData', pinData);
   const newPinData = {
     ...pinData, // Include properties from pinData
-    storeId: storeId, // Add the storeId property
-    userId: userId, // Add the userId property
+    storeId, // Add the storeId property
+    userId, // Add the userId property
     skipGeocoding: true, // Set this flag to skip geocoding
-    image:image,
-    typeObject:typeObject,
+    image,
+    typeObject,
     fields:typeObject?.map((item => item.id))
   };
   try {
