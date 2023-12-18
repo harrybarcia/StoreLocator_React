@@ -58,7 +58,6 @@ const Dropdown = (props) => {
     }
     fetchData(); // Call the function
   }, [fields]);
-  console.log('fields', fields);
   const types = fields?.map((obj, index) => ({
     label: obj.key,
     data: obj.colors,
@@ -66,7 +65,6 @@ const Dropdown = (props) => {
     order:obj.order,
     isFilter:obj.isFilter
   }));
-  console.log('types', types);
   const filteredAndSortedTypes = types.slice().sort((a, b) => a.order - b.order);
   filteredAndSortedTypes.slice().sort((a, b) => a.order - b.order);
   const selectStoreWhenClick = (filteredAndSortedTypes, isCheckedType) => {
@@ -79,9 +77,8 @@ const Dropdown = (props) => {
         selectedValuesArrays.push({ label: label, values: selectedValuesForEachItem });
       }
     });
-    console.log('filteredAndSortedTypes', filteredAndSortedTypes);
     const filteredArray = selectedValuesArrays?.sort((a, b) => b.order - a.order);
-    console.log("filteredArray", filteredArray) // 
+    // console.log("filteredArray", filteredArray) // 
                             //   [
                             //     {
                             //         "label": "Zonage",
@@ -106,11 +103,6 @@ const Dropdown = (props) => {
     const myConditionArrays = []
 
     const testForConditions = permanentData?.map((item, index) => {
-      console.log('filteredArray', filteredArray);
-      console.log('item', item);
-      console.log('item.typeObject', item.typeObject);
-      console.log('item.typeObject[index]', item.typeObject[index]);
-      console.log('item.typeObject[0].name', item.typeObject[0].data);
       const myConditionArray = []
       item?.typeObject
       .slice()
@@ -122,7 +114,6 @@ const Dropdown = (props) => {
       })
       myConditionArrays.push(myConditionArray)
     })    
-    console.log('myConditionArrays', myConditionArrays);
     // Hardcoded conditions array
     // const conditionsArray = [
     //   { Condition: true, AddressCondition: true, ZonageCondition: true },
@@ -158,7 +149,6 @@ const Dropdown = (props) => {
       prevIsOpen.map((value, i) => (i === index ? !value : false))
     );
   };
-  console.log('types', types);
   return (
     <div className="flex flex-row">
       {types.map((type, typeIndex) => (

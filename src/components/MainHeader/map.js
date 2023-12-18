@@ -185,6 +185,7 @@ import React, {
     const mapData = filteredData?.length>=0&&filteredData?.length<permanentData?.length?filteredData:permanentData
     console.log('mapData', mapData);
 
+
     // // I retrieve the data of mapData, if the data is equal to the colors.name then, retrieve the color.color of that item
     // for (const mItem of mapData){
     //   for (const tItem of typeObject){
@@ -224,7 +225,7 @@ import React, {
                   <CircleIcon
                     style={{
                       fontSize: 4 * viewport.zoom,
-                      fill: store?.typeObject[0]?.data?.color,
+                      fill: store?.typeObject[0]?.data[0].color,
                       stroke:"white",
                       cursor: "pointer",
                       strokeWidth: 3

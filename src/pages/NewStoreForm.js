@@ -53,30 +53,47 @@ const SimpleInput = (props) => {
     setRating(evt.target.value);
   };
 
-  const handleInputChange = (key, data, color) => {
-    console.log('key', key); // outputs "Foncier"
-    console.log('data', data); // outputs "#FF0000"
-    console.log('inputData', inputData[0]);
-    console.log('color', color);
-    // const data = {
-    //   name:data, color:
-    // }
-    // Find the index of the object with the specified key
-    const updatedData = inputData.map((item, index) =>
-      index === key ? { ...item, data } : item
-    );
+  const handleInputChange = (key, data) => {
+    console.log('key', key);
+    console.log('data', data);
+    console.log('inputData', inputData);
+    console.log("here");
+    const updatedData = inputData.map((item, index) => {
+      if (!item.data) {
+        console.log("noitemdata");
+        item.data = [];
+      }
+      if (index === key) {
+        console.log("index===key");
+        // Replace the existing value in item.data with data
+        item.data.splice(0, 1);
+        item.data.push(data);
+      } else {
+        item.data.push(item.colors[index]);
+      }
+      return item;
+    });
     console.log('updatedData', updatedData);
     setInputData(updatedData);
   };
-  console.log("inputData.map((item) => item)", inputData.map((item) => item));
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     const latitude = props.latitude;
     const longitude = props.longitude;
     const isEditMode = props.isEditMode;
-    const formData = new FormData();
+    console.log('inputData', inputData);
 
+    inputData.map((item, index) => {
+      if (!item.data){
+        item.data = [];
+        item.data.push(item.colors[0]);
+      return item;
+      }
+    });
+    console.log('inputData', inputData);
+
+    const formData = new FormData();
     if (props.newPlace) {
       formData.append("address", address);
       formData.append("city", city);
@@ -86,6 +103,8 @@ const SimpleInput = (props) => {
       formData.append("latitude", latitude);
       formData.append("longitude", longitude);
       formData.append("typeObject", JSON.stringify(inputData))
+      // I need to copy inputData and add data to it. 
+      // If data is empty, 
       const response = axios.post("/add-store-from-click", formData);
       const data = await response;
       axios("/allStores").then((response) => {
@@ -199,22 +218,21 @@ const SimpleInput = (props) => {
                   <label className="block text-gray-700 font-bold mb-2">{item?.key}</label>
                   {item.colors.length > 0 ? (
                     <select
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      onChange={(e) => {
-                        handleInputChange(index, item.colors.find(color => color.name === e.target.value));
-                      }}
-                      defaultValue={item.data?.name} // Set the default value here
-                    >
-                      {item.colors.map((color, colorIndex) => (
-                        <option
-                          key={colorIndex}
-                          value={color.name}
-                          style={{ backgroundColor: color.color }}
-                        >
-                          {color.name}
-                        </option>
-                      ))}
-                    </select>
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    onChange={(e) => {
+                      handleInputChange(index, item.colors.find(color => color.name === e.target.value));
+                    }}
+                  >
+                    {item.colors.map((color, colorIndex) => (
+                      <option
+                        key={colorIndex}
+                        value={color.name}
+                        style={{ backgroundColor: color.color }}
+                      >
+                        {color.name}
+                      </option>
+                    ))}
+                  </select>                  
                   ) : (
                     <input
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
