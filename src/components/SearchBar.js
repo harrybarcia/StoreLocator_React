@@ -31,20 +31,20 @@ const SearchBar = (props) => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className='flex flex-row items-center'>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-        />
-        <button type="submit">
-          <SearchIcon
-          style={{ fontSize: '48px' }}
-          ></SearchIcon>
-        </button>
-      </form>
-    </div>
+  <form onSubmit={handleSubmit} className='flex flex-row items-center'>
+    <button type="submit" className="hover:bg-gray-200 focus:bg-gray-200 focus:outline-none">
+      <SearchIcon style={{ fontSize: '48px' }}></SearchIcon>
+    </button>
+    <input
+      type="text"
+      placeholder="Search..."
+      value={searchTerm}
+      onChange={(event) => setSearchTerm(event.target.value)}
+      className='rounded focus:outline-none focus:border-blue-500 transition-all duration-300 hover:border-gray-300'
+    />
+  </form>
+</div>
+
   );
 };
 

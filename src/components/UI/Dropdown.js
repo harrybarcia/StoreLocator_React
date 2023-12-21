@@ -27,6 +27,7 @@ const Dropdown = (props) => {
   }, [isCheckedType]);
   useEffect(() => {
   }, [isCheckedType, filteredData]);
+  console.log('filteredData', filteredData);
   
   // Fetch data when the component mounts
   const fetchData = async () => {
@@ -57,7 +58,9 @@ const Dropdown = (props) => {
       }
     }
     fetchData(); // Call the function
+    props.sendFieldsDataFromDropdown(fields)
   }, [fields]);
+  console.log('isCheckedType', isCheckedType);
   const types = fields?.map((obj, index) => ({
     label: obj.key,
     data: obj.colors,
@@ -78,54 +81,29 @@ const Dropdown = (props) => {
       }
     });
     const filteredArray = selectedValuesArrays?.sort((a, b) => b.order - a.order);
-    // console.log("filteredArray", filteredArray) // 
-                            //   [
-                            //     {
-                            //         "label": "Zonage",
-                            //         "values": [
-                            //             {
-                            //                 "name": "Housing",
-                            //                 "color": "#158a66"
-                            //             },
-                            //             {
-                            //                 "name": "test",
-                            //                 "color": "#66981b"
-                            //             }
-                            //         ]
-                            //     }
-                            // ]
-    // const permanentData = [
-      //   { city: 'New York', address: '123 Main St', zonage: 'Commercial' },
-      //   { city: 'Los Angeles', address: '456 Oak St', zonage: 'Residential' },
-      //   { city: 'Chicago', address: '789 Elm St', zonage: 'Industrial' },
-      //   // Add more elements as needed
-      // ];
     const myConditionArrays = []
-
-    const testForConditions = permanentData?.map((item, index) => {
-      const myConditionArray = []
-      item?.typeObject
-      .slice()
-      .sort((a, b) => a.order - b.order)
-      .filter((item)=>item.isFilter ===true)
-      .map((tItem, tIndex) => {
-        const isFieldDataIncluded = filteredArray[tIndex]['values'].some(item => tItem.data && item.name === tItem.data.name );
-        myConditionArray.push(isFieldDataIncluded)
-      })
-      myConditionArrays.push(myConditionArray)
-    })    
-    // Hardcoded conditions array
-    // const conditionsArray = [
-    //   { Condition: true, AddressCondition: true, ZonageCondition: true },
-    //   { Condition: false, AddressCondition: true, ZonageCondition: true },
-    //   { Condition: true, AddressCondition: false, ZonageCondition: false },
-    //   // Add more conditions as needed
-    // ];
-    
-    // Hardcoded condition names
+      permanentData?.map((item) => {
+        const myConditionArray = item?.typeObject
+          ?.filter((tItem) => tItem.isFilter === true)
+          ?.map((tItem) => {
+            const isFieldDataIncluded =
+              tItem.data?.some((dataItem) =>
+                filteredArray?.[tItem.order]?.values?.some(
+                  (valueItem) => valueItem?.name === dataItem?.name
+                )
+              );                            
+            return isFieldDataIncluded;
+          })
+          .filter((condition) => condition !== undefined);
+      
+        if (myConditionArray.length > 0) {
+          myConditionArrays.push(myConditionArray);
+        }
+      });                             
     const filteredDataSorted = permanentData?.filter((_, index) =>
     myConditionArrays[index].every(condition => condition)
     );
+    console.log('filteredData', filteredData);
     props.sendDataFromDropdown(filteredDataSorted);
   };
   
@@ -157,7 +135,7 @@ const Dropdown = (props) => {
             ref={buttonsRef}
             type="button"
             id = "my-button"
-            className="relative flex w-fit rounded-full p-2 mr-12 text-black font-bold z-5 text-lg hover:gray border border-black"
+            className="relative flex w-fit rounded-full p-1 mr-12 text-black button-dropdown z-5 text-lg hover:gray border border-black "
             onClick={() => toggleIsOpen(typeIndex)}>
             <h3>{type.label}</h3>
             {isOpen[typeIndex] ? (
@@ -188,6 +166,7 @@ const Dropdown = (props) => {
 
         </div>
       ))}
+      
     </div>
   );
 }
