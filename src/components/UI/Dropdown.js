@@ -27,7 +27,6 @@ const Dropdown = (props) => {
   }, [isCheckedType]);
   useEffect(() => {
   }, [isCheckedType, filteredData]);
-  console.log('filteredData', filteredData);
   
   // Fetch data when the component mounts
   const fetchData = async () => {
@@ -60,7 +59,6 @@ const Dropdown = (props) => {
     fetchData(); // Call the function
     props.sendFieldsDataFromDropdown(fields)
   }, [fields]);
-  console.log('isCheckedType', isCheckedType);
   const types = fields?.map((obj, index) => ({
     label: obj.key,
     data: obj.colors,

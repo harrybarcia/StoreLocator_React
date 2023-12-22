@@ -9,28 +9,23 @@ const MultiSelectableDropdown = (props) => {
     const [permanentData, setPermanentData] = useState(props.permanentDataFromParent)
     const [isCheckedType, setIsCheckedType] = useState([]);
 
-    const [nextOrder, setNextOrder] = useState(1); // Initial order
-    // I keep tracks of the changes on filtered and permanent data
     useEffect(() => {
-      setFilteredData(props.dataFromParent);
-      setPermanentData(props.permanentDataFromParent)
+        setFilteredData(props.dataFromParent);
+        setPermanentData(props.permanentDataFromParent)
     }, [props.permanentDataFromParent, props.dataFromParent]);
     // I trigger selectStoreWhenClick when isChecked is changed
     useEffect(() => {
-      selectStoreWhenClick(types, isCheckedType);
+        selectStoreWhenClick(types, isCheckedType);
     }, [isCheckedType]);
     useEffect(() => {
     }, [isCheckedType, filteredData]);
     console.log('filteredData', filteredData);
-    
-  // Fetch data when the component mounts
-  const fetchData = async () => {
-    const dataRaw = await fetchFields();
-    const data = dataRaw.filter((item)=>item.isFilter)
-    const maxOrder = Math.max(...data.map((field) => field.order), 0);
-    setNextOrder(maxOrder + 1);
-    setFields(data); // Update the state with the fetched data
-  };
+
+    const fetchData = async () => {
+        const dataRaw = await fetchFields();
+        const data = dataRaw.filter((item) => item.isFilter)
+        setFields(data); // Update the state with the fetched data
+    };
     useEffect(() => {
         fetchData();
     }, []); // Empty dependency array to run the effect once when the component mounts  
@@ -56,11 +51,8 @@ const MultiSelectableDropdown = (props) => {
     }, [fields]);
     const types = fields?.map((obj, index) => ({
         label: obj.key,
-        data: obj.colors,
-        isCheckedType: isCheckedType[index],
-        order:obj.order,
-        isFilter:obj.isFilter
-      }));
+        data: obj.colors
+    }));
     console.log('types', types);
 
     const filteredAndSortedTypes = types.slice().sort((a, b) => a.order - b.order);
@@ -142,12 +134,10 @@ const MultiSelectableDropdown = (props) => {
                         className='overflow-hidden '
                         multiple
                         value={selectedItems}
-
+                        onChange={(e) => setSelectedItems(Array.from(e.target.selectedOptions, (option) => option.value))}
                     >
                         {type?.data?.map((item, itemIndex) => (
-                            <option key={item.name} value={item.name}
-                            onClick={() => handleCheckboxChange(typeIndex, itemIndex, item)}
-                            >
+                            <option key={item.name} value={item.name}>
                                 {item.name}
                             </option>
                             

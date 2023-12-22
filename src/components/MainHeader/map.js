@@ -186,10 +186,7 @@ const DisplayMap = (props) => {
   const handleInputDataFromDropdown = (data) => {
     setInputDataFromDropdown(data)
   }
-  console.log('inputDataFromDropdown', inputDataFromDropdown);
-
   const mapData = filteredData?.length >= 0 && filteredData?.length < permanentData?.length ? filteredData : permanentData
-  console.log('mapData', mapData);
 
 
   // // I retrieve the data of mapData, if the data is equal to the colors.name then, retrieve the color.color of that item
