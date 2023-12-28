@@ -3,7 +3,7 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import ReactMapGL, { Marker, Popup,NavigationControl } from "react-map-gl";
+import ReactMapGL, { Marker, Popup, NavigationControl } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
 import { Room, Star } from "@mui/icons-material";
 import CloseIcon from '@mui/icons-material/Close';
@@ -186,6 +186,7 @@ const DisplayMap = (props) => {
   const handleInputDataFromDropdown = (data) => {
     setInputDataFromDropdown(data)
   }
+  console.log('inputDataFromDropdown', inputDataFromDropdown);
   const mapData = filteredData?.length >= 0 && filteredData?.length < permanentData?.length ? filteredData : permanentData
 
 
@@ -207,16 +208,39 @@ const DisplayMap = (props) => {
         <SearchBar
           func={pullData}
         ></SearchBar>
-        
+
       </div>
       <div style={{ height: "80vh", width: "100%", position: "relative" }}>
-        <div style={{ height: "auto", width: "auto",backgroundColor:"white",padding:"1em", position: "absolute", border: "1px", bottom: "20px",right: "20px", zIndex: "10" }}>
-        <SelectBis
-        sendDataFromDropdown={dataFromDropdown}
-        dataFromParent={mapData}
-        permanentDataFromParent={permanentData}
-        sendFieldsDataFromDropdown={handleInputDataFromDropdown}
-        ></SelectBis>
+        <div className="flex flex-row-reverse absolute z-20 ">
+          <div >
+            {inputDataFromDropdown.map((type, typeIndex) => (
+              <div key={typeIndex}>
+                <h2 className="font-bold invisible">{type.key}</h2>
+                <ul className="flex flex-col ">
+                  {type.colors.map((item, index) => (
+                    <li key={index}>
+                      <div
+                        className="w-1 rounded-full p-4 h-1 m-2"
+                        style={{ backgroundColor: `${item.color}` }}
+                      >
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <div className=" p-4 w-100"
+          // style={{ height: "auto", maxHeight: '77%', overflow: "scroll", width: "auto", backgroundColor: "white", padding: "1em", position: "absolute", border: "1px", bottom: "20px", right: "20px", zIndex: "10" }}
+          >
+            <SelectBis
+              sendDataFromDropdown={dataFromDropdown}
+              dataFromParent={mapData}
+              permanentDataFromParent={permanentData}
+              sendFieldsDataFromDropdown={handleInputDataFromDropdown}
+            ></SelectBis>
+          </div>
         </div>
         <ReactMapGL
           {...viewport}
@@ -361,8 +385,8 @@ const DisplayMap = (props) => {
             </>
           )}
           <div style={{ position: 'absolute', bottom: 10, left: 10 }}>
-        <NavigationControl />
-      </div>
+            <NavigationControl />
+          </div>
         </ReactMapGL>
 
       </div>

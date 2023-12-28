@@ -194,13 +194,11 @@ const SelectBis = (props) => {
               }
             }
           }
-          
           console.log('resultArray', resultArray);
           return resultArray;
-          
     }    
     return (
-        <div>
+        <div >
             {types.map((type, typeIndex) => (
                 <div className='w-auto flex-row overflow-hidden justify-between p-2 '>
 

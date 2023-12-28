@@ -126,7 +126,7 @@ const Dropdown = (props) => {
     );
   };
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row flex-wrap justify-around">
       {types.map((type, typeIndex) => (
         <div key={typeIndex}>
           <button
