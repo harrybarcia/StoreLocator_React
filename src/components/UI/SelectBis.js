@@ -17,8 +17,6 @@ const SelectBis = (props) => {
     console.log('permanentData', permanentData);
     console.log('filteredData', filteredData);
 
-    console.log('props.dataFromParent', props.dataFromParent);
-
     const fetchData = async () => {
         const dataRaw = await fetchFields();
         const data = dataRaw.filter((item) => item.isFilter)
@@ -37,7 +35,6 @@ const SelectBis = (props) => {
         label: obj.key,
         data: obj.colors
     }));
-    console.log('types', types);
     useEffect(() => {
     }, [filteredData]);
     // console.log('filteredData', filteredData);
@@ -71,8 +68,17 @@ const SelectBis = (props) => {
             })
             return selectionData
         }));
+        
         console.log('data', data);
-    };
+        const filteredData = []
+        for (let i = 0; i < data.length; i++) {
+            const allValuesAreTrue = data[i].every(item => item === true || (Array.isArray(item) && item.length === 0));
+            console.log(`allValuesAreTrue for data[${i}]`, allValuesAreTrue);
+            allValuesAreTrue && filteredData.push(permanentData[i])
+        }
+        props.sendDataFromDropdown(filteredData)
+    }
+
     // console.log('filteredData', filteredData);
 
     const isSelectionIncludedInStore = (uniqueTypeObject,tIndex, selection) => {
@@ -177,15 +183,21 @@ const SelectBis = (props) => {
         //         ]
         //     }
         // ];
+        console.log('selection', selection);
         const resultArray = [];
         for (const selectKey in selection) {
-            if (parseInt(selectKey) === tIndex ){
-                const result = selection[selectKey].includes(uniqueTypeObject.data[0]['name']);
-                resultArray.push(result)
+            if (parseInt(selectKey) === tIndex) {
+              if (selection[selectKey].length>0) {
+                return selection[selectKey].includes(uniqueTypeObject.data[0]['name']);
+              } else {
+                return []; // Return an empty array if selection[selectKey] is undefined or null
+              }
             }
-        }
-        console.log('resultArray', resultArray);
-        return resultArray;
+          }
+          
+          console.log('resultArray', resultArray);
+          return resultArray;
+          
     }    
     return (
         <div>
