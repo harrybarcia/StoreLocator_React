@@ -6,7 +6,6 @@ import axios from "axios";
 import { fetchFields } from "../components/fetchFields"
 
 const SimpleInput = (props) => {
-  console.log('props.data', props.data);
 
   const [address, setAddress] = useState(props.data?.address || "");
   const [city, setCity] = useState(props.data?.city || "");
@@ -53,29 +52,33 @@ const SimpleInput = (props) => {
     setRating(evt.target.value);
   };
 
-  const handleInputChange = (key, data) => {
-    console.log('key', key);
-    console.log('data', data);
-    console.log('inputData', inputData);
+  const handleInputChange = (selectKey, selectData) => {
+    console.log('selectKey', selectKey);
+    console.log('data', selectData);
+    console.log('inputData', inputData[0].data);
     console.log("here");
+  
     const updatedData = inputData.map((item, index) => {
       if (!item.data) {
         console.log("noitemdata");
         item.data = [];
       }
-      if (index === key) {
-        console.log("index===key");
+      if (index === selectKey) {
         // Replace the existing value in item.data with data
-        item.data.splice(0, 1);
-        item.data.push(data);
-      } else {
-        item.data.push(item.colors[index]);
+        item.data = [selectData]; // Use an array with the new selectData
+      } else if (!item.data.length) {
+        // Add the first value from colors array to item.data if it's empty
+        item.data.push(item.colors[0]);
       }
+
       return item;
     });
+    console.log('inputData', inputData);
+  
     console.log('updatedData', updatedData);
     setInputData(updatedData);
   };
+  
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
