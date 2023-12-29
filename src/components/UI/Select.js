@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { fetchFields } from '../fetchFields'
 
 
-const SelectBis = (props) => {
-    const [selectedItems, setSelectedItems] = useState([{}]);
-
+const Select = (props) => {
+    const [selectedItems, setSelectedItems] = useState([]);
     const [filteredData, setFilteredData] = useState(props.dataFromParent)
     const [permanentData, setPermanentData] = useState(props.permanentDataFromParent)
     const [fields, setFields] = useState([]);
@@ -49,10 +48,10 @@ const SelectBis = (props) => {
         // I retrieve the existing array 
         setSelectedItems((prevSelectedItems) => ({
             // I copy the array and add the selected option
-          ...prevSelectedItems,
-          [typeIndex]: selectedOptions,
+            ...prevSelectedItems,
+            [typeIndex]: selectedOptions,
         }));
-      };
+    };
     console.log('selectedItems', selectedItems);
 
     const resetFilters = () => {
@@ -61,14 +60,16 @@ const SelectBis = (props) => {
     }
 
     const filterData = async () => {
-        const data =await Promise.all(permanentData?.map(async (item, index) => {
-            const selectionData = item.typeObject.map((typeObjectItem, tIndex) => {
-                const result = isSelectionIncludedInStore(typeObjectItem,tIndex, selectedItems);
+        const data = await Promise.all(permanentData?.map(async (item, index) => {
+            const selectionData = item.typeObject.sort((a, b) => a.order - b.order).map((typeObjectItem, tIndex) => {
+                const result = isSelectionIncludedInStore(typeObjectItem, tIndex, selectedItems);
+                console.log('typeObjectItem', typeObjectItem.data);
+                console.log('selectedItems', selectedItems);
                 return result
             })
             return selectionData
         }));
-        
+
         console.log('data', data);
         const filteredData = []
         for (let i = 0; i < data.length; i++) {
@@ -81,7 +82,7 @@ const SelectBis = (props) => {
 
     // console.log('filteredData', filteredData);
 
-    const isSelectionIncludedInStore = (uniqueTypeObject,tIndex, selection) => {
+    const isSelectionIncludedInStore = (uniqueTypeObject, tIndex, selection) => {
         console.log('uniqueTypeObject', uniqueTypeObject);
         // const selection = [{"0":"Solar"},{"1":"Canada"},{"2":"Gris"} ]
         // const uniqueTypeObject = 
@@ -186,22 +187,41 @@ const SelectBis = (props) => {
         console.log('selection', selection);
         const resultArray = [];
         for (const selectKey in selection) {
+            console.log('selectKey', selectKey);
+            console.log('tIndex', tIndex);
             if (parseInt(selectKey) === tIndex) {
-              if (selection[selectKey].length>0) {
-                return selection[selectKey].includes(uniqueTypeObject.data[0]['name']);
-              } else {
-                return []; // Return an empty array if selection[selectKey] is undefined or null
-              }
+                if (selection[selectKey].length > 0) {
+                    console.log('selection[selectKey]', selection[selectKey]);
+                    return selection[selectKey].includes(uniqueTypeObject.data[0]['name']);
+                } else {
+                    return []; // Return an empty array if selection[selectKey] is undefined or null
+                }
             }
-          }
-          console.log('resultArray', resultArray);
-          return resultArray;
-    }    
+        }
+        console.log('resultArray', resultArray);
+        return resultArray;
+    };
+    const [selectedColor, setSelectedColor] = useState(null);
+    const colors = ['#ff0000', '#00ff00', '#0000ff'];
+  
+    const renderOption = (option) => {
+      const color = option.value;
+      return (
+        <div className={`option ${color}`}>
+          {option.label}
+        </div>
+      );
+    };
+  
+    const handleSelectChangeC = (selectedOption) => {
+      setSelectedColor(selectedOption);
+    };
+
+
     return (
         <div >
             {types.map((type, typeIndex) => (
-                <div className='w-auto flex-row overflow-hidden justify-between p-2 '>
-
+                <div className='w-auto flex-row overflow-hidden justify-between'>
                     <h2
                         className='font-bold'
                     >{type.label}
@@ -210,27 +230,30 @@ const SelectBis = (props) => {
                         multiple
                         id={type.name}
                         name={type.name}
-                        className="overflow-hidden"
+                        className="overflow-scroll border border-gray-300 rounded-md p-2 w-full h-20"
                         value={selectedItems[typeIndex] || []}
                         onChange={(e) => handleSelectChange(typeIndex, Array.from(e.target.selectedOptions, (option) => option.value))}
                     >
                         {type?.data?.map((item, itemIndex) => (
-                            <option key={item.name} value={item.name}
-                            // onClick={() => handleOptionClick(typeIndex, item.name)}
-                            >
+                            <option key={item.name} value={item.name} className="flex items-center">
+                                <span
+                                    className="inline-block w-4 h-4 rounded-full mr-2"
+                                    style={{ backgroundColor: item.color }}
+                                ></span>
                                 {item.name}
                             </option>
                         ))}
                     </select>
+
                     <h2>
-                    {type.data.name}
+                        {type.data.name}
                     </h2>
 
                 </div>
             ))}
             <div>
                 <button
-                onClick={resetFilters}
+                    onClick={resetFilters}
                 >
                     Reset
                 </button>
@@ -239,4 +262,4 @@ const SelectBis = (props) => {
     );
 };
 
-export default SelectBis;
+export default Select;

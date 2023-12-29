@@ -18,13 +18,40 @@ import SearchBar from "../SearchBar";
 import CircleIcon from '@mui/icons-material/Circle';
 import ModalContent from "../UI/ModalContent";
 import CustomPopup from "../UI/Popup";
-import Selectable from "../UI/Selectable"
-import SelectBis from "../UI/SelectBis"
+import Select from "../UI/Select"
 
 
 mapboxgl.workerClass =
   require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default; // eslint-disable-line
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
+
+const styles={
+  app:{
+    backgroundColor:'rgba(0,0,0,0.1)',
+    justifyItems:'center',
+    alignItems:'center',
+    display:'grid',
+    height:'100vh',
+    fontFamily:'Arial',
+    color:'rgba(0,0,100,1)',
+    gridTemplateColumns:'1fr',
+    fontSize:25
+  },
+  select:{
+    width:'100%',
+    maxWidth:600
+  }
+}
+
+const options=[
+  {label:'React',value:'react'},
+  {label:'ReactNative',value:'react-native'},
+  {label:'JavaScript',value:'js'},
+  {label:'CSS',value:'css'},
+]
+
+
+
 
 const DisplayMap = (props) => {
   const [viewport, setViewport] = useState({
@@ -211,16 +238,16 @@ const DisplayMap = (props) => {
 
       </div>
       <div style={{ height: "80vh", width: "100%", position: "relative" }}>
-        <div className="flex flex-row-reverse absolute z-20 ">
+        <div className="flex flex-end right-0 absolute z-20 ">
           <div >
             {inputDataFromDropdown.map((type, typeIndex) => (
               <div key={typeIndex}>
-                <h2 className="font-bold invisible">{type.key}</h2>
-                <ul className="flex flex-col ">
+                <h2 className="font-bold invisible ">{type.key}</h2>
+                <ul className="flex flex-col  ">
                   {type.colors.map((item, index) => (
                     <li key={index}>
                       <div
-                        className="w-1 rounded-full p-4 h-1 m-2"
+                        className="w-3 rounded-full h-3 m-2"
                         style={{ backgroundColor: `${item.color}` }}
                       >
                       </div>
@@ -230,17 +257,17 @@ const DisplayMap = (props) => {
               </div>
             ))}
           </div>
-
           <div className=" p-4 w-100"
           // style={{ height: "auto", maxHeight: '77%', overflow: "scroll", width: "auto", backgroundColor: "white", padding: "1em", position: "absolute", border: "1px", bottom: "20px", right: "20px", zIndex: "10" }}
           >
-            <SelectBis
+            <Select
               sendDataFromDropdown={dataFromDropdown}
               dataFromParent={mapData}
               permanentDataFromParent={permanentData}
               sendFieldsDataFromDropdown={handleInputDataFromDropdown}
-            ></SelectBis>
+            ></Select>
           </div>
+
         </div>
         <ReactMapGL
           {...viewport}
