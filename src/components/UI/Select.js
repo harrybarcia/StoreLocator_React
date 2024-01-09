@@ -13,9 +13,6 @@ const Select = (props) => {
         setPermanentData(props.permanentDataFromParent)
     }, [props.permanentDataFromParent, props.dataFromParent]);
 
-    console.log('permanentData', permanentData);
-    console.log('filteredData', filteredData);
-
     const fetchData = async () => {
         const dataRaw = await fetchFields();
         const data = dataRaw.filter((item) => item.isFilter)
@@ -52,8 +49,6 @@ const Select = (props) => {
             [typeIndex]: selectedOptions,
         }));
     };
-    console.log('selectedItems', selectedItems);
-
     const resetFilters = () => {
         props.sendDataFromDropdown(permanentData)
         setSelectedItems([])
@@ -190,9 +185,10 @@ const Select = (props) => {
             console.log('selectKey', selectKey);
             console.log('tIndex', tIndex);
             if (parseInt(selectKey) === tIndex) {
-                if (selection[selectKey].length > 0) {
+                if (selection[selectKey].length > 0 && uniqueTypeObject.data) {
                     console.log('selection[selectKey]', selection[selectKey]);
-                    return selection[selectKey].includes(uniqueTypeObject.data[0]['name']);
+
+                    return selection[selectKey].includes(uniqueTypeObject.data[0]['name'] || []);
                 } else {
                     return []; // Return an empty array if selection[selectKey] is undefined or null
                 }
@@ -230,7 +226,7 @@ const Select = (props) => {
                         multiple
                         id={type.name}
                         name={type.name}
-                        className="overflow-scroll border border-gray-300 rounded-md p-2 w-full h-20"
+                        className="overflow-scroll border border-gray-300 rounded-md p-2 w-full h-30"
                         value={selectedItems[typeIndex] || []}
                         onChange={(e) => handleSelectChange(typeIndex, Array.from(e.target.selectedOptions, (option) => option.value))}
                     >

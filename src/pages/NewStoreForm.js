@@ -79,14 +79,12 @@ const SimpleInput = (props) => {
     setInputData(updatedData);
   };
   
-
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     const latitude = props.latitude;
     const longitude = props.longitude;
     const isEditMode = props.isEditMode;
     console.log('inputData', inputData);
-
     inputData.map((item, index) => {
       if (!item.data){
         item.data = [];
@@ -106,8 +104,6 @@ const SimpleInput = (props) => {
       formData.append("latitude", latitude);
       formData.append("longitude", longitude);
       formData.append("typeObject", JSON.stringify(inputData))
-      // I need to copy inputData and add data to it. 
-      // If data is empty, 
       const response = axios.post("/add-store-from-click", formData);
       const data = await response;
       axios("/allStores").then((response) => {
@@ -120,6 +116,7 @@ const SimpleInput = (props) => {
     if (isEditMode) {
       formData.append("address", address);
       formData.append("city", city);
+      console.log('image', image);
       formData.append("image", image);
       formData.append("price", price);
       formData.append("rating", rating);
@@ -128,7 +125,7 @@ const SimpleInput = (props) => {
       const location = { coordinates: [longitude, latitude] }
       const jsonString = JSON.stringify(location);
       formData.append("location", jsonString)
-      const id = props.id
+      const id = props.data._id
       const response = axios.put(`/edit-store/${id}?bypassGeocode=true`, formData);
       const data = await response;
       console.log('data', data);
@@ -170,7 +167,7 @@ const SimpleInput = (props) => {
   };
 
   return (
-    <div className="flex justify-center h-[400px] overflow-auto">
+    <div className="flex justify-center bg-white overflow-auto">
       <form onSubmit={handleSubmit} >
         <h4>Add your new store</h4>
         <div className="p-3">
@@ -221,21 +218,27 @@ const SimpleInput = (props) => {
                   <label className="block text-gray-700 font-bold mb-2">{item?.key}</label>
                   {item.colors.length > 0 ? (
                     <select
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    onChange={(e) => {
-                      handleInputChange(index, item.colors.find(color => color.name === e.target.value));
-                    }}
-                  >
-                    {item.colors.map((color, colorIndex) => (
-                      <option
-                        key={colorIndex}
-                        value={color.name}
-                        style={{ backgroundColor: color.color }}
-                      >
-                        {color.name}
-                      </option>
-                    ))}
-                  </select>                  
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value={item.data && item.data[0].name}
+                      onChange={(e) => {
+                        handleInputChange(index, item.colors.find(color => color.name === e.target.value));
+                      }}
+                    >
+                      {item.colors.map((color, colorIndex) => {
+                        console.log('color.name:', color.name);
+                        console.log('item.data[0].name:', item.data[0].name);
+
+                        return (
+                          <option
+                            key={colorIndex}
+                            value={color.name}
+                            style={{ backgroundColor: color.color }}
+                          >
+                            {color.name === item.data[0].name ? item.data[0].name : color.name}
+                          </option>
+                        );
+                      })}
+                    </select>
                   ) : (
                     <input
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"

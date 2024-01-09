@@ -78,7 +78,6 @@ const DisplayMap = (props) => {
   const [filteredData, setFilteredData] = useState([])
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [colorMainFilter, setColorMainFilter] = useState(null)
   const [inputDataFromDropdown, setInputDataFromDropdown] = useState([])
   useEffect(() => {
     const dataFetched = false
@@ -97,18 +96,20 @@ const DisplayMap = (props) => {
       };
       fetchData();
     }
-  }, [newPlace, isEditMode, dataFetched, filteredData]);
+  }, [newPlace, dataFetched, filteredData, ]);
 
   useEffect(() => {
   }, [permanentData]
   )
-
+  useEffect(() => {
+  }, [isEditMode]
+  )
+  
   const handleMarkerClick = (id, lat, lng) => {
     setCurrentPlaceId(id);
   };
 
   const handleAddClick = (e) => {
-
     if (mapRef.current) {
       mapRef.current.getMap().flyTo({
         center: [e.lngLat.lng, e.lngLat.lat],
@@ -130,26 +131,19 @@ const DisplayMap = (props) => {
     console.log('updatedStoreData', updatedStoreData);
     setNewPlace(null)
     setIsEditMode(false);
-    // CHECK THE CASE OF NEWFORM
-    // Check when the user deletes when on selection, it doesn't disapear from the page
-    // Create a copy of the filteredData to avoid mutating state directly
     console.log('filteredData', filteredData);
     const updatedFilteredData = filteredData.map((store) => {
       console.log('store', store);
-
       // Check if the store matches the updatedStoreData
-      if (store._id === updatedStoreData.data.data._id) {
+      if (store._id === updatedStoreData?.data.data._id) {
         // Replace the matching store with the updated data
         return updatedStoreData.data.data;
       }
       // If it doesn't match, keep the store as is
       return store;
     });
-
     // Update the filteredData with the modified array
-    setFilteredData(updatedFilteredData);
-
-
+    setPermanentData(updatedFilteredData);
     // localStorage.setItem('cachedData', JSON.stringify(data));
   };
   const closePopup = () => {
@@ -157,9 +151,8 @@ const DisplayMap = (props) => {
     setCurrentPlaceId(null)
     setIsEditMode(false);
   }
-
   const handleEditClick = () => {
-    setIsEditMode(true);
+    setIsEditMode((prev) => !prev)
   };
 
   const handleDeleteClick = async (id) => {
@@ -182,26 +175,13 @@ const DisplayMap = (props) => {
     }
   };
 
-  const handleCancelClick = () => {
-    // Cancel editing and revert to view mode
-    setIsEditMode(false);
-    setNewPlace(null)
-
-    // Optionally, you can reset the form data to its initial state
-    // setFormData(initialData);
-  };
-
-  const handleSaveClick = () => {
-    // Handle saving data and exit edit mode
-    setIsEditMode(false);
-  };
-
   const dataFromDropdown = (data) => {
     setFilteredData(data)
   }
   const receiveDataFromModal = (open) => {
     setIsOpen(open)
     setCurrentPlaceId(null)
+    setIsEditMode(false)
   }
   const pullData = (data) => {
     setFilteredData(data)
@@ -213,16 +193,25 @@ const DisplayMap = (props) => {
   const handleInputDataFromDropdown = (data) => {
     setInputDataFromDropdown(data)
   }
-  console.log('inputDataFromDropdown', inputDataFromDropdown);
+
+  const handleDragEnd = async (e, store, props) => {
+    // Create a new location object
+    const newLocation = { coordinates: [e.lngLat.lng, e.lngLat.lat] };
+    // Make the PATCH request to update the store's location
+    const id = store._id;
+    try {
+      const response = await axios.patch(`/edit-store/${id}`, {
+        location: newLocation,
+      });
+      const data = response.data;
+      console.log('data', data);
+    } catch (error) {
+      console.error('Error updating store location:', error);
+    }
+  };
+  
   const mapData = filteredData?.length >= 0 && filteredData?.length < permanentData?.length ? filteredData : permanentData
 
-
-  // // I retrieve the data of mapData, if the data is equal to the colors.name then, retrieve the color.color of that item
-  // for (const mItem of mapData){
-  //   for (const tItem of typeObject){
-  //     if (mItem.data ===)
-  //   }
-  // }
   return (
     <>
       <div className="flex flex-row flex-wrap m-2">
@@ -235,32 +224,13 @@ const DisplayMap = (props) => {
         <SearchBar
           func={pullData}
         ></SearchBar>
-
       </div>
       <div style={{ height: "80vh", width: "100%", position: "relative" }}>
-        <div className="flex flex-end right-0 absolute z-20 ">
-          <div >
-            {inputDataFromDropdown.map((type, typeIndex) => (
-              <div key={typeIndex}>
-                <h2 className="font-bold invisible ">{type.key}</h2>
-                <ul className="flex flex-col  ">
-                  {type.colors.map((item, index) => (
-                    <li key={index}>
-                      <div
-                        className="w-3 rounded-full h-3 m-2"
-                        style={{ backgroundColor: `${item.color}` }}
-                      >
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+        <div className="flex flex-end right-0 absolute z-20 top-20">
           <div className=" p-4 w-100"
-          // style={{ height: "auto", maxHeight: '77%', overflow: "scroll", width: "auto", backgroundColor: "white", padding: "1em", position: "absolute", border: "1px", bottom: "20px", right: "20px", zIndex: "10" }}
           >
             <Select
+              className="top-20"
               sendDataFromDropdown={dataFromDropdown}
               dataFromParent={mapData}
               permanentDataFromParent={permanentData}
@@ -283,6 +253,8 @@ const DisplayMap = (props) => {
             mapData?.map((store, index) => (
               <>
                 <Marker
+                  draggable
+                  onDragEnd={(e) => handleDragEnd (e, store)}
                   latitude={store.location.coordinates[1]}
                   longitude={store.location.coordinates[0]}
                   onClick={() => setIsOpen(true)}
@@ -290,7 +262,7 @@ const DisplayMap = (props) => {
                   <CircleIcon
                     style={{
                       fontSize: 4 * viewport.zoom,
-                      fill: store?.typeObject[0]?.data[0].color,
+                      fill: store?.typeObject[0]?.data[0]?.color,
                       stroke: "white",
                       cursor: "pointer",
                       strokeWidth: 3
@@ -305,59 +277,24 @@ const DisplayMap = (props) => {
                     }}
                   />
                 </Marker>
-                {store._id === currentPlaceId && isEditMode === false && (
-                  <CustomPopup
-                    key={store._id}
-                    closeButton={true}
-                    closeOnClick={false}
-                    onClose={() => closePopup()}
-                    anchor="none"
-                    latitude={store.location.coordinates[1]}
-                    longitude={store.location.coordinates[0]}
-                    onClick={() => { setIsOpen(true) }}
-                    isOpen={isOpen}
-                    sendDataFromModal={receiveDataFromModal}
-                    dataFromParent={store}
-                    loading={loading}
-                    handleEditClick={handleEditClick}
-                  ></CustomPopup>
-                )}
-                {store._id === currentPlaceId && isEditMode === true && (
-                  <Popup
-                    key={store._id}
-                    latitude={store.location.coordinates[1]}
-                    longitude={store.location.coordinates[0]}
-                    closeButton={true}
-                    closeOnClick={false}
-                    onClose={() => closePopup()}
-                    anchor="none"
-                  >
-                    <div>
-                      <button className="mimic-popup-close-button">
-                        <CloseIcon
-                          style={{
-                            fontSize: 30,
-                            color: "tomato",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </button>
-                      <div>
-                        <SimpleInput
-                          latitude={store.location.coordinates[1]}
-                          longitude={store.location.coordinates[0]}
-                          onClose={handleCloseForm}
-                          onCancel={handleCancelClick}
-                          isEditMode={isEditMode}
-                          existingData={store}
-                          id={currentPlaceId}
-                          handleSaveClick={handleSaveClick}
-                          data={store}
-                        ></SimpleInput>
-                      </div>
-
-                    </div>
-                  </Popup>
+                {store._id === currentPlaceId && (
+                      <CustomPopup
+                      key={store._id}
+                      closeButton={true}
+                      closeOnClick={false}
+                      onClose={() => closePopup()}
+                      anchor="none"
+                      latitude={store.location.coordinates[1]}
+                      longitude={store.location.coordinates[0]}
+                      onClick={() => { setIsOpen(true) }}
+                      isOpen={isOpen}
+                      sendDataFromModal={receiveDataFromModal}
+                      dataFromParent={store}
+                      loading={loading}
+                      handleEditClick={handleEditClick}
+                      isEditMode={isEditMode}
+                      >  
+                      </CustomPopup>
                 )}
               </>
             ))}
@@ -367,8 +304,6 @@ const DisplayMap = (props) => {
               <Marker
                 latitude={newPlace.lat}
                 longitude={newPlace.lng}
-              // offsetLeft={-3.5 * viewport.zoom}
-              // offsetTop={-7 * viewport.zoom}
               >
                 <Room
                   style={{
@@ -404,7 +339,7 @@ const DisplayMap = (props) => {
                     onClose={handleCloseForm}
                     isEditMode={isEditMode}
                     data={store}
-                    onCancel={() => handleCancelClick()}
+                    // onCancel={() => handleCancelClick()}
 
                   ></SimpleInput>
                 </div>
