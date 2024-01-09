@@ -48,10 +48,6 @@ exports.getFilteredFields = async (req, res) => {
   }
 };
 
-
-
-
-
 // @desc Create a store
 // @route POST /api-stores
 // @access Public
@@ -117,6 +113,7 @@ exports.addStoreFromClick = async (req, res) => {
 exports.updateStore = (req, res, next) => {
   console.log('in update controller');
   const storeId =req.params.id;
+  console.log('storeId', storeId);
   const updatedCity = req.body.city;
   const updatedAddress = req.body.address;
   const updatedImage = req.file.filename;
@@ -255,5 +252,31 @@ exports.getMyStores = async (req, res, next) => {
       throw new Error('Store not found')
     }
     console.log('reviews', store.reviews.length);
+};
+
+exports.updateStoreLocation = async (req, res) => {
+  const { id } = req.params; // Extract store ID from URL parameter
+  const { location } = req.body; // Extract updated location from request body
+
+  try {
+    // Find the store by ID
+    const store = await Store.findById(id);
+
+    if (!store) {
+      return res.status(404).json({ error: 'Store not found' });
+    }
+
+    // Update the location field
+    store.location = location;
+
+    // Save the updated store
+    await store.save();
+
+    // Respond with the updated store
+    res.json(store);
+  } catch (error) {
+    console.error('Error updating store location:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 };
 

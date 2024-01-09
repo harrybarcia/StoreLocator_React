@@ -38,5 +38,8 @@ app.post('/add-store', authenticateToken,  upload, adminController.addStore)
 app.post('/add-store-from-click',  upload, adminController.addStoreFromClick)
 app.put('/edit-store/:id',authenticateToken, bypassGeocoding, upload, adminController.updateStore)
 app.post('/rate/:id',authenticateToken, adminController.rateStore)
+app.patch('/edit-store/:id', authenticateToken, bypassGeocoding, upload, adminController.updateStoreLocation);
+
+
 
 module.exports = app;
