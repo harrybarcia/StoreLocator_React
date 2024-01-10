@@ -141,7 +141,7 @@ exports.updateStore = (req, res, next) => {
       return store.save();
     })
     .then(result => {
-      res.status(200).json({ message: 'Store updated!', data: result });
+      res.status(200).json(result);
     })
     .catch(err => console.log(err));
   } else {
@@ -157,7 +157,7 @@ exports.updateStore = (req, res, next) => {
       return store.save();
     })
     .then(result => {
-      res.status(200).json({ message: 'Store updated!', data: result });
+      res.status(200).json({ message: 'Store updated!', result });
     })
     .catch(err => console.log(err));
   }
