@@ -261,17 +261,13 @@ exports.updateStoreLocation = async (req, res) => {
   try {
     // Find the store by ID
     const store = await Store.findById(id);
-
     if (!store) {
       return res.status(404).json({ error: 'Store not found' });
     }
-
     // Update the location field
     store.location = location;
-
     // Save the updated store
     await store.save();
-
     // Respond with the updated store
     res.json(store);
   } catch (error) {
