@@ -45,7 +45,6 @@ export default function CustomPopup(props) {
     setOpen(props.isOpen)
     setIsEditMode(props.isEditMode)
   }, [props.isOpen, props.isEditMode])
-  console.log('isEditMode', isEditMode);
 
   useEffect( () => {
   }
@@ -79,9 +78,6 @@ export default function CustomPopup(props) {
   const handleSaveClick = () => {
     setIsEditMode(false);
   };
-
-  console.log('isEditMode', isEditMode);
-
 
   return (
     <div>

@@ -113,7 +113,11 @@ export default function BasicModal({ myField, modal, newFieldName, newFieldType,
             <button type="button"
                 className=' mt-8'
             >
-                <AddCircleOutlineIcon onClick={() => setOpen(true)}></AddCircleOutlineIcon>
+                
+                {
+                    modal != "dragEndModal" &&
+                    <AddCircleOutlineIcon onClick={() => setOpen(true)}></AddCircleOutlineIcon>
+                }
             </button>
             <Modal
                 open={open}
@@ -173,6 +177,12 @@ export default function BasicModal({ myField, modal, newFieldName, newFieldType,
                                     <button><AddCircleOutlineIcon onClick={(e) => handleAddInputDataField(e)}></AddCircleOutlineIcon> </button>
                                     <button onClick={() => handleAddInputsDataField()}>Add filter Data to the field</button>
                                 </div>
+                            </div>
+                        )}
+
+                        {modal === "dragEndModal" && (
+                            <div className="max-w-md flex items-center justify-center  bg-white p-8 rounded shadow-md flex flex-row mr-1">
+                                Here
                             </div>
                         )}
                     </Box>

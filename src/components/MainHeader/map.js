@@ -74,31 +74,49 @@ const DisplayMap = (props) => {
   const store = {
     address, rating, city, price, image, order
   }
-  const [dataFetched, setDataFetched] = useState(true);
   const [filteredData, setFilteredData] = useState([])
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = React.useState(false);
   const [inputDataFromDropdown, setInputDataFromDropdown] = useState([])
+  const [dataFetched, setDataFetched] = useState(false);
   useEffect(() => {
-    const dataFetched = false
     const cachedData = localStorage.getItem('cachedData');
-    // if the data is in the cache, just add it to the permament data
+    console.log('permanentData', permanentData);
     if (cachedData && dataFetched) {
-      setPermanentData(JSON.parse(cachedData));
-      // if the data is not in the cache, fetch the data.
+      console.log('cachedData', cachedData);
+      console.log('dataFetched', dataFetched);
+      // Parse cached data and update the permanent data
+      try {
+        const parsedData = JSON.parse(cachedData);
+        setPermanentData(parsedData);
+      } catch (error) {
+        console.error('Error parsing cached data:', error);
+      }
     } else if (!dataFetched) {
       const fetchData = async () => {
-        const response = axios("/allStores").then((response) => {
+        try {
+          const response = await axios("/allStores");
+          console.log('response', response);
+          // Update the permanent data with the fetched data
           setPermanentData(response.data);
-          localStorage.setItem('cachedData', JSON.stringify(response.data));
+          // Set dataFetched to true to indicate that data has been fetched
           setDataFetched(true);
-        });
+          // Cache the fetched data
+          localStorage.setItem('cachedData', JSON.stringify(response.data));
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
       };
+  
       fetchData();
     }
-  }, [newPlace, dataFetched, filteredData, ]);
+  }, [newPlace, filteredData]);
+  console.log('permanentData', permanentData);
+  
+  
 
   useEffect(() => {
+    
   }, [permanentData]
   )
   useEffect(() => {
@@ -117,7 +135,6 @@ const DisplayMap = (props) => {
         curve: 1, // Example coordinates (New York City)
       });
     }
-
     if (!currentPlaceId) {
       const { lat, lng } = e.lngLat;
       setNewPlace({
@@ -132,19 +149,20 @@ const DisplayMap = (props) => {
     setNewPlace(null)
     setIsEditMode(false);
     console.log('filteredData', filteredData);
-    const updatedFilteredData = filteredData.map((store) => {
-      console.log('store', store);
+    console.log('permanentData', permanentData);
+    const updatedFilteredData = filteredData && filteredData.map((store) => {
       // Check if the store matches the updatedStoreData
-      if (store._id === updatedStoreData?.data.data._id) {
+      if (store._id === updatedStoreData._id) {
         // Replace the matching store with the updated data
-        return updatedStoreData.data.data;
+        return updatedStoreData;
       }
       // If it doesn't match, keep the store as is
       return store;
     });
     // Update the filteredData with the modified array
-    setPermanentData(updatedFilteredData);
-    // localStorage.setItem('cachedData', JSON.stringify(data));
+    console.log('updatedFilteredData', updatedFilteredData);
+    setFilteredData(updatedFilteredData);
+    localStorage.setItem('cachedData', JSON.stringify(updatedFilteredData));
   };
   const closePopup = () => {
     setIsOpen(false)
@@ -167,7 +185,6 @@ const DisplayMap = (props) => {
           setPermanentData(response.data);
           localStorage.setItem('cachedData', JSON.stringify(response.data));
         })
-
         setCurrentPlaceId(null)
       } else {
       }
@@ -188,7 +205,6 @@ const DisplayMap = (props) => {
     if (!data) {
       setFilteredData(null)
     }
-
   }
   const handleInputDataFromDropdown = (data) => {
     setInputDataFromDropdown(data)
@@ -204,14 +220,21 @@ const DisplayMap = (props) => {
         location: newLocation,
       });
       const data = response.data;
+      handleCloseForm(data)
       console.log('data', data);
     } catch (error) {
       console.error('Error updating store location:', error);
     }
   };
-  
-  const mapData = filteredData?.length >= 0 && filteredData?.length < permanentData?.length ? filteredData : permanentData
 
+  const handleDataFetched = (data) => {
+    setDataFetched(data)
+  }
+  console.log('dataFetched', dataFetched);
+  
+  console.log('permanentData', permanentData);
+  const mapData = filteredData?.length >= 0 && filteredData?.length < permanentData?.length ? filteredData : permanentData
+  console.log('permanentData', permanentData);
   return (
     <>
       <div className="flex flex-row flex-wrap m-2">
@@ -235,6 +258,7 @@ const DisplayMap = (props) => {
               dataFromParent={mapData}
               permanentDataFromParent={permanentData}
               sendFieldsDataFromDropdown={handleInputDataFromDropdown}
+              dataFetched={handleDataFetched}
             ></Select>
           </div>
 
@@ -319,7 +343,6 @@ const DisplayMap = (props) => {
                 closeButton={true}
                 closeOnClick={false}
                 onClose={() => setNewPlace(null)}
-
                 anchor="none"
               >
                 <button className="mimic-popup-close-button">
@@ -339,6 +362,7 @@ const DisplayMap = (props) => {
                     onClose={handleCloseForm}
                     isEditMode={isEditMode}
                     data={store}
+                    dataFetched={handleDataFetched}
                     // onCancel={() => handleCancelClick()}
 
                   ></SimpleInput>

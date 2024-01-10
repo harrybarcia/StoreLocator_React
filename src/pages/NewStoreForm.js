@@ -7,6 +7,7 @@ import { fetchFields } from "../components/fetchFields"
 
 const SimpleInput = (props) => {
 
+
   const [address, setAddress] = useState(props.data?.address || "");
   const [city, setCity] = useState(props.data?.city || "");
   const [image, setFile] = useState(props.data?.image || "");
@@ -84,7 +85,11 @@ const SimpleInput = (props) => {
     const latitude = props.latitude;
     const longitude = props.longitude;
     const isEditMode = props.isEditMode;
+    const location = { coordinates: [longitude, latitude] }
+    let data; 
+
     console.log('inputData', inputData);
+
     inputData.map((item, index) => {
       if (!item.data){
         item.data = [];
@@ -92,79 +97,49 @@ const SimpleInput = (props) => {
       return item;
       }
     });
-    console.log('inputData', inputData);
 
+    const formFields = {
+      address,
+      city,
+      image,
+      price,
+      rating,
+      latitude,
+      longitude,
+      typeObject: JSON.stringify(inputData),
+    };
     const formData = new FormData();
-    if (props.newPlace) {
-      formData.append("address", address);
-      formData.append("city", city);
-      formData.append("image", image);
-      formData.append("price", price);
-      formData.append("rating", rating);
-      formData.append("latitude", latitude);
-      formData.append("longitude", longitude);
-      formData.append("typeObject", JSON.stringify(inputData))
-      const response = axios.post("/add-store-from-click", formData);
-      const data = await response;
-      axios("/allStores").then((response) => {
-        const allData = response.data
-        console.log(allData)
-        props.onClose(allData)
-      });
+    Object.entries(formFields).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
 
+    try {
+      let data;
+      if (isEditMode) {
+        const jsonString = JSON.stringify(location);
+        formData.append("location", jsonString);
+        const id = props.data._id;
+        const response = await axios.put(`/edit-store/${id}?bypassGeocode=true`, formData);
+        data = response.data;
+        console.log('data', data);
+      } else if (props.newPlace) {
+        await axios.post("/add-store-from-click", formData);
+        const response = await axios("/allStores");
+        data = response.data;
+      } else {
+        const response = await axios.post("/add-store", formData);
+        data = response.data;
+        navigate("/");
+      }
+      props.onClose(data);
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle errors as needed
     }
-    if (isEditMode) {
-      formData.append("address", address);
-      formData.append("city", city);
-      console.log('image', image);
-      formData.append("image", image);
-      formData.append("price", price);
-      formData.append("rating", rating);
-      formData.append("typeObject", JSON.stringify(inputData))
-      console.log('typeObject', JSON.stringify(inputData));
-      const location = { coordinates: [longitude, latitude] }
-      const jsonString = JSON.stringify(location);
-      formData.append("location", jsonString)
-      const id = props.data._id
-      const response = axios.put(`/edit-store/${id}?bypassGeocode=true`, formData);
-      const data = await response;
-      console.log('data', data);
-      props.onClose(data)
-    }
-    if (!isEditMode && !props.newPlace) {
-      formData.append("address", address);
-      formData.append("city", city);
-      formData.append("image", image);
-      formData.append("price", price);
-      formData.append("rating", rating);
-      formData.append("typeObject", JSON.stringify(inputData))
-      const response = axios.post("/add-store", formData);
-      const data = await response;
-      navigate("/");
-    }
+
   }
 
-  const handleDragEnd = () => {
-    console.log("in handleDragEnd function")
-    // if (!result.destination) return;
-
-    // const updatedOrder = [...newOrder];
-    // const [movedItem] = updatedOrder.splice(result.source.index, 1);
-    // updatedOrder.splice(result.destination.index, 0, movedItem);
-
-    // setNewOrder(updatedOrder);
-  };
-  const [selectedColor, setSelectedColor] = useState('');
-
-  const handleColorChange = (event) => {
-    // Access the selected value here
-    const selectedValue = event.target.value;
-    setSelectedColor(selectedValue);
-
-    // You can perform further actions with the selected value if needed
-    console.log('Selected Color:', selectedValue);
-    console.log('inputData', inputData);
-  };
+  console.log('inputData', inputData);
 
   return (
     <div className="flex justify-center bg-white overflow-auto">
@@ -212,7 +187,7 @@ const SimpleInput = (props) => {
           />
           <br />
           {inputData?.sort((a, b) => a.order - b.order).map((item, index) => (
-            <div key={index} draggable onDragEnd={handleDragEnd} data-rbd-draggable-id={item.id} data-rbd-drag-handle-draggable-id={item.id} index={index}>
+            <div key={index} data-rbd-draggable-id={item.id} data-rbd-drag-handle-draggable-id={item.id} index={index}>
               {item.visibility && (
                 <div className="mr-8">
                   <label className="block text-gray-700 font-bold mb-2">{item?.key}</label>
@@ -224,17 +199,13 @@ const SimpleInput = (props) => {
                         handleInputChange(index, item.colors.find(color => color.name === e.target.value));
                       }}
                     >
-                      {item.colors.map((color, colorIndex) => {
-                        console.log('color.name:', color.name);
-                        console.log('item.data[0].name:', item.data[0].name);
-
+                      {item?.colors.map((color, colorIndex) => {
                         return (
                           <option
                             key={colorIndex}
-                            value={color.name}
-                            style={{ backgroundColor: color.color }}
+                            value={color.name }
                           >
-                            {color.name === item.data[0].name ? item.data[0].name : color.name}
+                            {item.data && color.name === item.data[0].name ? item.data[0].name : color.name}
                           </option>
                         );
                       })}

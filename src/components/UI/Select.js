@@ -33,7 +33,8 @@ const Select = (props) => {
     }));
     useEffect(() => {
     }, [filteredData]);
-    // console.log('filteredData', filteredData);
+    console.log('filteredData', filteredData);
+    console.log('permanentData', permanentData);
 
     useEffect(() => {
         filterData();
@@ -50,10 +51,10 @@ const Select = (props) => {
         }));
     };
     const resetFilters = () => {
-        props.sendDataFromDropdown(permanentData)
+        props.dataFetched(false)
+        setFilteredData(permanentData)
         setSelectedItems([])
     }
-
     const filterData = async () => {
         const data = await Promise.all(permanentData?.map(async (item, index) => {
             const selectionData = item.typeObject.sort((a, b) => a.order - b.order).map((typeObjectItem, tIndex) => {
@@ -64,6 +65,7 @@ const Select = (props) => {
             })
             return selectionData
         }));
+        
 
         console.log('data', data);
         const filteredData = []
@@ -73,9 +75,9 @@ const Select = (props) => {
             allValuesAreTrue && filteredData.push(permanentData[i])
         }
         props.sendDataFromDropdown(filteredData)
-    }
+        }
 
-    // console.log('filteredData', filteredData);
+    console.log('filteredData', filteredData);
 
     const isSelectionIncludedInStore = (uniqueTypeObject, tIndex, selection) => {
         console.log('uniqueTypeObject', uniqueTypeObject);

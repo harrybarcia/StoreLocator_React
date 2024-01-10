@@ -197,7 +197,6 @@ const AdminPanel = () => {
                         })}
                       </div>
                     </div>
-
                     <BasicModal
                       myField={field.id}
                       onChangeFieldName={setNewFieldName}
