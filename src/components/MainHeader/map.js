@@ -16,42 +16,39 @@ import SuppressionModal from '../SuppressionModal';
 import Dropdown from "../UI/Dropdown"
 import SearchBar from "../SearchBar";
 import CircleIcon from '@mui/icons-material/Circle';
-import ModalContent from "../UI/ModalContent";
 import CustomPopup from "../UI/Popup";
 import Select from "../UI/Select"
+import FlashMessage from "../UI/FlashMsg";
 
 
 mapboxgl.workerClass =
   require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default; // eslint-disable-line
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
-const styles={
-  app:{
-    backgroundColor:'rgba(0,0,0,0.1)',
-    justifyItems:'center',
-    alignItems:'center',
-    display:'grid',
-    height:'100vh',
-    fontFamily:'Arial',
-    color:'rgba(0,0,100,1)',
-    gridTemplateColumns:'1fr',
-    fontSize:25
+const styles = {
+  app: {
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    justifyItems: 'center',
+    alignItems: 'center',
+    display: 'grid',
+    height: '100vh',
+    fontFamily: 'Arial',
+    color: 'rgba(0,0,100,1)',
+    gridTemplateColumns: '1fr',
+    fontSize: 25
   },
-  select:{
-    width:'100%',
-    maxWidth:600
+  select: {
+    width: '100%',
+    maxWidth: 600
   }
 }
 
-const options=[
-  {label:'React',value:'react'},
-  {label:'ReactNative',value:'react-native'},
-  {label:'JavaScript',value:'js'},
-  {label:'CSS',value:'css'},
+const options = [
+  { label: 'React', value: 'react' },
+  { label: 'ReactNative', value: 'react-native' },
+  { label: 'JavaScript', value: 'js' },
+  { label: 'CSS', value: 'css' },
 ]
-
-
-
 
 const DisplayMap = (props) => {
   const [viewport, setViewport] = useState({
@@ -71,19 +68,21 @@ const DisplayMap = (props) => {
   const [image, setImage] = useState("")
   const [showModal, setShowModal] = useState(false);
   const [order, setNewOrder] = useState(null)
-  const store = {
-    address, rating, city, price, image, order
-  }
+  const store = { address, rating, city, price, image, order }
   const [filteredData, setFilteredData] = useState([])
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [inputDataFromDropdown, setInputDataFromDropdown] = useState([])
+  const [inputDataFromDropdown, setInputDataFromDropdown] = useState([]);
   const [dataFetched, setDataFetched] = useState(false);
+  const [showFlashMessage, setShowFlashMessage] = useState(false);
+  const [originalCoordinates, setOriginalCoordinates] = useState([])
+
   useEffect(() => {
     const cachedData = localStorage.getItem('cachedData');
     console.log('permanentData', permanentData);
+    console.log('cachedData', cachedData.length > 0);
     if (cachedData && dataFetched) {
-      console.log('cachedData', cachedData);
+      console.log('cachedData', cachedData.length > 0);
       console.log('dataFetched', dataFetched);
       // Parse cached data and update the permanent data
       try {
@@ -99,6 +98,7 @@ const DisplayMap = (props) => {
           console.log('response', response);
           // Update the permanent data with the fetched data
           setPermanentData(response.data);
+          setFilteredData(response.data)
           // Set dataFetched to true to indicate that data has been fetched
           setDataFetched(true);
           // Cache the fetched data
@@ -107,22 +107,24 @@ const DisplayMap = (props) => {
           console.error('Error fetching data:', error);
         }
       };
-  
+
       fetchData();
     }
   }, [newPlace, filteredData]);
   console.log('permanentData', permanentData);
-  
-  
+
 
   useEffect(() => {
-    
   }, [permanentData]
   )
   useEffect(() => {
   }, [isEditMode]
   )
-  
+  useEffect(() => {
+  }, [showFlashMessage]
+  )
+
+
   const handleMarkerClick = (id, lat, lng) => {
     setCurrentPlaceId(id);
   };
@@ -145,24 +147,15 @@ const DisplayMap = (props) => {
     }
   };
   const handleCloseForm = (updatedStoreData) => {
-    console.log('updatedStoreData', updatedStoreData);
     setNewPlace(null)
     setIsEditMode(false);
-    console.log('filteredData', filteredData);
-    console.log('permanentData', permanentData);
-    const updatedFilteredData = filteredData && filteredData.map((store) => {
-      // Check if the store matches the updatedStoreData
-      if (store._id === updatedStoreData._id) {
-        // Replace the matching store with the updated data
-        return updatedStoreData;
-      }
-      // If it doesn't match, keep the store as is
-      return store;
-    });
-    // Update the filteredData with the modified array
-    console.log('updatedFilteredData', updatedFilteredData);
-    setFilteredData(updatedFilteredData);
-    localStorage.setItem('cachedData', JSON.stringify(updatedFilteredData));
+    const updateData = (data, updatedStoreData) =>
+      data && data.map((store) => (store._id === updatedStoreData._id ? updatedStoreData : store));
+    const updatedFilteredData = updateData(filteredData, updatedStoreData);
+    const updatedPermanentData = updateData(permanentData, updatedStoreData);
+
+    setFilteredData(filteredData ? updatedFilteredData : updatedPermanentData);
+    localStorage.setItem('cachedData', JSON.stringify(filteredData ? updatedFilteredData : updatedPermanentData));
   };
   const closePopup = () => {
     setIsOpen(false)
@@ -208,36 +201,70 @@ const DisplayMap = (props) => {
   }
   const handleInputDataFromDropdown = (data) => {
     setInputDataFromDropdown(data)
-  }
+  };
 
-  const handleDragEnd = async (e, store, props) => {
-    // Create a new location object
-    const newLocation = { coordinates: [e.lngLat.lng, e.lngLat.lat] };
+  const handleCloseFlashMessage = () => {
+    setCurrentPlaceId(null)
+    setShowFlashMessage(false);
+  };
+
+  const moveLocationOnTheFly = async (coordinates, store, flag) => {
+    let newLocationCoordinates;
+    if (flag === "setNewPositionAfterDrag") {
+      newLocationCoordinates = {
+        coordinates: [coordinates.lngLat.lng, coordinates.lngLat.lat,
+        ],
+      };
+      // first render, the popup won't show up
+      setShowFlashMessage(true);
+      setCurrentPlaceId(store._id);
+    }
+    if (flag === "cancelChangePosition") {
+      newLocationCoordinates = originalCoordinates;
+      setShowFlashMessage(false);
+      setCurrentPlaceId(null);
+    }
     // Make the PATCH request to update the store's location
     const id = store._id;
+    console.log('showFlashMessage', showFlashMessage);
     try {
       const response = await axios.patch(`/edit-store/${id}`, {
-        location: newLocation,
+        location: newLocationCoordinates,
       });
       const data = response.data;
+      // refilter the data with the updated data
       handleCloseForm(data)
       console.log('data', data);
     } catch (error) {
       console.error('Error updating store location:', error);
     }
+  }
+
+  const handleDragEnd = async (e, store) => {
+    setOriginalCoordinates(store.location)
+    moveLocationOnTheFly(e, store, "setNewPositionAfterDrag")
   };
+
+  const cancelChangePosition = (store) => {
+    moveLocationOnTheFly(originalCoordinates, store, "cancelChangePosition")
+  }
+  console.log("show", showFlashMessage)
+  console.log('isOpen', isOpen);
 
   const handleDataFetched = (data) => {
     setDataFetched(data)
-  }
+  };
+
   console.log('dataFetched', dataFetched);
-  
-  console.log('permanentData', permanentData);
+  console.log('currentPlaceId', currentPlaceId);
+
   const mapData = filteredData?.length >= 0 && filteredData?.length < permanentData?.length ? filteredData : permanentData
-  console.log('permanentData', permanentData);
+
+  const shouldDisplay = true
+
   return (
     <>
-      <div className="flex flex-row flex-wrap m-2">
+      {/* <div className="flex flex-row flex-wrap m-2">
         <Dropdown
           sendDataFromDropdown={dataFromDropdown}
           dataFromParent={mapData}
@@ -247,8 +274,9 @@ const DisplayMap = (props) => {
         <SearchBar
           func={pullData}
         ></SearchBar>
-      </div>
-      <div style={{ height: "80vh", width: "100%", position: "relative" }}>
+      </div> */}
+      
+<div style={{ height: "80vh", width: "100%", position: "relative" }}>
         <div className="flex flex-end right-0 absolute z-20 top-20">
           <div className=" p-4 w-100"
           >
@@ -261,7 +289,6 @@ const DisplayMap = (props) => {
               dataFetched={handleDataFetched}
             ></Select>
           </div>
-
         </div>
         <ReactMapGL
           {...viewport}
@@ -278,7 +305,7 @@ const DisplayMap = (props) => {
               <>
                 <Marker
                   draggable
-                  onDragEnd={(e) => handleDragEnd (e, store)}
+                  onDragEnd={(e) => handleDragEnd(e, store)}
                   latitude={store.location.coordinates[1]}
                   longitude={store.location.coordinates[0]}
                   onClick={() => setIsOpen(true)}
@@ -301,24 +328,35 @@ const DisplayMap = (props) => {
                     }}
                   />
                 </Marker>
-                {store._id === currentPlaceId && (
-                      <CustomPopup
-                      key={store._id}
-                      closeButton={true}
-                      closeOnClick={false}
-                      onClose={() => closePopup()}
-                      anchor="none"
-                      latitude={store.location.coordinates[1]}
-                      longitude={store.location.coordinates[0]}
-                      onClick={() => { setIsOpen(true) }}
-                      isOpen={isOpen}
-                      sendDataFromModal={receiveDataFromModal}
-                      dataFromParent={store}
-                      loading={loading}
-                      handleEditClick={handleEditClick}
-                      isEditMode={isEditMode}
-                      >  
-                      </CustomPopup>
+                {store._id === currentPlaceId && !showFlashMessage && (
+                  <CustomPopup
+                    key={store._id}
+                    closeButton={true}
+                    closeOnClick={false}
+                    onClose={() => closePopup()}
+                    anchor="none"
+                    latitude={store.location.coordinates[1]}
+                    longitude={store.location.coordinates[0]}
+                    onClick={() => { setIsOpen(true) }}
+                    isOpen={isOpen}
+                    sendDataFromModal={receiveDataFromModal}
+                    dataFromParent={store}
+                    loading={loading}
+                    handleEditClick={handleEditClick}
+                    isEditMode={isEditMode}
+                    showFlashMessage={showFlashMessage}
+                  >
+                  </CustomPopup>
+                )}
+                {store._id === currentPlaceId && showFlashMessage && (
+                  <FlashMessage message="Your message here"
+                    storeName={store._id}
+                    onClose={handleCloseFlashMessage}
+                    latitude={store.location.coordinates[1]}
+                    longitude={store.location.coordinates[0]}
+                    currentPlaceId={currentPlaceId}
+                    onCancel={() => cancelChangePosition(store)}
+                  />
                 )}
               </>
             ))}
@@ -363,7 +401,7 @@ const DisplayMap = (props) => {
                     isEditMode={isEditMode}
                     data={store}
                     dataFetched={handleDataFetched}
-                    // onCancel={() => handleCancelClick()}
+                  // onCancel={() => handleCancelClick()}
 
                   ></SimpleInput>
                 </div>
@@ -375,7 +413,13 @@ const DisplayMap = (props) => {
           </div>
         </ReactMapGL>
 
+
+
+
       </div>
+        )
+      }
+      
     </>
   );
 };
