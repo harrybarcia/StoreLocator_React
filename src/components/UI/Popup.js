@@ -18,7 +18,7 @@ const style = {
   transform: 'translate(-50%, -50%)',
   minWidth: '90%',
   maxWidth: '1440px || 80%',
-  height: '100%',
+  height: '95%',
   backgroundColor: '#fff',
   boxShadow: '0px 0px 24px rgba(0, 0, 0, 0.24)',
   padding: '0px',
@@ -132,9 +132,9 @@ export default function CustomPopup(props) {
                   </ul>
                 </div>
                 <img
-                  src={`images/${store.image}`}
+                  src={`images/wind-project-header-1440x420.jpg `}
                   alt="Image"
-                  style={{ width: '100%', maxHeight: "100%", minHeight:"240px", objectFit: 'cover', ...imageStyle }}
+                  style={{ width: '100%', maxHeight: "100%", minHeight:"240px", objectFit: 'cover', ...imageStyle}}
                   onLoad={handleImageLoad}
                 />
               </div>
@@ -146,9 +146,9 @@ export default function CustomPopup(props) {
                   <div className="flex-grow"><strong>Address: </strong>{store.address}</div>
                   <div className="flex-grow"><strong>City:</strong> {store.city}</div>
                   {
-                    store.typeObject.map((item, index) => (
+                    store.typeObject.map((item, index) => ( item?.data &&
                       <div key={index} className="mb-auto">
-                        <strong>{item.key}</strong> : {item.data[0].name}
+                        <strong>{item?.key}</strong> : {item?.data[0].name}
                       </div>
                     ))
                   }

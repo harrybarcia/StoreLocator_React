@@ -11,7 +11,7 @@ const FlashMessage = ({onClose, onCancel }) => {
         const timeoutId = setTimeout(() => {
             //sets showFlas to false
             onClose();
-        }, 5000);
+        }, 4000);
 
         return () => {
             clearTimeout(timeoutId);

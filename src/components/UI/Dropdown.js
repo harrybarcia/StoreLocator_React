@@ -4,7 +4,7 @@ import axios from 'axios';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Checkbox from '@mui/material/Checkbox';
-import { fetchFields } from '../fetchFields'
+import { fetchFields } from '../functions/fetchFields'
 
 
 const Dropdown = (props) => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchFields } from '../fetchFields'
+import { fetchFields } from '../functions/fetchFields'
 
 
 const Select = (props) => {

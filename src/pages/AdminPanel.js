@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from "axios";
-import { fetchFields } from '../components/fetchFields';
+import { fetchFields } from '../components/functions/fetchFields';
 import { Navigate, useNavigate } from "react-router-dom";
 import { Checkbox } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';

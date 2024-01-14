@@ -19,6 +19,7 @@ import CircleIcon from '@mui/icons-material/Circle';
 import CustomPopup from "../UI/Popup";
 import Select from "../UI/Select"
 import FlashMessage from "../UI/FlashMsg";
+import CsvTest from "../functions/csvtojson";
 
 
 mapboxgl.workerClass =
@@ -75,12 +76,17 @@ const DisplayMap = (props) => {
   const [inputDataFromDropdown, setInputDataFromDropdown] = useState([]);
   const [dataFetched, setDataFetched] = useState(false);
   const [showFlashMessage, setShowFlashMessage] = useState(false);
-  const [originalCoordinates, setOriginalCoordinates] = useState([])
+  const [originalCoordinates, setOriginalCoordinates] = useState([]);
+  const [showStreet, setShowStreet] = useState(true)
+
+
+  const switchToSatelliteView = () => {
+    setShowStreet((prev) => !prev)
+  };
 
   useEffect(() => {
     const cachedData = localStorage.getItem('cachedData');
     console.log('permanentData', permanentData);
-    console.log('cachedData', cachedData.length > 0);
     if (cachedData && dataFetched) {
       console.log('cachedData', cachedData.length > 0);
       console.log('dataFetched', dataFetched);
@@ -120,32 +126,12 @@ const DisplayMap = (props) => {
   useEffect(() => {
   }, [isEditMode]
   )
-  useEffect(() => {
-  }, [showFlashMessage]
-  )
 
 
   const handleMarkerClick = (id, lat, lng) => {
     setCurrentPlaceId(id);
   };
 
-  const handleAddClick = (e) => {
-    if (mapRef.current) {
-      mapRef.current.getMap().flyTo({
-        center: [e.lngLat.lng, e.lngLat.lat],
-        speed: 0.3,
-        curve: 1, // Example coordinates (New York City)
-      });
-    }
-    if (!currentPlaceId) {
-      const { lat, lng } = e.lngLat;
-      setNewPlace({
-        lat,
-        lng,
-      });
-      setIsEditMode(false);
-    }
-  };
   const handleCloseForm = (updatedStoreData) => {
     setNewPlace(null)
     setIsEditMode(false);
@@ -258,9 +244,47 @@ const DisplayMap = (props) => {
   console.log('dataFetched', dataFetched);
   console.log('currentPlaceId', currentPlaceId);
 
+  let dblClick = false;
+
+  const handleDblClick = () => {
+    console.log('dblClick');
+    dblClick=true
+  };
+
+  const handleAddClick = (e) => {
+    dblClick = false;
+    setTimeout(() => {
+      if (!dblClick) {
+        if (mapRef.current) {
+          mapRef.current.getMap().flyTo({
+            center: [e.lngLat.lng, e.lngLat.lat],
+            speed: 0.3,
+            curve: 1, // Example coordinates (New York City)
+          });
+        }
+        if (!currentPlaceId) {
+          const { lat, lng } = e.lngLat;
+          setNewPlace({
+            lat,
+            lng,
+          });
+          setIsEditMode(false);
+        }
+      }
+    }, 220)
+  };
+
   const mapData = filteredData?.length >= 0 && filteredData?.length < permanentData?.length ? filteredData : permanentData
 
-  const shouldDisplay = true
+  const [dataFromCsv, setDataFromCsv] = useState(null)
+  const handleDataFromChild = (data) => {
+    setDataFromCsv(data)
+  }
+  console.log('dataFromCsv', dataFromCsv);
+
+  useEffect(() => {
+
+  }, [dataFromCsv])
 
   return (
     <>
@@ -275,8 +299,8 @@ const DisplayMap = (props) => {
           func={pullData}
         ></SearchBar>
       </div> */}
-      
-<div style={{ height: "80vh", width: "100%", position: "relative" }}>
+
+      <div style={{ height: "80vh", width: "100%", position: "relative" }}>
         <div className="flex flex-end right-0 absolute z-20 top-20">
           <div className=" p-4 w-100"
           >
@@ -294,10 +318,11 @@ const DisplayMap = (props) => {
           {...viewport}
           mapboxAccessToken="pk.eyJ1IjoiaGFycnliYXJjaWEiLCJhIjoiY2s3dzRvdTJnMDBqODNlbzhpcjdmaGxldiJ9.vg2wE4S7o_nryVx8IFIOuQ"
           style={{ width: "100%", height: "100%" }}
-          mapStyle="mapbox://styles/mapbox/streets-v11"
+          mapStyle={showStreet ? "mapbox://styles/mapbox/streets-v11" : "mapbox://styles/mapbox/satellite-v9"}
           onMove={(evt) => setViewport(evt.viewState)}
           onViewportChange={(newViewport) => setViewport(newViewport)}
           onClick={handleAddClick}
+          onDblClick={handleDblClick}
           ref={mapRef}
         >
           {
@@ -361,11 +386,11 @@ const DisplayMap = (props) => {
               </>
             ))}
 
-          {newPlace && (
+          {/* {newPlace && ( */}
             <>
               <Marker
-                latitude={newPlace.lat}
-                longitude={newPlace.lng}
+                latitude="48"
+                longitude="-120"
               >
                 <Room
                   style={{
@@ -376,8 +401,8 @@ const DisplayMap = (props) => {
                 />
               </Marker>
               <Popup
-                latitude={newPlace.lat}
-                longitude={newPlace.lng}
+                latitude="48"
+                longitude="-120"
                 closeButton={true}
                 closeOnClick={false}
                 onClose={() => setNewPlace(null)}
@@ -394,32 +419,38 @@ const DisplayMap = (props) => {
                 </button>
                 <div>
                   <SimpleInput
-                    latitude={newPlace.lat}
-                    longitude={newPlace.lng}
+                    latitude="48"
+                    longitude="-120"
                     newPlace={newPlace}
                     onClose={handleCloseForm}
                     isEditMode={isEditMode}
                     data={store}
                     dataFetched={handleDataFetched}
-                  // onCancel={() => handleCancelClick()}
+                    dataFromCsv={dataFromCsv}
 
                   ></SimpleInput>
                 </div>
               </Popup>
             </>
-          )}
+          {/* )} */}
           <div style={{ position: 'absolute', bottom: 10, left: 10 }}>
             <NavigationControl />
           </div>
+          <div className="p-2 bg-white rounded" style={{ position: 'absolute', bottom: 50, right: 10 }}>
+            <button onClick={switchToSatelliteView}>
+              Switch to Satellite View
+            </button>
+          </div>
+
         </ReactMapGL>
 
 
 
-
+                    <CsvTest
+                    sendDataFromChild={handleDataFromChild}
+                    >Here</CsvTest>
       </div>
-        )
-      }
-      
+
     </>
   );
 };
