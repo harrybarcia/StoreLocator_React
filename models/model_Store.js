@@ -26,7 +26,7 @@ const StoreSchema=new Schema(
     image:{type:String, required:false},
     userId: {type: Schema.Types.ObjectId, ref: 'User'},
     city:String,
-    price:{type:Number, required:[true, 'Please add a price']},
+    price:{type:Number, required:[false, 'Please add a price']},
     rating:{type:Number},
     reviews:[ratingSchema],
     skipGeocoding:{
@@ -60,7 +60,7 @@ const StoreSchema=new Schema(
 // Create a static method for adding pins without geocoding
 StoreSchema.statics.createPinWithoutGeocoding = async function (pinData) {
   const { address, formattedAddress, longitude, latitude, ...rest } = pinData;
-  console.log(longitude)
+  console.log('longitude', longitude);
   // Construct the location object
   const location = {
     type: 'Point',

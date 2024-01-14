@@ -91,7 +91,9 @@ exports.addStoreFromClick = async (req, res) => {
   const storeId = new mongodb.ObjectId();
   const userId = "64fa71d29df5a1f4b8cf582f";
   const image = req.file?.filename || "";
-  const typeObject = JSON.parse(req.body.typeObject)
+  
+  // const typeObject = JSON.parse(req.body.typeObject)
+  const typeObject = []
   console.log('pinData', pinData);
   const newPinData = {
     ...pinData, // Include properties from pinData
@@ -102,8 +104,11 @@ exports.addStoreFromClick = async (req, res) => {
     typeObject,
     fields:typeObject?.map((item => item.id))
   };
+  console.log('newPinData', newPinData);
+  console.log('newPinData.location', newPinData.location);
   try {
     const savedPin = await Store.createPinWithoutGeocoding(newPinData);
+    console.log('savedPin', savedPin);
     const field = await Store.findById(savedPin._id).populate('typeObject.colors');
     res.status(200).json([savedPin, field]);
   } catch (err) {
