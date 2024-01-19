@@ -4,11 +4,7 @@ import { memo } from "react"
 import "./NewStoreForm.css";
 import axios from "axios";
 import { fetchFields } from "../components/functions/fetchFields";
-import csvTest from "../components/functions/csvtojson";
 
-
-const csvTest2 = csvTest
-console.log('csvTest', csvTest2);
 const SimpleInput = (props) => {
 
   const [address, setAddress] = useState(props.data?.address || "");
@@ -20,7 +16,6 @@ const SimpleInput = (props) => {
   const [inputData, setInputData] = useState(props.data?.typeObject || []);
 
   useEffect(() => {
-    alert("here")
     // Fetch data when the component mounts
     const fetchData = async () => {
       const response = await fetchFields();
@@ -37,29 +32,29 @@ const SimpleInput = (props) => {
 
   useEffect(() => {
   }, [inputData]); // Empty dependency array to run the effect once when the component mounts
-  useEffect( () => {
-    try {
-      // Make a POST request to add data
-      async function fetchData(itemData) {
-        axios.post("/add-store-from-click", itemData);
+  // useEffect( () => {
+  //   try {
+  //     // Make a POST request to add data
+  //     async function fetchData(itemData) {
+  //       axios.post("/add-store-from-click", itemData);
 
-      // Make a GET request to fetch updated data
-      const response = await axios.get("/allStores");
-      const data = response.data;
+  //     // Make a GET request to fetch updated data
+  //     const response = await axios.get("/allStores");
+  //     const data = response.data;
 
-      // Use the fetched data as needed
-      console.log(data);
-      }
-      props.dataFromCsv.map((data) => {
-        fetchData(data);
-      })
+  //     // Use the fetched data as needed
+  //     console.log(data);
+  //     }
+  //     props.dataFromCsv.map((data) => {
+  //       fetchData(data);
+  //     })
       
-    } catch (error) {
-      // Handle errors if any
-      console.error('Error:', error);
-    }
+  //   } catch (error) {
+  //     // Handle errors if any
+  //     console.error('Error:', error);
+  //   }
     
-  }, [props.dataFromCsv]);
+  // }, [props.dataFromCsv]);
 
 
   const navigate = useNavigate();
@@ -152,10 +147,10 @@ const SimpleInput = (props) => {
         data = response.data;
         console.log('data', data);
       } else if (props.newPlace) {
-        const test = props.dataFromCsv
-        console.log('test', test);
+        // const test = props.dataFromCsv
+        // console.log('test', test);
         
-        await axios.post("/add-store-from-click", test);
+        await axios.post("/add-store-from-click", formData);
         const response = await axios("/allStores");
         data = response.data;
       } else {

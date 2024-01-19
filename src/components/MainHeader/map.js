@@ -19,7 +19,9 @@ import CircleIcon from '@mui/icons-material/Circle';
 import CustomPopup from "../UI/Popup";
 import Select from "../UI/Select"
 import FlashMessage from "../UI/FlashMsg";
-import CsvTest from "../functions/csvtojson";
+import ConvertCsvToJson from "../functions/ConvertCsvToJson";
+import GeoJsonEditor from "../GeoJsonEditor";
+import FullTable from "../FullTable";
 
 
 mapboxgl.workerClass =
@@ -248,7 +250,7 @@ const DisplayMap = (props) => {
 
   const handleDblClick = () => {
     console.log('dblClick');
-    dblClick=true
+    dblClick = true
   };
 
   const handleAddClick = (e) => {
@@ -285,6 +287,42 @@ const DisplayMap = (props) => {
   useEffect(() => {
 
   }, [dataFromCsv])
+
+  const handleOnCloseCsvModal = () => {
+    alert("here")
+  }
+
+  // const examplePoints = [
+  //   { location: { coordinates: [-117, 48] }, address: 'Point 1' }
+  // ];
+
+  // const [simulatedGPS, setSimulatedGPS] = useState([]);
+  // useEffect(() => {
+  //   setSimulatedGPS(examplePoints);
+  // }, []);
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     animateGPS();
+  //   }, 3000);
+
+  //   return () => clearInterval(interval);
+  // }, [simulatedGPS]);
+
+  // const animateGPS = () => {
+  //   setSimulatedGPS((prevPoints) => {
+  //     return prevPoints.map((point) => ({
+  //       ...point,
+  //       location: {
+  //         coordinates: [
+  //           parseFloat(point.location.coordinates[0]) + 10,
+  //           parseFloat(point.location.coordinates[1]) + 10,
+  //         ],
+  //       },
+  //     }));
+  //   });
+  // };
+
 
   return (
     <>
@@ -353,6 +391,16 @@ const DisplayMap = (props) => {
                     }}
                   />
                 </Marker>
+                {/* {simulatedGPS.map((point, index) => (
+        <Marker
+          key={index}
+          latitude={parseFloat(point.location.coordinates[1])}
+          longitude={parseFloat(point.location.coordinates[0])}
+          offsetLeft={-20}
+          offsetTop={-20}
+        >
+          <div className="custom-marker">🚗</div>
+        </Marker>))} */}
                 {store._id === currentPlaceId && !showFlashMessage && (
                   <CustomPopup
                     key={store._id}
@@ -385,12 +433,11 @@ const DisplayMap = (props) => {
                 )}
               </>
             ))}
-
-          {/* {newPlace && ( */}
+          {newPlace && (
             <>
               <Marker
-                latitude="48"
-                longitude="-120"
+                latitude={newPlace.lat}
+                longitude={newPlace.lng}
               >
                 <Room
                   style={{
@@ -401,8 +448,8 @@ const DisplayMap = (props) => {
                 />
               </Marker>
               <Popup
-                latitude="48"
-                longitude="-120"
+                latitude={newPlace.lat}
+                longitude={newPlace.lng}
                 closeButton={true}
                 closeOnClick={false}
                 onClose={() => setNewPlace(null)}
@@ -419,20 +466,19 @@ const DisplayMap = (props) => {
                 </button>
                 <div>
                   <SimpleInput
-                    latitude="48"
-                    longitude="-120"
+                    latitude={newPlace.lat}
+                    longitude={newPlace.lng}
                     newPlace={newPlace}
                     onClose={handleCloseForm}
                     isEditMode={isEditMode}
                     data={store}
                     dataFetched={handleDataFetched}
                     dataFromCsv={dataFromCsv}
-
                   ></SimpleInput>
                 </div>
               </Popup>
             </>
-          {/* )} */}
+          )}
           <div style={{ position: 'absolute', bottom: 10, left: 10 }}>
             <NavigationControl />
           </div>
@@ -443,12 +489,30 @@ const DisplayMap = (props) => {
           </div>
 
         </ReactMapGL>
-
-
-
-                    <CsvTest
-                    sendDataFromChild={handleDataFromChild}
-                    >Here</CsvTest>
+        <ConvertCsvToJson
+          sendDataFromChild={handleDataFromChild}
+        >Here</ConvertCsvToJson>
+        <FullTable
+          key={store._id}
+          closeButton={true}
+          closeOnClick={false}
+          onClose={() => closePopup()}
+          anchor="none"
+          isOpen={true}
+          sendDataFromModal={receiveDataFromModal}
+          dataFromParent={store}
+          loading={loading}
+          handleEditClick={handleEditClick}
+          isEditMode={isEditMode}
+          showFlashMessage={showFlashMessage}
+        >
+          <GeoJsonEditor
+            dataFromCsv={dataFromCsv}
+            onClose={handleOnCloseCsvModal}
+          >
+          </GeoJsonEditor>
+        </FullTable>
+        
       </div>
 
     </>
